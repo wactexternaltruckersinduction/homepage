@@ -253,7 +253,81 @@
     <div class="form-card">
         <button onclick="showPage('page1')">← Back</button>
         <h2>RENEWAL FORM</h2>
-        <p>Renewal form content goes here...</p>
+
+        <div id="searchSection">
+            <label>ENTER INDUCTION NUMBER (e.g. SI/EXT/2015/1234)</label>
+            <div style="display: flex; gap: 10px;">
+                <input type="text" id="searchID" placeholder="Search Full or Partial ID...">
+                <button type="button" onclick="searchTrucker()" id="searchBtn">SEARCH</button>
+            </div>
+            <div id="loading" style="display:none; color: blue; margin-top: 10px;">Searching database...</div>
+            <div id="searchResults" style="margin-top: 15px;"></div>
+        </div>
+
+        <form id="renewalForm" style="display:none; margin-top: 30px;">
+            <hr>
+            <h3>VERIFIED INFORMATION (READ-ONLY)</h3>
+            <div class="grid">
+                <div class="form-group">
+                    <label>FULL NAME</label>
+                    <input type="text" name="fullName" id="ren_name" readonly style="background: #eee;">
+                </div>
+                <div class="form-group">
+                    <label>INDUCTION NUMBER</label>
+                    <input type="text" name="inductionNumber" id="ren_id" readonly style="background: #eee;">
+                </div>
+            </div>
+
+            <h3>UPDATABLE INFORMATION</h3>
+            <div class="form-group">
+                <label>PRESENT RESIDENTIAL ADDRESS</label>
+                <input type="text" name="address" id="ren_address" required>
+            </div>
+            <div class="grid">
+                <div class="form-group">
+                    <label>MOBILE NUMBER</label>
+                    <input type="tel" name="mobile" id="ren_mobile" required>
+                </div>
+                <div class="form-group">
+                    <label>COMPANY NAME</label>
+                    <input type="text" name="companyName" id="ren_company" required>
+                </div>
+            </div>
+
+            <div class="referee-box">
+                <label>WAS INDUCTION CARD SEIZED, SUSPENDED, OR LOST?</label>
+                <select name="cardStatus" id="cardStatus" onchange="toggleUploadRequirements()">
+                    <option value="No">No (In Possession)</option>
+                    <option value="Seized">Yes - Seized</option>
+                    <option value="Suspended">Yes - Suspended</option>
+                    <option value="Lost">Yes - Lost</option>
+                </select>
+            </div>
+
+            <h3>DOCUMENT UPLOADS</h3>
+            <div class="grid">
+                <div class="form-group">
+                    <label id="labelOldCard">OLD INDUCTION CARD (Required if in possession)</label>
+                    <input type="file" id="file_oldCard" accept="image/*,application/pdf">
+                </div>
+                <div class="form-group">
+                    <label id="labelPolice">POLICE REPORT (Required if Lost)</label>
+                    <input type="file" id="file_police" accept="image/*,application/pdf">
+                </div>
+            </div>
+            <div class="grid">
+                <div class="form-group">
+                    <label>DRIVER'S LICENSE (Required)</label>
+                    <input type="file" id="file_license" required>
+                </div>
+                <div class="form-group">
+                    <label>PASSPORT PHOTOGRAPH (Required)</label>
+                    <input type="file" id="file_passport" required>
+                </div>
+            </div>
+
+            <button type="submit" class="submit-btn" id="renSubmitBtn">SUBMIT RENEWAL</button>
+        </form>
     </div>
 </div>
 
