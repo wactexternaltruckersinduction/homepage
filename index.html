@@ -344,7 +344,108 @@
         document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
         document.getElementById(pageId).classList.add('active');
     }
+async function searchTrucker() {
+    const id = document.getElementById('searchID').value;
+    const resultsDiv = document.getElementById('searchResults');
+    const loading = document.getElementById('loading');
+    
+    if (id.length < 3) return alert("Please enter at least 3 characters");
 
+    loading.style.display = "block";
+    resultsDiv.innerHTML = "";
+
+    try {
+        const response = await fetch(`${scriptURL}?action=search&inductionNumber=${id}`);
+        const data = await response.json();
+        
+        loading.style.display = "none";
+
+        if (data.length === 0) {
+            resultsDiv.innerHTML = "<p style='color:red;'>Induction number not found. Please check and try again.</p>";
+        } else if (data.length === 1) {
+            populateRenewalForm(data[0]);
+        } else {
+            resultsDiv.innerHTML = "<p>Multiple matches found. Please select:</p>";
+            data.forEach(item => {
+                const btn = document.createElement('button');
+                btn.innerText = `${item['Full Name']} (${item['Induction Number']})`;
+                btn.className = "main-btn";
+                btn.style.margin = "5px";
+                btn.onclick = () => populateRenewalForm(item);
+                resultsDiv.appendChild(btn);
+            });
+        }
+    } catch (e) {
+        alert("Error fetching data");
+        loading.style.display = "none";
+    }
+}
+
+function populateRenewalForm(trucker) {
+    document.getElementById('renewalForm').style.display = "block";
+    document.getElementById('searchResults').innerHTML = `<p style='color:green;'>Selected: ${trucker['Full Name']}</p>`;
+    
+    // Mapping keys from your Master Sheet headers
+    document.getElementById('ren_name').value = trucker['Full Name'] || "";
+    document.getElementById('ren_id').value = trucker['Induction Number'] || "";
+    document.getElementById('ren_address').value = trucker['Address'] || "";
+    document.getElementById('ren_mobile').value = trucker['Mobile Number'] || "";
+    document.getElementById('ren_company').value = trucker['Company Name'] || "";
+}
+
+function toggleUploadRequirements() {
+    const status = document.getElementById('cardStatus').value;
+    const oldCard = document.getElementById('file_oldCard');
+    const police = document.getElementById('file_police');
+
+    oldCard.required = (status === "No");
+    police.required = (status === "Lost");
+}
+
+// Logic to convert file to Base64 for Google Drive
+async function getFileData(fileInput) {
+    const file = fileInput.files[0];
+    if (!file) return null;
+    return new Promise((resolve) => {
+        const reader = new FileReader();
+        reader.onload = () => resolve({
+            base64: reader.result.split(',')[1],
+            type: file.type,
+            name: file.name
+        });
+        reader.readAsDataURL(file);
+    });
+}
+
+// Final Submission
+document.getElementById('renewalForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const btn = document.getElementById('renSubmitBtn');
+    btn.innerText = "UPLOADING & SAVING...";
+    btn.disabled = true;
+
+    const payload = {
+        action: 'submitRenewal',
+        fullName: document.getElementById('ren_name').value,
+        inductionNumber: document.getElementById('ren_id').value,
+        address: document.getElementById('ren_address').value,
+        mobile: document.getElementById('ren_mobile').value,
+        companyName: document.getElementById('ren_company').value,
+        cardStatus: document.getElementById('cardStatus').value,
+        oldCard: await getFileData(document.getElementById('file_oldCard')),
+        policeReport: await getFileData(document.getElementById('file_police')),
+        driversLicense: await getFileData(document.getElementById('file_license')),
+        passportPhoto: await getFileData(document.getElementById('file_passport'))
+    };
+
+    fetch(scriptURL, {
+        method: 'POST',
+        body: JSON.stringify(payload)
+    }).then(() => {
+        alert("Renewal Submitted Successfully!");
+        location.reload();
+    }).catch(err => alert("Error: " + err));
+});
     // Google Sheets Submission Logic
     const scriptURL = 'https://script.google.com/macros/library/d/1jh6TXpVtrk68rTtgayDKkmtouAX30AGosR7wpHIUhC8dyCMrTidi-QLh/2';
     const form = document.getElementById('newTruckerForm');
