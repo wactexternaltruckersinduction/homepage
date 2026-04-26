@@ -364,25 +364,66 @@
         document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
         document.getElementById(pageId).classList.add('active');
     }
-
+async function getFileData(fileInput) {
+        if (!fileInput || !fileInput.files[0]) return null;
+        const file = fileInput.files[0];
+        return new Promise((resolve) => {
+            const reader = new FileReader();
+            reader.onload = () => resolve({
+                base64: reader.result.split(',')[1],
+                type: file.type,
+                name: file.name
+            });
+            reader.readAsDataURL(file);
+        });
+    }
     // --- NEW TRUCKER FORM SUBMISSION ---
-    const newForm = document.getElementById('newTruckerForm');
-    newForm.addEventListener('submit', e => {
+    document.getElementById('newTruckerForm').addEventListener('submit', async function(e) {
         e.preventDefault();
-        const btn = newForm.querySelector('button[type="submit"]');
-        btn.innerText = "SUBMITTING...";
+        const btn = this.querySelector('.submit-btn');
+        const responseDiv = document.getElementById('newFormResponse');
+        
+        btn.innerText = "PROCESSING & GENERATING ID...";
         btn.disabled = true;
 
-        fetch(scriptURL, { method: 'POST', body: new FormData(newForm)})
-          .then(response => {
-              alert("New Trucker Successfully Submitted!");
-              location.reload();
-          })
-          .catch(error => {
-              alert("Error Submitting Form!");
-              btn.innerText = "SUBMIT FORM";
-              btn.disabled = false;
-          });
+        const payload = {
+            action: 'submitNew',
+            fullName: this.fullName.value,
+            address: this.address.value,
+            state: this.state.value,
+            lga: this.lga.value,
+            mobile: this.mobile.value,
+            dob: this.dob.value,
+            maritalStatus: this.maritalStatus.value,
+            licenseDetails: this.licenseDetails.value,
+            companyName: this.companyName.value,
+            passportPhoto: await getFileData(document.getElementById('new_passport')),
+            driversLicense: await getFileData(document.getElementById('new_license')),
+            recLetter: await getFileData(document.getElementById('new_recLetter'))
+        };
+
+        try {
+            const response = await fetch(scriptURL, { method: 'POST', body: JSON.stringify(payload) });
+            const result = await response.json();
+
+            if (result.result === 'success') {
+                responseDiv.style.display = "block";
+                responseDiv.style.background = "#d4edda";
+                responseDiv.innerHTML = `
+                    <h4 style="color:#155724">Success! ID: ${result.inductionNumber}</h4>
+                    <p>Please save your Induction Number for future renewals.</p>
+                `;
+                this.reset();
+                alert("Registration Successful!");
+            } else {
+                alert(result.message || "Error submitting form");
+            }
+        } catch (err) {
+            alert("Submission Error: " + err.message);
+        } finally {
+            btn.innerText = "SUBMIT FORM";
+            btn.disabled = false;
+        }
     });
 
     // --- SEARCH TRUCKER LOGIC ---
@@ -445,20 +486,6 @@
         police.required = (status === "Lost");
     }
 
-    // Logic to convert file to Base64 for Google Drive
-    async function getFileData(fileInput) {
-        const file = fileInput.files[0];
-        if (!file) return null;
-        return new Promise((resolve) => {
-            const reader = new FileReader();
-            reader.onload = () => resolve({
-                base64: reader.result.split(',')[1],
-                type: file.type,
-                name: file.name
-            });
-            reader.readAsDataURL(file);
-        });
-    }
 
     // --- RENEWAL FINAL SUBMISSION ---
     document.getElementById('renewalForm').addEventListener('submit', async (e) => {
