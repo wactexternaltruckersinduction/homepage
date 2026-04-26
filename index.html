@@ -500,55 +500,59 @@ async function getFileData(fileInput) {
     });
 
     // --- SEARCH TRUCKER LOGIC ---
-    async function searchTrucker() {
-        const id = document.getElementById('searchID').value;
-        const resultsDiv = document.getElementById('searchResults');
-        const loading = document.getElementById('loading');
+// --- UPDATED SEARCH TRUCKER LOGIC ---
+async function searchTrucker() {
+    const id = document.getElementById('searchID').value;
+    const resultsDiv = document.getElementById('searchResults');
+    const loading = document.getElementById('loading');
+    
+    if (id.length < 3) return alert("Please enter at least 3 characters");
+
+    loading.style.display = "block";
+    resultsDiv.innerHTML = "";
+
+    try {
+        const response = await fetch(`${scriptURL}?action=search&inductionNumber=${encodeURIComponent(id)}`);
+        const data = await response.json();
         
-        if (id.length < 3) return alert("Please enter at least 3 characters");
+        loading.style.display = "none";
 
-        loading.style.display = "block";
-        resultsDiv.innerHTML = "";
-
-        try {
-            const response = await fetch(`${scriptURL}?action=search&inductionNumber=${encodeURIComponent(id)}`);
-            const data = await response.json();
-            
-            loading.style.display = "none";
-
-            if (data.length === 0) {
-                resultsDiv.innerHTML = "<p style='color:red;'>Induction number not found. Please check and try again.</p>";
-            } else if (data.length === 1) {
-                populateRenewalForm(data[0]);
-            } else {
-                resultsDiv.innerHTML = "<p>Multiple matches found. Please select:</p>";
-                data.forEach(item => {
-                    const btn = document.createElement('button');
-                    btn.innerText = `${item['Full Name']} (${item['Induction Number']})`;
-                    btn.className = "main-btn";
-                    btn.style.margin = "5px";
-                    btn.onclick = () => populateRenewalForm(item);
-                    resultsDiv.appendChild(btn);
-                });
-            }
-        } catch (e) {
-            console.error(e);
-            alert("Error fetching data. Check if your scriptURL is a Web App URL ending in /exec");
-            loading.style.display = "none";
+        if (data.length === 0) {
+            resultsDiv.innerHTML = "<p style='color:red;'>Induction number not found. Please check and try again.</p>";
+        } else if (data.length === 1) {
+            populateRenewalForm(data[0]);
+        } else {
+            resultsDiv.innerHTML = "<p>Multiple matches found. Please select:</p>";
+            data.forEach(item => {
+                const btn = document.createElement('button');
+                // FIXED: Changed from ['Full Name'] to .fullName
+                btn.innerText = `${item.fullName} (${item.inductionNumber})`;
+                btn.className = "main-btn";
+                btn.style.margin = "5px";
+                btn.onclick = () => populateRenewalForm(item);
+                resultsDiv.appendChild(btn);
+            });
         }
+    } catch (e) {
+        console.error(e);
+        alert("Error fetching data. Ensure you have deployed as a Web App.");
+        loading.style.display = "none";
     }
+}
 
-    function populateRenewalForm(trucker) {
-        document.getElementById('renewalForm').style.display = "block";
-        document.getElementById('searchResults').innerHTML = `<p style='color:green;'>Selected: ${trucker['Full Name']}</p>`;
-        
-        // Mapping keys from your Master Sheet headers
-        document.getElementById('ren_name').value = trucker['Full Name'] || "";
-        document.getElementById('ren_id').value = trucker['Induction Number'] || "";
-        document.getElementById('ren_address').value = trucker['Address'] || "";
-        document.getElementById('ren_mobile').value = trucker['Mobile Number'] || "";
-        document.getElementById('ren_company').value = trucker['Company Name'] || "";
-    }
+// --- UPDATED POPULATE FUNCTION ---
+function populateRenewalForm(trucker) {
+    document.getElementById('renewalForm').style.display = "block";
+    // FIXED: Changed from ['Full Name'] to .fullName
+    document.getElementById('searchResults').innerHTML = `<p style='color:green;'>Selected: ${trucker.fullName}</p>`;
+    
+    // FIXED: Mapped keys to match the normalizeKeyForFrontend function in Code.gs
+    document.getElementById('ren_name').value = trucker.fullName || "";
+    document.getElementById('ren_id').value = trucker.inductionNumber || "";
+    document.getElementById('ren_address').value = trucker.address || "";
+    document.getElementById('ren_mobile').value = trucker.mobile || "";
+    document.getElementById('ren_company').value = trucker.companyName || "";
+}
 
     function toggleUploadRequirements() {
         const status = document.getElementById('cardStatus').value;
