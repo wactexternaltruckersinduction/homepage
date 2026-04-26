@@ -133,8 +133,72 @@
             font-size: 18px;
             cursor: pointer;
         }
+        /* Squarcle Modal Styles */
+#successModal {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0,0,0,0.6);
+    backdrop-filter: blur(5px);
+}
+
+.squarcle-content {
+    background-color: #fff;
+    margin: 10% auto;
+    padding: 40px;
+    width: 320px;
+    height: 320px;
+    border-radius: 65px; /* The Squarcle shape */
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+    border: 4px solid var(--primary-color);
+}
+
+.squarcle-content h2 {
+    font-size: 18px;
+    color: #333;
+    margin-bottom: 10px;
+    border: none;
+}
+
+.induction-display {
+    background: #f0f4f8;
+    padding: 15px;
+    border-radius: 20px;
+    font-weight: bold;
+    font-size: 20px;
+    color: var(--primary-color);
+    margin: 20px 0;
+    width: 90%;
+}
+
+.close-sq-btn {
+    background: var(--primary-color);
+    color: white;
+    border: none;
+    padding: 12px 25px;
+    border-radius: 15px;
+    cursor: pointer;
+    font-weight: bold;
+}
     </style>
 </head>
+    <div id="successModal">
+    <div class="squarcle-content">
+        <h2>REGISTRATION SUCCESSFUL</h2>
+        <p style="font-size: 12px;">Your Induction Number is:</p>
+        <div class="induction-display" id="displayID"></div>
+        <button class="close-sq-btn" onclick="closeModal()">CONTINUE</button>
+    </div>
+</div>
 <body>
 
 <header>
@@ -407,14 +471,11 @@ async function getFileData(fileInput) {
             const result = await response.json();
 
             if (result.result === 'success') {
-                responseDiv.style.display = "block";
-                responseDiv.style.background = "#d4edda";
-                responseDiv.innerHTML = `
-                    <h4 style="color:#155724">Success! ID: ${result.inductionNumber}</h4>
-                    <p>Please save your Induction Number for future renewals.</p>
-                `;
-                this.reset();
-                alert("Registration Successful!");
+                //SHOW THE SQUARCLE MODAL 
+                document.getElementById('displayID').innerText = result.inductionNumber;
+            document.getElementById('successModal').style.display = "block";
+            this.reset();
+                
             } else {
                 alert(result.message || "Error submitting form");
             }
