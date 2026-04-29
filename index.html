@@ -14,7 +14,7 @@
         }
 
         body {
-            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background-color: var(--bg-light);
             color: var(--text-dark);
             margin: 0;
@@ -22,7 +22,6 @@
             line-height: 1.6;
         }
 
-        /* --- HEADER --- */
         header {
             background: white;
             padding: 15px 40px;
@@ -35,8 +34,6 @@
             z-index: 100;
         }
 
-        .brand-box { display: flex; align-items: center; }
-        
         .logo-circle {
             width: 50px;
             height: 50px;
@@ -54,17 +51,8 @@
         .brand-text .name { font-weight: 800; color: var(--primary-blue); font-size: 20px; display: block; }
         .brand-text .sub { font-size: 12px; color: #64748b; }
 
-        /* --- LAYOUT --- */
         .container { max-width: 800px; margin: 40px auto; padding: 0 20px; }
         
-        .page { display: none; animation: fadeIn 0.4s ease; }
-        .page.active { display: block; }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
         .card {
             background: white;
             border-radius: var(--squarcle-radius);
@@ -73,52 +61,48 @@
             box-shadow: var(--shadow-soft);
         }
 
-        h2 { color: var(--primary-blue); margin-top: 0; font-size: 22px; text-align: center; }
-        h3 { font-size: 14px; text-transform: uppercase; letter-spacing: 1px; color: #64748b; border-bottom: 1px solid #eee; padding-bottom: 10px; margin-top: 30px; }
-
-        /* --- FORMS --- */
-        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
-        .form-group { margin-bottom: 15px; }
-        label { display: block; font-size: 11px; font-weight: 700; color: #64748b; margin-bottom: 5px; text-transform: uppercase; }
+        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+        .form-group { margin-bottom: 20px; }
+        
+        label { display: block; font-size: 11px; font-weight: 700; color: #64748b; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.5px; }
         
         input, select, textarea {
             width: 100%;
-            padding: 12px;
+            padding: 12px 16px;
             border: 2px solid #e2e8f0;
             border-radius: 12px;
             font-size: 14px;
+            transition: all 0.2s;
             box-sizing: border-box;
         }
 
-        input:focus { outline: none; border-color: var(--primary-blue); }
+        input:focus { outline: none; border-color: var(--primary-blue); box-shadow: 0 0 0 4px rgba(0, 74, 153, 0.1); }
 
-        .referee-box { background: #f1f5f9; padding: 20px; border-radius: 16px; margin-bottom: 15px; }
-
-        /* --- BUTTONS --- */
         .btn {
-            padding: 14px 24px;
+            padding: 14px 28px;
             border-radius: 14px;
             font-weight: 700;
             cursor: pointer;
             border: none;
-            transition: 0.2s;
+            transition: 0.3s;
             text-transform: uppercase;
             font-size: 14px;
+            letter-spacing: 1px;
         }
 
         .btn-primary { background: var(--primary-blue); color: white; width: 100%; }
         .btn-secondary { background: #64748b; color: white; }
-        .btn-outline { background: transparent; border: 2px solid #e2e8f0; color: #64748b; }
-        .btn:hover { opacity: 0.9; transform: translateY(-1px); }
+        
+        .page { display: none; }
+        .page.active { display: block; }
 
-        /* --- MODAL --- */
         #successModal {
             display: none;
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
             background: rgba(0,0,0,0.6);
-            z-index: 1000;
             backdrop-filter: blur(4px);
+            z-index: 1000;
         }
 
         .modal-content {
@@ -130,45 +114,30 @@
             border-radius: var(--squarcle-radius);
             text-align: center;
         }
-
-        .id-display {
-            font-size: 24px;
-            font-weight: 800;
-            color: var(--primary-blue);
-            background: #eff6ff;
-            padding: 15px;
-            border-radius: 12px;
-            margin: 20px 0;
-            border: 2px dashed var(--primary-blue);
-        }
-
-        footer { text-align: center; padding: 40px; color: #94a3b8; font-size: 12px; text-transform: uppercase; }
-
-        @media (max-width: 600px) { .grid { grid-template-columns: 1fr; } }
     </style>
 </head>
 <body>
 
 <header>
-    <div class="brand-box">
+    <div style="display: flex; align-items: center;">
         <div class="logo-circle">
-            <img src="https://cms-cd.apmterminals.com/onne/-/jssmedia/mainsite/africa-and-middle-east/Onne/Standard-Hero-images/wact-logo-square-400-ext.png" alt="WACT">
+            <img src="https://cms-cd.apmterminals.com/onne/-/jssmedia/mainsite/africa-and-middle-east/Onne/Standard-Hero-images/wact-logo-square-400-ext.png" alt="WACT Logo">
         </div>
         <div class="brand-text">
-            <span class="name">WACT ONNE</span>
+            <span class="name">WEST AFRICA CONTAINER TERMINAL ONNE</span>
+            <span class="name">Federal Ocean Terminal (FOT) ONNE</span>
             <span class="sub">Trucker Induction Portal</span>
         </div>
     </div>
-    <div id="currentDate" style="font-size: 12px; font-weight: 600; color: #64748b;"></div>
 </header>
 
 <div class="container">
     
-    <!-- PAGE 1: SELECTION -->
+    <!-- SELECTION PAGE -->
     <div id="pageSelection" class="page active">
         <div class="card" style="text-align: center;">
-            <h2 style="margin-bottom: 10px;">Welcome</h2>
-            <p style="color: #64748b; margin-bottom: 30px;">Please select an application type to continue.</p>
+            <h2 style="color: var(--primary-blue);">Welcome to Induction</h2>
+            <p style="color: #64748b; margin-bottom: 30px;">Select your application type below to proceed.</p>
             <div class="grid">
                 <button class="btn btn-primary" onclick="showPage('pageNew')">New Induction</button>
                 <button class="btn btn-secondary" onclick="showPage('pageRenewal')">Renewal</button>
@@ -176,141 +145,142 @@
         </div>
     </div>
 
-    <!-- PAGE: NEW TRUCKER FORM -->
+    <!-- NEW INDUCTION FORM -->
     <div id="pageNew" class="page">
-        <button class="btn btn-outline" style="margin-bottom: 20px;" onclick="showPage('pageSelection')">← Back</button>
+        <button class="btn" style="background: none; color: var(--primary-blue); margin-bottom: 15px;" onclick="showPage('pageSelection')">← Back to selection</button>
         <form id="newTruckerForm" class="card">
-            <h2>New Trucker Induction</h2>
+            <h2 style="margin-top: 0; color: var(--primary-blue);">New Induction Form</h2>
             
-            <h3>Biodata</h3>
             <div class="form-group">
-                <label>Full Name (As per License)</label>
-                <input type="text" name="fullName" placeholder="John Doe" required>
+                <label>Full Name</label>
+                <input type="text" name="fullName" required>
             </div>
+
             <div class="form-group">
                 <label>Residential Address</label>
-                <input type="text" name="address" required>
+                <textarea name="address" rows="2" required></textarea>
+            </div>
+
+            <div class="grid">
+                <div class="form-group">
+                    <label>Mobile Number</label>
+                    <input type="tel" name="mobile" required>
+                </div>
+                <div class="form-group">
+                    <label>Date of Birth</label>
+                    <input type="date" name="dob" required>
+                </div>
+            </div>
+
+            <div class="grid">
+                <div class="form-group">
+                    <label>License Details</label>
+                    <input type="text" name="licenseDetails" required>
+                </div>
+                <div class="form-group">
+                    <label>Company Name</label>
+                    <input type="text" name="companyName" required>
+                </div>
+            </div>
+
+            <h3 style="font-size: 14px; color: #64748b; border-bottom: 1px solid #eee; padding-bottom: 10px; margin-top: 30px;">Referees</h3>
+            <div class="grid">
+                <div class="form-group"><label>Referee 1 Name</label><input type="text" name="ref1Name" required></div>
+                <div class="form-group"><label>Referee 1 Contact</label><input type="text" name="ref1Contact" required></div>
             </div>
             <div class="grid">
-                <div class="form-group"><label>Mobile</label><input type="tel" name="mobile" required></div>
-                <div class="form-group"><label>DOB</label><input type="date" name="dob" required></div>
+                <div class="form-group"><label>Referee 2 Name</label><input type="text" name="ref2Name" required></div>
+                <div class="form-group"><label>Referee 2 Contact</label><input type="text" name="ref2Contact" required></div>
             </div>
+
+            <h3 style="font-size: 14px; color: #64748b; border-bottom: 1px solid #eee; padding-bottom: 10px; margin-top: 30px;">Documents</h3>
             <div class="grid">
-                <div class="form-group"><label>License Number</label><input type="text" name="licenseDetails" required></div>
-                <div class="form-group"><label>Company Name</label><input type="text" name="companyName" required></div>
+                <div class="form-group">
+                    <label>Passport Photo</label>
+                    <input type="file" id="new_passport" accept="image/*" required>
+                </div>
+                <div class="form-group">
+                    <label>Driver's License (Scan)</label>
+                    <input type="file" id="new_license" accept="image/*,application/pdf" required>
+                </div>
             </div>
 
-            <h3>Referees</h3>
-            <div class="referee-box">
-                <label>Referee 1 Name</label>
-                <input type="text" name="ref1Name" style="margin-bottom:10px" required>
-                <input type="text" name="ref1Contact" placeholder="Phone Number">
-            </div>
-            <div class="referee-box">
-                <label>Referee 2 Name</label>
-                <input type="text" name="ref2Name" style="margin-bottom:10px" required>
-                <input type="text" name="ref2Contact" placeholder="Phone Number">
-            </div>
-
-            <h3>Uploads</h3>
-            <div class="grid">
-                <div class="form-group"><label>Passport Photo</label><input type="file" id="new_passport" accept="image/*" required></div>
-                <div class="form-group"><label>Driver's License</label><input type="file" id="new_license" accept="image/*,application/pdf" required></div>
-            </div>
-
-            <div class="form-group" style="margin-top:20px;">
-                <label style="display: flex; align-items: center; gap: 10px; text-transform: none;">
-                    <input type="checkbox" required style="width: auto;"> I confirm all details are accurate.
-                </label>
-            </div>
-
-            <button type="submit" class="btn btn-primary" id="newSubmitBtn">Submit Application</button>
+            <button type="submit" class="btn btn-primary" id="newSubmitBtn" style="margin-top: 20px;">Submit Application</button>
         </form>
     </div>
 
-    <!-- PAGE: RENEWAL FORM -->
+    <!-- RENEWAL FORM -->
     <div id="pageRenewal" class="page">
-        <button class="btn btn-outline" style="margin-bottom: 20px;" onclick="showPage('pageSelection')">← Back</button>
+        <button class="btn" style="background: none; color: var(--primary-blue); margin-bottom: 15px;" onclick="showPage('pageSelection')">← Back to selection</button>
         <div class="card">
-            <h2>Induction Renewal</h2>
-            <p style="font-size: 13px; text-align: center; color: #64748b;">Search for your existing record</p>
-            
-            <div style="display: flex; gap: 10px; margin-bottom: 20px;">
-                <input type="text" id="searchID" placeholder="Enter Induction or License No.">
-                <button class="btn btn-primary" style="width: auto;" onclick="searchTrucker()" id="searchBtn">Search</button>
+            <h2 style="margin-top: 0; color: var(--primary-blue);">Renewal Application</h2>
+            <div style="margin-bottom: 25px;">
+                <label>Search by Induction Number or License</label>
+                <div style="display: flex; gap: 10px;">
+                    <input type="text" id="searchID" placeholder="Enter ID...">
+                    <button type="button" class="btn btn-primary" style="width: auto;" onclick="searchTrucker()" id="searchBtn">Search</button>
+                </div>
             </div>
-            <div id="loading" style="display:none; text-align: center; color: var(--primary-blue); font-weight: 600;">Searching...</div>
+
             <div id="searchResults"></div>
 
-            <form id="renewalForm" style="display:none; margin-top: 30px;">
-                <h3>Verified Info</h3>
+            <form id="renewalForm" style="display: none; border-top: 1px solid #eee; padding-top: 25px; margin-top: 25px;">
                 <div class="grid">
-                    <div class="form-group"><label>Name</label><input type="text" id="ren_name" readonly style="background:#f1f5f9;"></div>
-                    <div class="form-group"><label>Induction ID</label><input type="text" id="ren_id" readonly style="background:#f1f5f9;"></div>
+                    <div class="form-group"><label>Name</label><input type="text" id="ren_name" readonly style="background: #f1f5f9;"></div>
+                    <div class="form-group"><label>Existing ID</label><input type="text" id="ren_id" readonly style="background: #f1f5f9;"></div>
+                </div>
+                
+                <div class="form-group">
+                    <label>Updated Address</label>
+                    <input type="text" name="address" id="ren_address" required>
                 </div>
 
-                <h3>Update Details</h3>
-                <div class="form-group"><label>New Address</label><input type="text" name="address" id="ren_address" required></div>
                 <div class="grid">
-                    <div class="form-group"><label>New Mobile</label><input type="tel" name="mobile" id="ren_mobile" required></div>
+                    <div class="form-group"><label>Mobile</label><input type="tel" name="mobile" id="ren_mobile" required></div>
                     <div class="form-group"><label>Company</label><input type="text" name="companyName" id="ren_company" required></div>
                 </div>
 
-                <h3>Card Status</h3>
                 <div class="form-group">
-                    <label>Is your card lost or seized?</label>
+                    <label>Card Status</label>
                     <select id="cardStatus">
-                        <option value="No">No (In Possession)</option>
-                        <option value="Lost">Yes - Lost</option>
-                        <option value="Seized">Yes - Seized</option>
+                        <option value="In Possession">In Possession</option>
+                        <option value="Lost">Lost</option>
+                        <option value="Damaged">Damaged</option>
                     </select>
                 </div>
 
-                <h3>Uploads</h3>
                 <div class="grid">
-                    <div class="form-group"><label>Passport Photo</label><input type="file" id="ren_passport" required></div>
-                    <div class="form-group"><label>Driver's License</label><input type="file" id="ren_license" required></div>
+                    <div class="form-group"><label>New Passport Photo</label><input type="file" id="ren_passport" required></div>
+                    <div class="form-group"><label>License Update</label><input type="file" id="ren_license" required></div>
                 </div>
 
-                <button type="submit" class="btn btn-primary" id="renSubmitBtn" style="margin-top:20px;">Submit Renewal</button>
+                <button type="submit" class="btn btn-primary" id="renSubmitBtn">Submit Renewal</button>
             </form>
         </div>
     </div>
-
 </div>
 
 <!-- SUCCESS MODAL -->
 <div id="successModal">
     <div class="modal-content">
-        <div style="font-size: 50px;">✅</div>
-        <h2>Submission Successful</h2>
-        <p>Your Induction ID has been generated:</p>
-        <div class="id-display" id="displayID">---</div>
-        <p style="font-size: 12px; color: #64748b;">Please take a screenshot of this ID.</p>
-        <button class="btn btn-primary" onclick="location.reload()">Return Home</button>
+        <h2 style="color: var(--primary-blue);">Success!</h2>
+        <p>Your application has been received.</p>
+        <div id="displayID" style="font-size: 24px; font-weight: 800; margin: 20px 0; color: var(--primary-blue);"></div>
+        <button class="btn btn-primary" onclick="location.reload()">Finish</button>
     </div>
 </div>
 
-<footer>
-    &copy; 2026 West Africa Container Terminal | Confidential
-</footer>
-
 <script>
-    // --- CONFIG ---
     const scriptURL = 'https://script.google.com/macros/s/AKfycbyT9VU1LktpavOtbkIKlsvjWV5_7kx_xctn1dVZS6LtiDQnMAagX4Xk5xC0zH_MhouoBg/exec';
-
-    document.getElementById('currentDate').innerText = new Date().toLocaleDateString('en-GB', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
 
     function showPage(id) {
         document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
         document.getElementById(id).classList.add('active');
-        window.scrollTo(0,0);
     }
 
-    // --- FILE HELPER ---
     async function getFileData(fileInput) {
-        if (!fileInput || !fileInput.files[0]) return null;
         const file = fileInput.files[0];
+        if (!file) return null;
         return new Promise((resolve) => {
             const reader = new FileReader();
             reader.onload = () => resolve({
@@ -322,11 +292,11 @@
         });
     }
 
-    // --- NEW FORM SUBMISSION ---
+    // New Submission
     document.getElementById('newTruckerForm').addEventListener('submit', async function(e) {
         e.preventDefault();
         const btn = document.getElementById('newSubmitBtn');
-        btn.innerText = "Processing...";
+        btn.innerText = "Submitting...";
         btn.disabled = true;
 
         const payload = {
@@ -338,101 +308,115 @@
             licenseDetails: this.licenseDetails.value,
             companyName: this.companyName.value,
             ref1Name: this.ref1Name.value,
+            ref1Contact: this.ref1Contact.value,
             ref2Name: this.ref2Name.value,
+            ref2Contact: this.ref2Contact.value,
             passportPhoto: await getFileData(document.getElementById('new_passport')),
             driversLicense: await getFileData(document.getElementById('new_license'))
         };
 
         try {
-            const response = await fetch(scriptURL, { method: 'POST', body: JSON.stringify(payload) });
-            const result = await response.json();
-            if (result.result === 'success') {
-                document.getElementById('displayID').innerText = result.inductionNumber;
-                document.getElementById('successModal').style.display = "block";
-            } else {
-                alert("Error: " + result.message);
-            }
+            const res = await fetch(scriptURL, { method: 'POST', body: JSON.stringify(payload) });
+            const data = await res.json();
+            document.getElementById('displayID').innerText = "ID: " + data.inductionNumber;
+            document.getElementById('successModal').style.display = 'block';
         } catch (err) {
-            alert("Connection Error. Check your internet.");
+            alert("Error submitting form.");
         } finally {
             btn.innerText = "Submit Application";
             btn.disabled = false;
         }
     });
 
-    // --- SEARCH LOGIC ---
+    // Search Logic
     async function searchTrucker() {
         const id = document.getElementById('searchID').value;
-        const loading = document.getElementById('loading');
-        const resultsDiv = document.getElementById('searchResults');
-        
-        if (id.length < 3) return alert("Enter at least 3 characters");
-
-        loading.style.display = "block";
-        resultsDiv.innerHTML = "";
+        const resDiv = document.getElementById('searchResults');
+         const loading = document.getElementById('loading');
+        resDiv.innerHTML = "Searching...";
 
         try {
-            const response = await fetch(`${scriptURL}?action=search&inductionNumber=${encodeURIComponent(id)}`);
-            const data = await response.json();
-            loading.style.display = "none";
-
-            if (data.length === 0) {
-                resultsDiv.innerHTML = "<p style='color:red; text-align:center;'>No records found.</p>";
-            } else {
-                data.forEach(item => {
-                    const b = document.createElement('button');
-                    b.className = "btn btn-outline";
-                    b.style.width = "100%";
-                    b.style.marginBottom = "5px";
-                    b.innerText = `${item.fullName} (${item.inductionNumber})`;
-                    b.onclick = () => {
-                        document.getElementById('renewalForm').style.display = "block";
-                        document.getElementById('ren_name').value = item.fullName;
-                        document.getElementById('ren_id').value = item.inductionNumber;
-                        document.getElementById('ren_address').value = item.address || "";
-                        document.getElementById('ren_mobile').value = item.mobile || "";
-                        document.getElementById('ren_company').value = item.companyName || "";
-                        resultsDiv.innerHTML = `<p style='color:green; text-align:center;'>Selected: ${item.fullName}</p>`;
-                    };
-                    resultsDiv.appendChild(b);
-                });
-            }
+            const response = await fetch(`${scriptURL}?action=search&inductionNumber=${id}`);
+            const results = await response.json();
+            resDiv.innerHTML = "";
+            
+            results.forEach(item => {
+                const b = document.createElement('button');
+                b.className = "btn btn-secondary";
+                b.style = "width: 100%; margin-bottom: 10px; text-align: left;";
+                b.innerText = `${item.fullName} - ${item.inductionNumber}`;
+                b.onclick = () => {
+                    document.getElementById('renewalForm').style.display = "block";
+                    document.getElementById('ren_name').value = item.fullName;
+                    document.getElementById('ren_id').value = item.inductionNumber;
+                    document.getElementById('ren_address').value = item.address;
+                    document.getElementById('ren_mobile').value = item.mobile;
+                    document.getElementById('ren_company').value = item.companyName;
+                };
+                resDiv.appendChild(b);
+            });
         } catch (e) {
-            alert("Search failed.");
-            loading.style.display = "none";
+            resDiv.innerHTML = "No record found.";
         }
     }
+    / --- UPDATED POPULATE FUNCTION ---
+function populateRenewalForm(trucker) {
+    document.getElementById('renewalForm').style.display = "block";
+    // FIXED: Changed from ['Full Name'] to .fullName
+    document.getElementById('searchResults').innerHTML = `<p style='color:green;'>Selected: ${trucker.fullName}</p>`;
+    
+    // FIXED: Mapped keys to match the normalizeKeyForFrontend function in Code.gs
+    document.getElementById('ren_name').value = trucker.fullName || "";
+    document.getElementById('ren_id').value = trucker.inductionNumber || "";
+    document.getElementById('ren_address').value = trucker.address || "";
+    document.getElementById('ren_mobile').value = trucker.mobile || "";
+    document.getElementById('ren_company').value = trucker.companyName || "";
+}
 
-    // --- RENEWAL SUBMISSION ---
-    document.getElementById('renewalForm').addEventListener('submit', async function(e) {
+    function toggleUploadRequirements() {
+        const status = document.getElementById('cardStatus').value;
+        const oldCard = document.getElementById('file_oldCard');
+        const police = document.getElementById('file_police');
+
+        oldCard.required = (status === "No");
+        police.required = (status === "Lost");
+    }
+
+
+    // --- RENEWAL FINAL SUBMISSION ---
+    document.getElementById('renewalForm').addEventListener('submit', async (e) => {
         e.preventDefault();
         const btn = document.getElementById('renSubmitBtn');
-        btn.innerText = "Saving...";
+        btn.innerText = "UPLOADING & SAVING...";
         btn.disabled = true;
 
         const payload = {
             action: 'submitRenewal',
             fullName: document.getElementById('ren_name').value,
             inductionNumber: document.getElementById('ren_id').value,
-            address: this.address.value,
-            mobile: this.mobile.value,
-            companyName: this.companyName.value,
+            address: document.getElementById('ren_address').value,
+            mobile: document.getElementById('ren_mobile').value,
+            companyName: document.getElementById('ren_company').value,
             cardStatus: document.getElementById('cardStatus').value,
-            passportPhoto: await getFileData(document.getElementById('ren_passport')),
-            driversLicense: await getFileData(document.getElementById('ren_license'))
+            oldCard: await getFileData(document.getElementById('file_oldCard')),
+            policeReport: await getFileData(document.getElementById('file_police')),
+            driversLicense: await getFileData(document.getElementById('file_license')),
+            passportPhoto: await getFileData(document.getElementById('file_passport'))
         };
 
-        try {
-            await fetch(scriptURL, { method: 'POST', body: JSON.stringify(payload) });
+        fetch(scriptURL, {
+            method: 'POST',
+            body: JSON.stringify(payload)
+        }).then(() => {
             alert("Renewal Submitted Successfully!");
             location.reload();
-        } catch (err) {
-            alert("Error saving renewal.");
-            btn.innerText = "Submit Renewal";
+        }).catch(err => {
+            alert("Error: " + err);
+            btn.innerText = "SUBMIT RENEWAL";
             btn.disabled = false;
-        }
+        });
     });
-</script>
 
+</script>
 </body>
 </html>
