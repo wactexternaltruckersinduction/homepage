@@ -378,15 +378,14 @@
     }
 
     // --- NEW TRUCKER FORM SUBMISSION ---
-document.getElementById('newTruckerForm').addEventListener('submit', async function(e) {
-    e.preventDefault();
-    const btn = this.querySelector('.submit-btn'); 
-    const responseDiv = document.getElementById('newFormResponse');
-    
-    btn.innerText = "PROCESSING & GENERATING Induction Number...";
-    btn.disabled = true;
+    document.getElementById('newTruckerForm').addEventListener('submit', async function(e) {
+        e.preventDefault();
+        const btn = this.querySelector('.submit-btn'); 
+        const responseDiv = document.getElementById('newFormResponse');
+        
+        btn.innerText = "PROCESSING & GENERATING ID...";
+        btn.disabled = true;
 
-    try {
         const payload = {
             action: 'submitNew',
             fullName: this.fullName.value,
@@ -399,40 +398,42 @@ document.getElementById('newTruckerForm').addEventListener('submit', async funct
             licenseDetails: this.licenseDetails.value,
             companyName: this.companyName.value,
             ref1Name: this.ref1Name.value,
-            ref1Address: this.ref1Address.value,
-            ref1Position: this.ref1Position.value,
-            ref1Duration: this.ref1Duration.value,
-            ref1Contact: this.ref1Contact.value,
-            ref2Name: this.ref2Name.value,
-            ref2Address: this.ref2Address.value,
-            ref2Position: this.ref2Position.value,
-            ref2Duration: this.ref2Duration.value,
-            ref2Contact: this.ref2Contact.value,
-            consent: this.consent.checked ? "Yes" : "No",
+    ref1Address: this.ref1Address.value,
+    ref1Position: this.ref1Position.value,
+    ref1Duration: this.ref1Duration.value,
+    ref1Contact: this.ref1Contact.value,
+    ref2Name: this.ref2Name.value,
+    ref2Address: this.ref2Address.value,
+    ref2Position: this.ref2Position.value,
+    ref2Duration: this.ref2Duration.value,
+    ref2Contact: this.ref2Contact.value,
+    consent: this.consent.checked ? "Yes" : "No",
             passportPhoto: await getFileData(document.getElementById('new_passport')),
             driversLicense: await getFileData(document.getElementById('new_license')),
             recLetter: await getFileData(document.getElementById('new_recLetter'))
         };
 
-        const response = await fetch(scriptURL, { method: 'POST', body: JSON.stringify(payload) });
-        const result = await response.json();
+        try {
+            const response = await fetch(scriptURL, { method: 'POST', body: JSON.stringify(payload) });
+            const result = await response.json();
 
-        if (result.result === 'success') {
-            //SHOW THE SQUARCLE MODAL 
-            document.getElementById('displayID').innerText = result.inductionNumber;
+            if (result.result === 'success') {
+                //SHOW THE SQUARCLE MODAL 
+                document.getElementById('displayID').innerText = result.inductionNumber;
             document.getElementById('successModal').style.display = "block";
             this.reset();
-            
-        } else { 
-            alert(result.message || "Error submitting form");
+                
+            } else { 
+                alert(result.message || "Error submitting form");
+            }
+        } catch (err) {
+            alert("Submission Error: " + err.message);
+        } finally {
+            btn.innerText = "SUBMIT FORM";
+            btn.disabled = false;
         }
-    } catch (err) {
-        alert("Submission Error: " + err.message);
-    } finally {
-        btn.innerText = "SUBMIT FORM";
-        btn.disabled = false;
-    }
-});
+    });
+
 
     // --- SEARCH LOGIC ---
     async function searchTrucker() {
