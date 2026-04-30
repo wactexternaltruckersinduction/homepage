@@ -185,6 +185,23 @@
         </div>
     </div>
 
+    <!-- NEW PAGE: MANAGE APPOINTMENT -->
+    <div id="pageManage" class="page">
+    <div class="card">
+        <button class="btn btn-outline" style="margin-bottom: 20px;" onclick="showPage('pageSelection')">← Back</button>
+        <h2>Manage Appointment</h2>
+        <p style="font-size: 13px; text-align: center; color: #64748b;">Enter your Induction ID to view or change your date.</p>
+        <div style="display: flex; gap: 10px; margin-bottom: 20px;">
+            <input type="text" id="manageID" placeholder="e.g. SI/EXT/2026/0001">
+            <button class="btn btn-primary" style="width: auto;" onclick="retrieveAppointment()">Find</button>
+        </div>
+        <div id="manageResult" style="display:none; text-align: center;">
+            <p id="manageStatusText"></p>
+            <button class="btn btn-secondary" onclick="startAppointmentFlow(document.getElementById('manageID').value, 'new')">Reschedule Appointment</button>
+        </div>
+    </div>
+</div>
+    
     <!-- PAGE: NEW TRUCKER FORM -->
     <div id="pageNew" class="page">
         <button type="button" class="btn btn-outline" style="margin-bottom: 20px;" onclick="showPage('pageSelection')">← Back</button>
@@ -371,6 +388,8 @@
                     <p><strong>APPT DATE:</strong> <span id="slip_date"></span></p>
                     <p><strong>APPT ID:</strong> <span id="slip_apt_id"></span></p>
                     <p><strong>STATUS:</strong> <span id="slip_status"></span></p>
+                    <p><strong>TIME:</strong> 09:00 AM Prompt</p>
+                <p><strong>LOCATION:</strong> WACT Training Center, Onne Port.</p>
                 </div>
                 <hr>
                 <p style="font-size: 11px; margin-top: 20px;">Please bring a printed copy or screenshot of this slip to the security gate on your appointment day.</p>
