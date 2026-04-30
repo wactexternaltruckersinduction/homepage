@@ -142,6 +142,78 @@
         }
 
         @media (max-width: 600px) { .grid { grid-template-columns: 1fr; } }
+        /* CALENDAR STYLING */
+.calendar-container {
+    max-width: 400px;
+    margin: 0 auto;
+}
+
+.calendar-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+    font-weight: bold;
+    color: var(--primary-blue);
+}
+
+.calendar-days-header {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    text-align: center;
+    font-size: 11px;
+    font-weight: 700;
+    color: #94a3b8;
+    margin-bottom: 5px;
+}
+
+.calendar-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 5px;
+}
+
+.cal-day {
+    aspect-ratio: 1 / 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    font-size: 13px;
+    cursor: pointer;
+    background: white;
+    transition: 0.2s;
+}
+
+.cal-day:disabled {
+    background: #f8fafc;
+    color: #cbd5e1;
+    cursor: not-allowed;
+    border-color: transparent;
+}
+
+.cal-day.available {
+    border-color: var(--primary-blue);
+    color: var(--primary-blue);
+    font-weight: bold;
+}
+
+.cal-day.selected {
+    background: var(--primary-blue) !important;
+    color: white !important;
+}
+
+.cal-day.full {
+    background: #fee2e2;
+    color: #ef4444;
+    border-color: #fecaca;
+}
+
+.cal-day:hover:not(:disabled) {
+    background: #eff6ff;
+}
     </style>
 </head>
 <body>
@@ -324,6 +396,47 @@
                 <button type="submit" class="btn btn-primary" id="renSubmitBtn" style="margin-top:20px;">Submit Renewal Request</button>
             </form>
         </div>
+        
+        <!-- APPOINTMENT PAGE -->
+        <div id="pageAppointment" class="page">
+    <div class="card">
+        <h2 style="color: var(--primary-blue); margin-top: 0;">Select Appointment Date</h2>
+        
+        <div class="calendar-container">
+            <div class="calendar-header">
+                <span id="calendarMonth">Month Year</span>
+            </div>
+            
+            <div class="calendar-days-header">
+                <div>S</div><div>M</div><div>T</div><div>W</div><div>T</div><div>F</div><div>S</div>
+            </div>
+            
+            <div id="calendarGrid" class="calendar-grid">
+                <!-- Days injected by JS -->
+            </div>
+        </div>
+
+        <div id="selectionSummary" style="margin-top: 20px; text-align: center; font-size: 14px; display: none;">
+            Selected: <span id="targetDateDisplay" style="font-weight: bold; color: var(--primary-blue);"></span>
+        </div>
+
+        <button type="button" class="btn btn-primary" id="confirmAptBtn" style="margin-top: 25px; display: none;" onclick="bookSession()">Confirm Appointment</button>
+    </div>
+</div>
+        !-- PRINTABLE CONFIRMATION SLIP -->
+<div id="pageSlip" class="page">
+    <div class="card" id="printArea" style="border: 2px solid var(--primary-blue); text-align: center;">
+        <h2 style="margin-bottom: 5px;">INDUCTION SLIP</h2>
+        <div id="slipContent" style="padding: 20px; text-align: left; background: #fafafa; border-radius: 12px;">
+            <p><strong>NAME:</strong> <span id="s_name"></span></p>
+            <p><strong>ID:</strong> <span id="s_id"></span></p>
+            <p><strong>DATE:</strong> <span id="s_date"></span></p>
+            <p><strong>TIME:</strong> 09:00 AM Prompt</p>
+        </div>
+        <button class="btn btn-primary" style="margin-top: 20px;" onclick="window.print()">Print Slip</button>
+        <button class="btn btn-outline" style="margin-top: 10px;" onclick="location.reload()">Finish</button>
+    </div>
+</div>
     </div>
 
 </div>
@@ -412,6 +525,7 @@
             if (result.result === 'success' || result.inductionNumber) {
                 document.getElementById('displayID').innerText = result.inductionNumber;
                 document.getElementById('successModal').style.display = "block";
+                startAppointmentFlow(this.fullName.value, result.inductionNumber);
                 this.reset();
             } else {
                 alert("Error: " + (result.message || "Something went wrong."));
@@ -492,6 +606,7 @@
             await fetch(scriptURL, { method: 'POST', body: JSON.stringify(payload) });
             alert("Renewal Request Submitted Successfully!");
             location.reload();
+            startAppointmentFlow(document.getElementById('ren_name').value, document.getElementById('ren_id').value);
         } catch (err) {
             alert("Error submitting renewal.");
             btn.innerText = "Submit Renewal Request";
