@@ -141,79 +141,20 @@
             margin-top: auto;
         }
 
-        @media (max-width: 600px) { .grid { grid-template-columns: 1fr; } }
         /* CALENDAR STYLING */
-.calendar-container {
-    max-width: 400px;
-    margin: 0 auto;
-}
+        .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 10px; }
+        .day-box { border: 1px solid #ddd; padding: 10px; border-radius: 12px; text-align: center; cursor: pointer; position: relative; transition: 0.3s; }
+        .day-box.disabled { background: #f1f5f9; color: #ccc; cursor: not-allowed; border: none; }
+        .day-box.available { border: 2px solid var(--primary-blue); color: var(--primary-blue); font-weight: bold; }
+        .day-box.selected { background: var(--primary-blue) !important; color: white !important; }
+        .day-box.full { background: #fee2e2; color: #ef4444; border: 1px solid #fecaca; cursor: not-allowed; }
+        .slots-left { font-size: 10px; display: block; margin-top: 5px; }
 
-.calendar-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 10px;
-    font-weight: bold;
-    color: var(--primary-blue);
-}
-
-.calendar-days-header {
-    display: grid;
-    grid-template-columns: repeat(7, 1fr);
-    text-align: center;
-    font-size: 11px;
-    font-weight: 700;
-    color: #94a3b8;
-    margin-bottom: 5px;
-}
-
-.calendar-grid {
-    display: grid;
-    grid-template-columns: repeat(7, 1fr);
-    gap: 5px;
-}
-
-.cal-day {
-    aspect-ratio: 1 / 1;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    border: 1px solid #e2e8f0;
-    border-radius: 8px;
-    font-size: 13px;
-    cursor: pointer;
-    background: white;
-    transition: 0.2s;
-}
-
-.cal-day:disabled {
-    background: #f8fafc;
-    color: #cbd5e1;
-    cursor: not-allowed;
-    border-color: transparent;
-}
-
-.cal-day.available {
-    border-color: var(--primary-blue);
-    color: var(--primary-blue);
-    font-weight: bold;
-}
-
-.cal-day.selected {
-    background: var(--primary-blue) !important;
-    color: white !important;
-}
-
-.cal-day.full {
-    background: #fee2e2;
-    color: #ef4444;
-    border-color: #fecaca;
-}
-
-.cal-day:hover:not(:disabled) {
-    background: #eff6ff;
-}
+        @media print {
+            body * { visibility: hidden; }
+            #printArea, #printArea * { visibility: visible; }
+            #printArea { position: absolute; left: 0; top: 0; width: 100%; }
+        }
     </style>
 </head>
 <body>
@@ -396,47 +337,52 @@
                 <button type="submit" class="btn btn-primary" id="renSubmitBtn" style="margin-top:20px;">Submit Renewal Request</button>
             </form>
         </div>
-        
-        <!-- APPOINTMENT PAGE -->
-        <div id="pageAppointment" class="page">
-    <div class="card">
-        <h2 style="color: var(--primary-blue); margin-top: 0;">Select Appointment Date</h2>
-        
-        <div class="calendar-container">
-            <div class="calendar-header">
-                <span id="calendarMonth">Month Year</span>
-            </div>
-            
-            <div class="calendar-days-header">
-                <div>S</div><div>M</div><div>T</div><div>W</div><div>T</div><div>F</div><div>S</div>
-            </div>
-            
-            <div id="calendarGrid" class="calendar-grid">
-                <!-- Days injected by JS -->
-            </div>
-        </div>
-
-        <div id="selectionSummary" style="margin-top: 20px; text-align: center; font-size: 14px; display: none;">
-            Selected: <span id="targetDateDisplay" style="font-weight: bold; color: var(--primary-blue);"></span>
-        </div>
-
-        <button type="button" class="btn btn-primary" id="confirmAptBtn" style="margin-top: 25px; display: none;" onclick="bookSession()">Confirm Appointment</button>
     </div>
-</div>
-        !-- PRINTABLE CONFIRMATION SLIP -->
-<div id="pageSlip" class="page">
-    <div class="card" id="printArea" style="border: 2px solid var(--primary-blue); text-align: center;">
-        <h2 style="margin-bottom: 5px;">INDUCTION SLIP</h2>
-        <div id="slipContent" style="padding: 20px; text-align: left; background: #fafafa; border-radius: 12px;">
-            <p><strong>NAME:</strong> <span id="s_name"></span></p>
-            <p><strong>ID:</strong> <span id="s_id"></span></p>
-            <p><strong>DATE:</strong> <span id="s_date"></span></p>
-            <p><strong>TIME:</strong> 09:00 AM Prompt</p>
+
+    <!-- PAGE: APPOINTMENT SCHEDULING -->
+    <div id="pageAppointment" class="page">
+        <div class="card">
+            <h2>Schedule Induction Session</h2>
+            <div id="calHeader" style="display:flex; justify-content: space-between; margin-bottom: 15px;">
+                <button class="btn btn-outline" style="padding: 5px 15px;" onclick="changeMonth(-1)">Prev</button>
+                <h3 id="monthDisplay">Month Year</h3>
+                <button class="btn btn-outline" style="padding: 5px 15px;" onclick="changeMonth(1)">Next</button>
+            </div>
+            <div class="calendar-grid" id="calendarGrid"></div>
+            
+            <div id="bookingActions" style="margin-top:20px; display:none; text-align:center;">
+                <p>Selected Date: <strong id="selectedDateText"></strong></p>
+                <button class="btn btn-primary" onclick="confirmBooking()">Book Appointment</button>
+            </div>
         </div>
-        <button class="btn btn-primary" style="margin-top: 20px;" onclick="window.print()">Print Slip</button>
-        <button class="btn btn-outline" style="margin-top: 10px;" onclick="location.reload()">Finish</button>
     </div>
-</div>
+
+    <!-- PAGE: CONFIRMATION SLIP -->
+    <div id="pageSlip" class="page">
+        <div class="card" id="printArea">
+            <div style="border: 2px solid #000; padding: 20px; text-align: center;">
+                <img src="https://cms-cd.apmterminals.com/onne/-/jssmedia/mainsite/africa-and-middle-east/Onne/Standard-Hero-images/wact-logo-square-400-ext.png" style="width: 60px; margin-bottom: 10px;">
+                <h1 style="font-size: 20px; margin-bottom: 5px;">WACT INDUCTION SLIP</h1>
+                <hr>
+                <div style="text-align: left; margin-top: 20px;">
+                    <p><strong>NAME:</strong> <span id="slip_name"></span></p>
+                    <p><strong>INDUCTION ID:</strong> <span id="slip_id"></span></p>
+                    <p><strong>APPT DATE:</strong> <span id="slip_date"></span></p>
+                    <p><strong>APPT ID:</strong> <span id="slip_apt_id"></span></p>
+                    <p><strong>STATUS:</strong> <span id="slip_status"></span></p>
+                </div>
+                <hr>
+                <p style="font-size: 11px; margin-top: 20px;">Please bring a printed copy or screenshot of this slip to the security gate on your appointment day.</p>
+            </div>
+            <div style="margin-top: 20px; display: flex; flex-direction: column; gap: 10px;">
+                <button class="btn btn-primary" onclick="window.print()">Print Slip</button>
+                <div style="display: flex; gap: 5px;">
+                    <input type="email" id="emailInput" placeholder="Enter email">
+                    <button class="btn btn-secondary" style="white-space: nowrap;" onclick="alert('Email functionality requires server setup')">Email Slip</button>
+                </div>
+                <button class="btn btn-outline" onclick="location.reload()">Finish</button>
+            </div>
+        </div>
     </div>
 
 </div>
@@ -448,8 +394,8 @@
         <h2 style="color: var(--primary-blue);">Success!</h2>
         <p>Your Induction ID has been generated:</p>
         <div class="id-display" id="displayID">---</div>
-        <p style="font-size: 12px; color: #64748b;">Please save or take a screenshot of your Induction Number.</p>
-        <button class="btn btn-primary" onclick="location.reload()">Finish & Close</button>
+        <p style="font-size: 12px; color: #64748b;">Please proceed to book your physical induction session.</p>
+        <button class="btn btn-primary" id="modalActionBtn">Continue to Appointment</button>
     </div>
 </div>
 
@@ -458,10 +404,15 @@
 </footer>
 
 <script>
-    // --- CONFIG ---
     const scriptURL = 'https://script.google.com/macros/s/AKfycbyT9VU1LktpavOtbkIKlsvjWV5_7kx_xctn1dVZS6LtiDQnMAagX4Xk5xC0zH_MhouoBg/exec';
 
     document.getElementById('currentDate').innerText = new Date().toLocaleDateString('en-GB', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+
+    // Global variables for appointment flow
+    let currentUserData = { name: '', id: '', type: '' };
+    let calendarData = {};
+    let currentMonth = new Date();
+    let selectedDateStr = "";
 
     function showPage(id) {
         document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
@@ -487,8 +438,7 @@
     document.getElementById('newTruckerForm').addEventListener('submit', async function(e) {
         e.preventDefault();
         const btn = document.getElementById('newSubmitBtn');
-        btn.innerText = "Processing & Generating ID...";
-        btn.disabled = true;
+        btn.innerText = "Processing..."; btn.disabled = true;
 
         try {
             const payload = {
@@ -523,45 +473,45 @@
             const result = await response.json();
 
             if (result.result === 'success' || result.inductionNumber) {
+                currentUserData = { name: this.fullName.value, id: result.inductionNumber, type: 'new' };
                 document.getElementById('displayID').innerText = result.inductionNumber;
                 document.getElementById('successModal').style.display = "block";
-                startAppointmentFlow(this.fullName.value, result.inductionNumber);
+                
+                document.getElementById('modalActionBtn').onclick = () => {
+                    document.getElementById('successModal').style.display = "none";
+                    startAppointmentFlow(currentUserData.id, currentUserData.type);
+                };
                 this.reset();
             } else {
                 alert("Error: " + (result.message || "Something went wrong."));
             }
         } catch (err) {
-            alert("System Error: Could not connect to server. Check your internet.");
+            alert("System Error: Check internet connection.");
         } finally {
-            btn.innerText = "Submit Application";
-            btn.disabled = false;
+            btn.innerText = "Submit Application"; btn.disabled = false;
         }
     });
 
     // --- SEARCH LOGIC ---
     async function searchTrucker() {
         const id = document.getElementById('searchID').value;
-        const loading = document.getElementById('loading');
         const resultsDiv = document.getElementById('searchResults');
-        
         if (id.length < 3) return alert("Enter at least 3 characters.");
 
-        loading.style.display = "block";
+        document.getElementById('loading').style.display = "block";
         resultsDiv.innerHTML = "";
 
         try {
             const response = await fetch(`${scriptURL}?action=search&inductionNumber=${encodeURIComponent(id)}`);
             const data = await response.json();
-            loading.style.display = "none";
+            document.getElementById('loading').style.display = "none";
 
             if (data.length === 0) {
                 resultsDiv.innerHTML = "<p style='color:red; text-align:center;'>No records found.</p>";
             } else {
                 data.forEach(item => {
                     const b = document.createElement('button');
-                    b.className = "btn btn-outline";
-                    b.style.width = "100%";
-                    b.style.marginBottom = "8px";
+                    b.className = "btn btn-outline"; b.style.width = "100%"; b.style.marginBottom = "8px";
                     b.innerText = `SELECT: ${item.fullName} (${item.inductionNumber})`;
                     b.onclick = () => {
                         document.getElementById('renewalForm').style.display = "block";
@@ -570,14 +520,14 @@
                         document.getElementById('ren_address').value = item.address || "";
                         document.getElementById('ren_mobile').value = item.mobile || "";
                         document.getElementById('ren_company').value = item.companyName || "";
-                        resultsDiv.innerHTML = `<p style='color:green; text-align:center; font-weight:bold;'>Record Selected: ${item.fullName}</p>`;
+                        resultsDiv.innerHTML = `<p style='color:green; text-align:center;'>Selected: ${item.fullName}</p>`;
                     };
                     resultsDiv.appendChild(b);
                 });
             }
         } catch (e) {
             alert("Search failed.");
-            loading.style.display = "none";
+            document.getElementById('loading').style.display = "none";
         }
     }
 
@@ -585,34 +535,141 @@
     document.getElementById('renewalForm').addEventListener('submit', async function(e) {
         e.preventDefault();
         const btn = document.getElementById('renSubmitBtn');
-        btn.innerText = "Saving Renewal Data...";
-        btn.disabled = true;
-
-        const payload = {
-            action: 'submitRenewal',
-            fullName: document.getElementById('ren_name').value,
-            inductionNumber: document.getElementById('ren_id').value,
-            address: document.getElementById('ren_address').value,
-            mobile: document.getElementById('ren_mobile').value,
-            companyName: document.getElementById('ren_company').value,
-            cardStatus: document.getElementById('cardStatus').value,
-            oldCard: await getFileData(document.getElementById('file_oldCard')),
-            policeReport: await getFileData(document.getElementById('file_police')),
-            driversLicense: await getFileData(document.getElementById('file_license')),
-            passportPhoto: await getFileData(document.getElementById('file_passport'))
-        };
+        btn.innerText = "Saving..."; btn.disabled = true;
 
         try {
-            await fetch(scriptURL, { method: 'POST', body: JSON.stringify(payload) });
-            alert("Renewal Request Submitted Successfully!");
-            location.reload();
-            startAppointmentFlow(document.getElementById('ren_name').value, document.getElementById('ren_id').value);
+            const payload = {
+                action: 'submitRenewal',
+                fullName: document.getElementById('ren_name').value,
+                inductionNumber: document.getElementById('ren_id').value,
+                address: document.getElementById('ren_address').value,
+                mobile: document.getElementById('ren_mobile').value,
+                companyName: document.getElementById('ren_company').value,
+                cardStatus: document.getElementById('cardStatus').value,
+                oldCard: await getFileData(document.getElementById('file_oldCard')),
+                policeReport: await getFileData(document.getElementById('file_police')),
+                driversLicense: await getFileData(document.getElementById('file_license')),
+                passportPhoto: await getFileData(document.getElementById('file_passport'))
+            };
+
+            const response = await fetch(scriptURL, { method: 'POST', body: JSON.stringify(payload) });
+            const result = await response.json();
+
+            if (result.result === 'success') {
+                currentUserData = { name: payload.fullName, id: payload.inductionNumber, type: 'renewal' };
+                document.getElementById('displayID').innerText = payload.inductionNumber;
+                document.getElementById('successModal').style.display = "block";
+
+                document.getElementById('modalActionBtn').onclick = () => {
+                    document.getElementById('successModal').style.display = "none";
+                    startAppointmentFlow(currentUserData.id, currentUserData.type);
+                };
+            }
         } catch (err) {
             alert("Error submitting renewal.");
-            btn.innerText = "Submit Renewal Request";
-            btn.disabled = false;
+        } finally {
+            btn.innerText = "Submit Renewal Request"; btn.disabled = false;
         }
     });
+
+    // --- APPOINTMENT SYSTEM LOGIC ---
+
+    async function startAppointmentFlow(id, type) {
+        showPage('pageAppointment');
+        document.getElementById('calendarGrid').innerHTML = "<p style='grid-column: span 7; text-align:center;'>Loading Calendar...</p>";
+        
+        try {
+            const res = await fetch(`${scriptURL}?action=getCalendarData&id=${id}&type=${type}`);
+            calendarData = await res.json();
+            renderCalendar();
+        } catch(e) {
+            alert("Failed to load appointment data.");
+        }
+    }
+
+    function renderCalendar() {
+        const grid = document.getElementById('calendarGrid');
+        const monthDisplay = document.getElementById('monthDisplay');
+        grid.innerHTML = "";
+        
+        monthDisplay.innerText = currentMonth.toLocaleDateString('en-GB', { month: 'long', year: 'numeric' });
+
+        let firstDay = new Date(currentMonth.getFullYear(), currentMonth.getMonth(), 1).getDay();
+        let totalDays = new Date(currentMonth.getFullYear(), currentMonth.getMonth() + 1, 0).getDate();
+
+        for(let i=0; i<firstDay; i++) grid.appendChild(document.createElement('div'));
+
+        for(let d=1; d<=totalDays; d++) {
+            let dateObj = new Date(currentMonth.getFullYear(), currentMonth.getMonth(), d);
+            let dateStr = dateObj.toISOString().split('T')[0];
+            let dayOfWeek = dateObj.getDay(); 
+            
+            let box = document.createElement('div');
+            box.className = "day-box";
+            box.innerText = d;
+
+            let isWedFri = (dayOfWeek === 3 || dayOfWeek === 5);
+            let inRange = (dateStr >= calendarData.allowedMin && dateStr <= calendarData.allowedMax);
+            let bookings = calendarData.existingBookings[dateStr] || 0;
+
+            if (isWedFri && inRange) {
+                if (bookings >= 10) {
+                    box.classList.add('full');
+                    box.innerHTML += `<span class="slots-left">FULL</span>`;
+                } else {
+                    box.classList.add('available');
+                    box.innerHTML += `<span class="slots-left">${10 - bookings} left</span>`;
+                    box.onclick = () => selectDate(dateStr, box);
+                }
+            } else {
+                box.classList.add('disabled');
+            }
+            grid.appendChild(box);
+        }
+    }
+
+    function selectDate(dateStr, element) {
+        selectedDateStr = dateStr;
+        document.querySelectorAll('.day-box').forEach(el => el.classList.remove('selected'));
+        element.classList.add('selected');
+        document.getElementById('selectedDateText').innerText = new Date(dateStr).toLocaleDateString('en-GB', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
+        document.getElementById('bookingActions').style.display = "block";
+    }
+
+    function changeMonth(offset) {
+        currentMonth.setMonth(currentMonth.getMonth() + offset);
+        renderCalendar();
+    }
+
+    async function confirmBooking() {
+        const btn = document.querySelector('#bookingActions button');
+        btn.innerText = "Booking..."; btn.disabled = true;
+
+        try {
+            const payload = {
+                action: 'book',
+                id: currentUserData.id,
+                type: currentUserData.type,
+                date: selectedDateStr
+            };
+
+            const response = await fetch(scriptURL, { method: 'POST', body: JSON.stringify(payload) });
+            const result = await response.json();
+
+            if (result.result === 'success') {
+                document.getElementById('slip_name').innerText = currentUserData.name;
+                document.getElementById('slip_id').innerText = currentUserData.id;
+                document.getElementById('slip_date').innerText = selectedDateStr;
+                document.getElementById('slip_apt_id').innerText = result.aptId;
+                document.getElementById('slip_status').innerText = result.status;
+                showPage('pageSlip');
+            }
+        } catch (e) {
+            alert("Booking failed.");
+        } finally {
+            btn.innerText = "Book Appointment"; btn.disabled = false;
+        }
+    }
 </script>
 
 </body>
