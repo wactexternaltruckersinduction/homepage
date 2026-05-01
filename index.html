@@ -664,12 +664,18 @@
     }
 
     function selectDate(dateStr, element) {
-        selectedDateStr = dateStr;
-        document.querySelectorAll('.day-box').forEach(el => el.classList.remove('selected'));
-        element.classList.add('selected');
-        document.getElementById('selectedDateText').innerText = new Date(dateStr).toLocaleDateString('en-GB', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
-        document.getElementById('bookingActions').style.display = "block";
-    }
+    selectedDateStr = dateStr; // This is in YYYY-MM-DD format
+    document.querySelectorAll('.day-box').forEach(el => el.classList.remove('selected'));
+    element.classList.add('selected');
+
+    // Split the date manually to avoid the "day before" bug
+    const [year, month, day] = dateStr.split('-');
+    const months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+    const formattedDate = `${day} ${months[parseInt(month) - 1]} ${year}`;
+
+    document.getElementById('selectedDateText').innerText = formattedDate;
+    document.getElementById('bookingActions').style.display = "block";
+}
 
     function changeMonth(offset) {
         currentMonth.setMonth(currentMonth.getMonth() + offset);
@@ -785,7 +791,10 @@ async function confirmBooking() {
         
         document.getElementById('slip_name').innerText = managementData.truckerName;
         document.getElementById('slip_id').innerText = currentUserData.id;
-        document.getElementById('slip_date').innerText = new Date(managementData.currentAppointment).toLocaleDateString();
+        
+        // Fix the date display here as well
+    const [year, month, day] = managementData.currentAppointment.toString().split('T')[0].split('-');
+    document.getElementById('slip_date').innerText = `${day}/${month}/${year}`;
         
         // Reusing your random ID logic
         document.getElementById('slip_apt_id').innerText = "APT-" + Math.floor(Math.random()*100000);
