@@ -676,16 +676,17 @@
         renderCalendar();
     }
 
-    async function confirmBooking() {
+async function confirmBooking() {
         const btn = document.querySelector('#bookingActions button');
-        btn.innerText = "Booking..."; btn.disabled = true;
+        btn.innerText = "Booking..."; 
+        btn.disabled = true;
 
         try {
-            const payload = {
-                action: 'book',
-                id: currentUserData.id,
-                type: currentUserData.type,
-                date: selectedDateStr
+            const payload = { 
+                action: 'book', 
+                id: currentUserData.id, 
+                type: currentUserData.type, 
+                date: selectedDateStr 
             };
 
             const response = await fetch(scriptURL, { method: 'POST', body: JSON.stringify(payload) });
@@ -696,106 +697,101 @@
                 document.getElementById('slip_id').innerText = currentUserData.id;
                 document.getElementById('slip_date').innerText = selectedDateStr;
                 document.getElementById('slip_apt_id').innerText = result.aptId;
-                document.getElementById('slip_status').innerText = result.status;
                 showPage('pageSlip');
+            } else { 
+                alert(result.message); 
+            }
+        } catch (e) { 
+            alert("Booking failed."); 
+        } finally { 
+            btn.innerText = "Book Appointment"; 
+            btn.disabled = false; 
+        }
+    }
+
+    // --- MANAGE APPOINTMENT FUNCTIONS (THESE MUST BE OUTSIDE OTHER FUNCTIONS) ---
+    
+    let managementData = null; // Stores found record for printing/rescheduling
+
+    async function retrieveAppointment() {
+        const queryInput = document.getElementById('manageSearchInput');
+        const query = queryInput.value.trim();
+        
+        if (!query) return alert("Please enter Induction or License Number.");
+
+        const resultDiv = document.getElementById('manageResult');
+        const statusText = document.getElementById('manageStatusText');
+        const findBtn = document.querySelector('button[onclick="retrieveAppointment()"]');
+        const rescheduleBtn = document.querySelector('#manageResult .btn-secondary');
+        
+        findBtn.innerText = "Searching...";
+        findBtn.disabled = true;
+
+        try {
+            const res = await fetch(`${scriptURL}?action=getCalendarData&id=${encodeURIComponent(query)}&type=new`);
+            const data = await res.json();
+
+            if (data.error) {
+                alert(data.error);
+                resultDiv.style.display = "none";
+                return;
+            }
+
+            // Save data for Reschedule/Print actions
+            managementData = data; 
+            currentUserData = { name: data.truckerName, id: data.truckerId, type: 'new' };
+
+            resultDiv.style.display = "block";
+            
+            if (data.currentAppointment) {
+                const date = new Date(data.currentAppointment).toLocaleDateString('en-GB', { 
+                    weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' 
+                });
+                const count = data.rescheduleCount || 0;
+                
+                statusText.innerHTML = `Confirmed Session: <b>${date}</b><br>` +
+                                     `<small style="color:#64748b;">Reschedules used: ${count}/2</small>`;
+
+                // Handle the 2-reschedule limit
+                if (count >= 2) {
+                    rescheduleBtn.disabled = true;
+                    rescheduleBtn.innerText = "Limit Reached";
+                    rescheduleBtn.style.opacity = "0.5";
+                } else {
+                    rescheduleBtn.disabled = false;
+                    rescheduleBtn.innerText = "Reschedule Date";
+                    rescheduleBtn.style.opacity = "1";
+                }
+            } else {
+                statusText.innerHTML = "No active appointment found for this record.";
+                rescheduleBtn.innerText = "Book Appointment";
             }
         } catch (e) {
-            alert("Booking failed.");
+            alert("Error retrieving data. Check connection.");
         } finally {
-            btn.innerText = "Book Appointment"; btn.disabled = false;
+            findBtn.innerText = "Find";
+            findBtn.disabled = false;
         }
+    }
 
-        // 1. GLOBAL VARIABLES - Must be outside functions
-let managementData = null; 
-let currentUserData = { name: '', id: '', type: '' };
+    function startReschedule() {
+        startAppointmentFlow(currentUserData.id, currentUserData.type);
+    }
 
-// 2. THE RETRIEVE FUNCTION
-async function retrieveAppointment() {
-    const queryInput = document.getElementById('manageSearchInput');
-    const query = queryInput.value.trim();
-    
-    if (!query) return alert("Please enter Induction or License Number.");
-
-    const resultDiv = document.getElementById('manageResult');
-    const statusText = document.getElementById('manageStatusText');
-    const findBtn = document.querySelector('button[onclick="retrieveAppointment()"]');
-    const rescheduleBtn = document.querySelector('#manageResult .btn-secondary');
-    
-    // UI Feedback
-    findBtn.innerText = "Searching...";
-    findBtn.disabled = true;
-
-    try {
-        // Fetching data from backend
-        const res = await fetch(`${scriptURL}?action=getCalendarData&id=${encodeURIComponent(query)}&type=new`);
-        const data = await res.json();
-
-        if (data.error) {
-            alert(data.error);
-            resultDiv.style.display = "none";
-            return;
+    function reprintSlip() {
+        if (!managementData || !managementData.currentAppointment) {
+            return alert("No appointment found to print.");
         }
-
-        // Save data globally for Reschedule/Print actions
-        managementData = data; 
-        currentUserData = { name: data.truckerName, id: data.truckerId, type: 'new' };
-
-        resultDiv.style.display = "block";
         
-        if (data.currentAppointment) {
-            const date = new Date(data.currentAppointment).toLocaleDateString('en-GB', { 
-                weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' 
-            });
-            const count = data.rescheduleCount || 0;
-            
-            statusText.innerHTML = `Confirmed Session: <b>${date}</b><br>` +
-                                 `<small style="color:#64748b;">Reschedules used: ${count}/2</small>`;
-
-            // Handle the 2-reschedule limit
-            if (count >= 2) {
-                rescheduleBtn.disabled = true;
-                rescheduleBtn.innerText = "Limit Reached";
-                rescheduleBtn.style.opacity = "0.5";
-            } else {
-                rescheduleBtn.disabled = false;
-                rescheduleBtn.innerText = "Reschedule Date";
-                rescheduleBtn.style.opacity = "1";
-            }
-        } else {
-            statusText.innerHTML = "No active appointment found for this record.";
-            rescheduleBtn.innerText = "Book Appointment";
-        }
-    } catch (e) {
-        alert("Error retrieving data. Check connection.");
-    } finally {
-        findBtn.innerText = "Find";
-        findBtn.disabled = false;
-    }
-}
-
-// 3. SUPPORTING FUNCTIONS FOR YOUR BUTTONS
-function startReschedule() {
-    // Re-uses your existing appointment flow
-    startAppointmentFlow(currentUserData.id, currentUserData.type);
-}
-
-function reprintSlip() {
-    if (!managementData || !managementData.currentAppointment) {
-        return alert("No appointment found to print.");
-    }
-    
-    // Fills your existing slip page with the found data
-    document.getElementById('slip_name').innerText = managementData.truckerName;
-    document.getElementById('slip_id').innerText = currentUserData.id;
-    document.getElementById('slip_date').innerText = new Date(managementData.currentAppointment).toLocaleDateString();
-    
-    // Point 5: Using your original random ID logic for the slip
-    document.getElementById('slip_apt_id').innerText = "APT-" + Math.floor(Math.random()*100000);
-    document.getElementById('slip_status').innerText = "Verified";
-    
-    showPage('pageSlip');
-}
-}
+        document.getElementById('slip_name').innerText = managementData.truckerName;
+        document.getElementById('slip_id').innerText = currentUserData.id;
+        document.getElementById('slip_date').innerText = new Date(managementData.currentAppointment).toLocaleDateString();
+        
+        // Reusing your random ID logic
+        document.getElementById('slip_apt_id').innerText = "APT-" + Math.floor(Math.random()*100000);
+        document.getElementById('slip_status').innerText = "Verified";
+        
+        showPage('pageSlip');
     }
 </script>
 
