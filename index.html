@@ -686,16 +686,14 @@
         document.querySelectorAll('.day-box').forEach(el => el.classList.remove('selected'));
         element.classList.add('selected');
 
-        // FIX: Manual split to prevent timezone shifting (day-before bug)
-        const parts = dateStr.split('-');
-        const year = parts[0];
-        const month = parts[1];
-        const day = parts[2];
-        const months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
-        const formattedDate = `${day} ${months[parseInt(month) - 1]} ${year}`;
-
-        document.getElementById('selectedDateText').innerText = formattedDate;
-        document.getElementById('bookingActions').style.display = "block";
+        // Split the YYYY-MM-DD string directly
+    const [year, month, day] = dateStr.split('-');
+    const months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+    
+    // This forces the display to match the exact string from the calendar
+    const formattedDate = `${day} ${months[parseInt(month) - 1]} ${year}`;
+    document.getElementById('selectedDateText').innerText = formattedDate;
+    document.getElementById('bookingActions').style.display = "block";
     }
 
     function changeMonth(offset) {
