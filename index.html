@@ -181,23 +181,36 @@
             <div class="grid">
                 <button type="button" class="btn btn-primary" onclick="showPage('pageNew')">New Induction</button>
                 <button type="button" class="btn btn-secondary" onclick="showPage('pageRenewal')">Renewal</button>
+                <button type="button" class="btn btn-outline" style="grid-column: span 2;" onclick="showPage('pageManage')">Manage / Reschedule Appointment</button>
             </div>
         </div>
     </div>
 
-    <!-- NEW PAGE: MANAGE APPOINTMENT -->
-    <div id="pageManage" class="page">
+    //APPOINTMENT PAGE MANAGER//
+<div id="pageManage" class="page">
     <div class="card">
-        <button class="btn btn-outline" style="margin-bottom: 20px;" onclick="showPage('pageSelection')">← Back</button>
-        <h2>Manage Appointment</h2>
-        <p style="font-size: 13px; text-align: center; color: #64748b;">Enter your Induction ID to view or change your date.</p>
+        <!-- Back Button for Navigation -->
+        <button class="btn btn-outline" style="margin-bottom: 20px; padding: 5px 15px;" onclick="showPage('pageSelection')">← Back</button>
+        
+        <h2 style="color: var(--primary-blue);">Manage Appointment</h2>
+        <p style="font-size: 13px; text-align: center; color: #64748b; margin-bottom: 20px;">
+            Enter your <b>Induction Number</b> or <b>License Number</b> to view or change your date.
+        </p>
+
         <div style="display: flex; gap: 10px; margin-bottom: 20px;">
-            <input type="text" id="manageID" placeholder="e.g. SI/EXT/2026/0001">
+            <input type="text" id="manageSearchInput" placeholder="ID or License Number">
             <button class="btn btn-primary" style="width: auto;" onclick="retrieveAppointment()">Find</button>
         </div>
-        <div id="manageResult" style="display:none; text-align: center;">
-            <p id="manageStatusText"></p>
-            <button class="btn btn-secondary" onclick="startAppointmentFlow(document.getElementById('manageID').value, 'new')">Reschedule Appointment</button>
+
+        <div id="manageResult" style="display:none; text-align: center; border-top: 1px solid #eee; padding-top: 20px;">
+            <div id="appointmentStatusCard" style="background: #f0fdf4; padding: 15px; border-radius: 12px; margin-bottom: 20px;">
+                <p id="manageStatusText" style="margin: 0; font-weight: 600; color: #166534;"></p>
+            </div>
+            
+            <div class="grid">
+                <button class="btn btn-primary" onclick="reprintSlip()">Print Slip</button>
+                <button class="btn btn-secondary" onclick="startReschedule()">Reschedule Date</button>
+            </div>
         </div>
     </div>
 </div>
@@ -691,6 +704,48 @@
         } finally {
             btn.innerText = "Book Appointment"; btn.disabled = false;
         }
+
+        async function retrieveAppointment() {
+    const query = document.getElementById('manageSearchInput').value.trim();
+    if (!query) return alert("Please enter your Induction Number or License Number.");
+
+    const resultDiv = document.getElementById('manageResult');
+    const statusText = document.getElementById('manageStatusText');
+    
+    try {
+        // We search as 'new' first to check the Master Induction database
+        const res = await fetch(`${scriptURL}?action=getCalendarData&id=${encodeURIComponent(query)}&type=new`);
+        const data = await res.json();
+
+        if (data.error) {
+            alert(data.error);
+            return;
+        }
+
+        // Global state for rescheduling and slip printing
+        managementData = data; 
+        currentUserData = { 
+            name: data.truckerName, 
+            id: data.truckerId, // Use the real ID returned from DB
+            type: 'new' 
+        };
+
+        resultDiv.style.display = "block";
+        
+        if (data.currentAppointment) {
+            const date = new Date(data.currentAppointment).toLocaleDateString('en-GB', { 
+                weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' 
+            });
+            statusText.innerHTML = `Confirmed Induction Session:<br><span style="font-size: 18px;">${date}</span>`;
+        } else {
+            statusText.innerHTML = "No active appointment found for this record.";
+            statusText.parentElement.style.background = "#fff7ed"; 
+            statusText.style.color = "#9a3412";
+        }
+    } catch (e) {
+        alert("System error while retrieving appointment data.");
+    }
+}
     }
 </script>
 
