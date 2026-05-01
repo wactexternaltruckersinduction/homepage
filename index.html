@@ -849,16 +849,23 @@ async function submitBulkVerify() {
     const btn = document.querySelector('#adminPanel .btn-primary');
     btn.innerText = "Processing..."; btn.disabled = true;
 
-    try {
-        const res = await google.script.run.withSuccessHandler(response => {
-            alert(response.message);
-            location.reload(); // Refresh to show new statuses
-        }).adminBulkVerify(ids, pass);
-    } catch (e) {
-        alert("System error during bulk verification.");
-    } finally {
-        btn.innerText = "Verify & Generate Cards"; btn.disabled = false;
-    }
+    google.script.run
+        .withSuccessHandler(function(response) {
+            btn.innerText = "Verify & Generate Cards";
+            btn.disabled = false;
+            if (response.result === 'success') {
+                alert(response.message);
+                location.reload(); 
+            } else {
+                alert("Error: " + response.message);
+            }
+        })
+        .withFailureHandler(function(err) {
+            btn.innerText = "Verify & Generate Cards";
+            btn.disabled = false;
+            alert("Server Error: " + err.message); // This will tell us EXACTLY what broke
+        })
+        .adminBulkVerify(ids, pass);
 }
 </script>
 </body>
