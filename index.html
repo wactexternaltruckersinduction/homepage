@@ -214,6 +214,24 @@
         </div>
     </div>
 </div>
+    <!-- Admin Access Section -->
+<div style="margin-top: 40px; border-top: 2px dashed #e2e8f0; padding-top: 20px;">
+    <button class="btn btn-outline" style="font-size: 10px; padding: 5px 10px;" onclick="toggleAdminPanel()">Admin Login</button>
+    
+    <div id="adminPanel" style="display:none; margin-top: 20px; background: #fff7ed; padding: 20px; border-radius: 18px; border: 1px solid #ffedd5;">
+        <h3 style="margin-top:0; color: #9a3412;">Admin Bulk Verification</h3>
+        <p style="font-size: 12px; color: #c2410c;">Paste Induction Numbers (one per line or comma-separated)</p>
+        
+        <textarea id="bulkIds" rows="5" style="margin-bottom: 15px;" placeholder="SI/EXT/2026/1001, SI/EXT/2026/1002..."></textarea>
+        
+        <div class="form-group">
+            <label>Admin Passcode</label>
+            <input type="password" id="adminPass" placeholder="Enter Passcode">
+        </div>
+        
+        <button class="btn btn-primary" style="background: #f47c20;" onclick="submitBulkVerify()">Verify & Generate Cards</button>
+    </div>
+</div>
     
     <!-- PAGE: NEW TRUCKER FORM -->
     <div id="pageNew" class="page">
@@ -811,6 +829,37 @@
         
         showPage('pageSlip');
     }
+    
+    function toggleAdminPanel() {
+    const panel = document.getElementById('adminPanel');
+    const pass = prompt("Enter Admin Access Code:");
+    if (pass === "WACT2026") { // Quick check before showing UI
+        panel.style.display = panel.style.display === 'none' ? 'block' : 'none';
+    } else {
+        alert("Incorrect Code.");
+    }
+}
+
+async function submitBulkVerify() {
+    const ids = document.getElementById('bulkIds').value;
+    const pass = document.getElementById('adminPass').value;
+    
+    if (!ids || !pass) return alert("Please fill in IDs and Passcode.");
+    
+    const btn = document.querySelector('#adminPanel .btn-primary');
+    btn.innerText = "Processing..."; btn.disabled = true;
+
+    try {
+        const res = await google.script.run.withSuccessHandler(response => {
+            alert(response.message);
+            location.reload(); // Refresh to show new statuses
+        }).adminBulkVerify(ids, pass);
+    } catch (e) {
+        alert("System error during bulk verification.");
+    } finally {
+        btn.innerText = "Verify & Generate Cards"; btn.disabled = false;
+    }
+}
 </script>
 </body>
 </html>
