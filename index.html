@@ -705,26 +705,43 @@
             btn.innerText = "Book Appointment"; btn.disabled = false;
         }
 
-        async function retrieveAppointment() {
-    const query = document.getElementById('manageSearchInput').value.trim();
+        // 1. GLOBAL VARIABLES - Must be outside functions
+let managementData = null; 
+let currentUserData = { name: '', id: '', type: '' };
+
+// 2. THE RETRIEVE FUNCTION
+async function retrieveAppointment() {
+    const queryInput = document.getElementById('manageSearchInput');
+    const query = queryInput.value.trim();
+    
     if (!query) return alert("Please enter Induction or License Number.");
 
     const resultDiv = document.getElementById('manageResult');
     const statusText = document.getElementById('manageStatusText');
+    const findBtn = document.querySelector('button[onclick="retrieveAppointment()"]');
     const rescheduleBtn = document.querySelector('#manageResult .btn-secondary');
     
+    // UI Feedback
+    findBtn.innerText = "Searching...";
+    findBtn.disabled = true;
+
     try {
+        // Fetching data from backend
         const res = await fetch(`${scriptURL}?action=getCalendarData&id=${encodeURIComponent(query)}&type=new`);
         const data = await res.json();
 
-        if (data.error) return alert(data.error);
+        if (data.error) {
+            alert(data.error);
+            resultDiv.style.display = "none";
+            return;
+        }
 
+        // Save data globally for Reschedule/Print actions
         managementData = data; 
         currentUserData = { name: data.truckerName, id: data.truckerId, type: 'new' };
 
         resultDiv.style.display = "block";
         
-        // Logic: Show Date and Reschedule Count
         if (data.currentAppointment) {
             const date = new Date(data.currentAppointment).toLocaleDateString('en-GB', { 
                 weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' 
@@ -734,10 +751,10 @@
             statusText.innerHTML = `Confirmed Session: <b>${date}</b><br>` +
                                  `<small style="color:#64748b;">Reschedules used: ${count}/2</small>`;
 
-            // Disable button if limit reached
+            // Handle the 2-reschedule limit
             if (count >= 2) {
                 rescheduleBtn.disabled = true;
-                rescheduleBtn.innerText = "Reschedule Limit Reached";
+                rescheduleBtn.innerText = "Limit Reached";
                 rescheduleBtn.style.opacity = "0.5";
             } else {
                 rescheduleBtn.disabled = false;
@@ -745,12 +762,39 @@
                 rescheduleBtn.style.opacity = "1";
             }
         } else {
-            statusText.innerHTML = "No active appointment found.";
+            statusText.innerHTML = "No active appointment found for this record.";
             rescheduleBtn.innerText = "Book Appointment";
         }
     } catch (e) {
-        alert("Error retrieving data.");
+        alert("Error retrieving data. Check connection.");
+    } finally {
+        findBtn.innerText = "Find";
+        findBtn.disabled = false;
     }
+}
+
+// 3. SUPPORTING FUNCTIONS FOR YOUR BUTTONS
+function startReschedule() {
+    // Re-uses your existing appointment flow
+    startAppointmentFlow(currentUserData.id, currentUserData.type);
+}
+
+function reprintSlip() {
+    if (!managementData || !managementData.currentAppointment) {
+        return alert("No appointment found to print.");
+    }
+    
+    // Fills your existing slip page with the found data
+    document.getElementById('slip_name').innerText = managementData.truckerName;
+    document.getElementById('slip_id').innerText = currentUserData.id;
+    document.getElementById('slip_date').innerText = new Date(managementData.currentAppointment).toLocaleDateString();
+    
+    // Point 5: Using your original random ID logic for the slip
+    document.getElementById('slip_apt_id').innerText = "APT-" + Math.floor(Math.random()*100000);
+    document.getElementById('slip_status').innerText = "Verified";
+    
+    showPage('pageSlip');
+}
 }
     }
 </script>
