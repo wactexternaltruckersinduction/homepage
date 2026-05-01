@@ -670,6 +670,9 @@
 
     // Split the date manually to avoid the "day before" bug
     const [year, month, day] = dateStr.split('-');
+    const year = parts[0];
+    const month = parts[1];
+    const day = parts[2];
     const months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
     const formattedDate = `${day} ${months[parseInt(month) - 1]} ${year}`;
 
@@ -703,6 +706,7 @@ async function confirmBooking() {
                 document.getElementById('slip_id').innerText = currentUserData.id;
                 document.getElementById('slip_date').innerText = selectedDateStr;
                 document.getElementById('slip_apt_id').innerText = result.aptId;
+                document.getElementById('slip_status').innerText = result.status || "Booked";
                 showPage('pageSlip');
             } else { 
                 alert(result.message); 
@@ -752,10 +756,12 @@ async function confirmBooking() {
             if (data.currentAppointment) {
                 const date = new Date(data.currentAppointment).toLocaleDateString('en-GB', { 
                     weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' 
-                });
+                });  
+                const currentStatus = data.status || "Booked"; // Get status from DB
                 const count = data.rescheduleCount || 0;
                 
                 statusText.innerHTML = `Confirmed Session: <b>${date}</b><br>` +
+                                     `<span style="color:var(--primary-blue);">Status: ${currentStatus}</span><br>` +
                                      `<small style="color:#64748b;">Reschedules used: ${count}/2</small>`;
 
                 // Handle the 2-reschedule limit
@@ -791,14 +797,17 @@ async function confirmBooking() {
         
         document.getElementById('slip_name').innerText = managementData.truckerName;
         document.getElementById('slip_id').innerText = currentUserData.id;
-        
-        // Fix the date display here as well
-    const [year, month, day] = managementData.currentAppointment.toString().split('T')[0].split('-');
-    document.getElementById('slip_date').innerText = `${day}/${month}/${year}`;
-        
+
+        const dateStr = managementData.currentAppointment.toString().split('T')[0];
+        const [y, m, d] = dateStr.split('-');
+        document.getElementById('slip_date').innerText = `${d}/${m}/${y}`;
+
+            // Fix the date display here as well
+    document.getElementById('slip_status').innerText = managementData.status || "Booked";
+          
         // Reusing your random ID logic
         document.getElementById('slip_apt_id').innerText = "APT-" + Math.floor(Math.random()*100000);
-        document.getElementById('slip_status').innerText = "Verified";
+        
         
         showPage('pageSlip');
     }
