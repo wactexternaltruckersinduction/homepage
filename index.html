@@ -707,43 +707,49 @@
 
         async function retrieveAppointment() {
     const query = document.getElementById('manageSearchInput').value.trim();
-    if (!query) return alert("Please enter your Induction Number or License Number.");
+    if (!query) return alert("Please enter Induction or License Number.");
 
     const resultDiv = document.getElementById('manageResult');
     const statusText = document.getElementById('manageStatusText');
+    const rescheduleBtn = document.querySelector('#manageResult .btn-secondary');
     
     try {
-        // We search as 'new' first to check the Master Induction database
         const res = await fetch(`${scriptURL}?action=getCalendarData&id=${encodeURIComponent(query)}&type=new`);
         const data = await res.json();
 
-        if (data.error) {
-            alert(data.error);
-            return;
-        }
+        if (data.error) return alert(data.error);
 
-        // Global state for rescheduling and slip printing
         managementData = data; 
-        currentUserData = { 
-            name: data.truckerName, 
-            id: data.truckerId, // Use the real ID returned from DB
-            type: 'new' 
-        };
+        currentUserData = { name: data.truckerName, id: data.truckerId, type: 'new' };
 
         resultDiv.style.display = "block";
         
+        // Logic: Show Date and Reschedule Count
         if (data.currentAppointment) {
             const date = new Date(data.currentAppointment).toLocaleDateString('en-GB', { 
                 weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' 
             });
-            statusText.innerHTML = `Confirmed Induction Session:<br><span style="font-size: 18px;">${date}</span>`;
+            const count = data.rescheduleCount || 0;
+            
+            statusText.innerHTML = `Confirmed Session: <b>${date}</b><br>` +
+                                 `<small style="color:#64748b;">Reschedules used: ${count}/2</small>`;
+
+            // Disable button if limit reached
+            if (count >= 2) {
+                rescheduleBtn.disabled = true;
+                rescheduleBtn.innerText = "Reschedule Limit Reached";
+                rescheduleBtn.style.opacity = "0.5";
+            } else {
+                rescheduleBtn.disabled = false;
+                rescheduleBtn.innerText = "Reschedule Date";
+                rescheduleBtn.style.opacity = "1";
+            }
         } else {
-            statusText.innerHTML = "No active appointment found for this record.";
-            statusText.parentElement.style.background = "#fff7ed"; 
-            statusText.style.color = "#9a3412";
+            statusText.innerHTML = "No active appointment found.";
+            rescheduleBtn.innerText = "Book Appointment";
         }
     } catch (e) {
-        alert("System error while retrieving appointment data.");
+        alert("Error retrieving data.");
     }
 }
     }
