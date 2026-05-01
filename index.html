@@ -607,7 +607,7 @@
         }
     });
 
-    // --- APPOINTMENT SYSTEM LOGIC ---
+// --- APPOINTMENT SYSTEM LOGIC ---
 
     async function startAppointmentFlow(id, type) {
         showPage('pageAppointment');
@@ -664,28 +664,28 @@
     }
 
     function selectDate(dateStr, element) {
-    selectedDateStr = dateStr; // This is in YYYY-MM-DD format
-    document.querySelectorAll('.day-box').forEach(el => el.classList.remove('selected'));
-    element.classList.add('selected');
+        selectedDateStr = dateStr; 
+        document.querySelectorAll('.day-box').forEach(el => el.classList.remove('selected'));
+        element.classList.add('selected');
 
-    // Split the date manually to avoid the "day before" bug
-    const [year, month, day] = dateStr.split('-');
-    const year = parts[0];
-    const month = parts[1];
-    const day = parts[2];
-    const months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
-    const formattedDate = `${day} ${months[parseInt(month) - 1]} ${year}`;
+        // FIX: Manual split to prevent timezone shifting (day-before bug)
+        const parts = dateStr.split('-');
+        const year = parts[0];
+        const month = parts[1];
+        const day = parts[2];
+        const months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+        const formattedDate = `${day} ${months[parseInt(month) - 1]} ${year}`;
 
-    document.getElementById('selectedDateText').innerText = formattedDate;
-    document.getElementById('bookingActions').style.display = "block";
-}
+        document.getElementById('selectedDateText').innerText = formattedDate;
+        document.getElementById('bookingActions').style.display = "block";
+    }
 
     function changeMonth(offset) {
         currentMonth.setMonth(currentMonth.getMonth() + offset);
         renderCalendar();
     }
 
-async function confirmBooking() {
+    async function confirmBooking() {
         const btn = document.querySelector('#bookingActions button');
         btn.innerText = "Booking..."; 
         btn.disabled = true;
@@ -719,9 +719,9 @@ async function confirmBooking() {
         }
     }
 
-    // --- MANAGE APPOINTMENT FUNCTIONS (THESE MUST BE OUTSIDE OTHER FUNCTIONS) ---
+    // --- MANAGE APPOINTMENT FUNCTIONS ---
     
-    let managementData = null; // Stores found record for printing/rescheduling
+    let managementData = null; 
 
     async function retrieveAppointment() {
         const queryInput = document.getElementById('manageSearchInput');
@@ -747,24 +747,27 @@ async function confirmBooking() {
                 return;
             }
 
-            // Save data for Reschedule/Print actions
             managementData = data; 
             currentUserData = { name: data.truckerName, id: data.truckerId, type: 'new' };
 
             resultDiv.style.display = "block";
             
             if (data.currentAppointment) {
-                const date = new Date(data.currentAppointment).toLocaleDateString('en-GB', { 
-                    weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' 
-                });  
-                const currentStatus = data.status || "Booked"; // Get status from DB
+                // FIX: Safe date split for Manage Portal display
+                const dateParts = data.currentAppointment.toString().split('T')[0].split('-');
+                const y = dateParts[0];
+                const m = dateParts[1];
+                const d = dateParts[2];
+                const months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+                const formatted = `${d} ${months[parseInt(m) - 1]} ${y}`;
+                
+                const currentStatus = data.status || "Booked";
                 const count = data.rescheduleCount || 0;
                 
-                statusText.innerHTML = `Confirmed Session: <b>${date}</b><br>` +
+                statusText.innerHTML = `Confirmed Session: <b>${formatted}</b><br>` +
                                      `<span style="color:var(--primary-blue);">Status: ${currentStatus}</span><br>` +
                                      `<small style="color:#64748b;">Reschedules used: ${count}/2</small>`;
 
-                // Handle the 2-reschedule limit
                 if (count >= 2) {
                     rescheduleBtn.disabled = true;
                     rescheduleBtn.innerText = "Limit Reached";
@@ -798,20 +801,16 @@ async function confirmBooking() {
         document.getElementById('slip_name').innerText = managementData.truckerName;
         document.getElementById('slip_id').innerText = currentUserData.id;
 
+        // FIX: Safe date split for Slip printout
         const dateStr = managementData.currentAppointment.toString().split('T')[0];
         const [y, m, d] = dateStr.split('-');
         document.getElementById('slip_date').innerText = `${d}/${m}/${y}`;
 
-            // Fix the date display here as well
-    document.getElementById('slip_status').innerText = managementData.status || "Booked";
-          
-        // Reusing your random ID logic
+        document.getElementById('slip_status').innerText = managementData.status || "Booked";
         document.getElementById('slip_apt_id').innerText = "APT-" + Math.floor(Math.random()*100000);
-        
         
         showPage('pageSlip');
     }
 </script>
-
 </body>
 </html>
