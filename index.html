@@ -417,15 +417,6 @@
         <p style="font-size: 12px; color: #64748b;">Please proceed to book your physical induction session.</p>
         <button class="btn btn-primary" id="modalActionBtn">Continue to Appointment</button>
     </div>
-        <!-- SUCCESS MODAL FOR RENEWAL -->
-<div id="successModalRen">
-    <div class="modal-content">
-        <div style="font-size: 50px;">✅</div>
-        <h2 style="color: var(--primary-blue);">Renewal Submitted Successfully!</h2>
-        <p style="font-size: 12px; color: #64748b;">Please proceed to book your physical induction session.</p>
-        <button class="btn btn-primary" id="modalActionBtn">Continue to Appointment</button>
-    </div>
-</div>
 </div>
   
 <footer>
@@ -589,10 +580,10 @@
             if (result.result === 'success') {
                 currentUserData = { name: payload.fullName, id: payload.inductionNumber, type: 'renewal' };
                 document.getElementById('displayID').innerText = payload.inductionNumber;
-                document.getElementById('successModalRen').style.display = "block";
+                document.getElementById('successModal').style.display = "block";
 
                 document.getElementById('modalActionBtn').onclick = () => {
-                    document.getElementById('successModalRen').style.display = "none";
+                    document.getElementById('successModal').style.display = "none";
                     startAppointmentFlow(currentUserData.id, currentUserData.type);
                 };
             }
