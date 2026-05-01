@@ -577,20 +577,22 @@
             const response = await fetch(scriptURL, { method: 'POST', body: JSON.stringify(payload) });
             const result = await response.json();
 
-         if (type === 'renewal') {
-        modalTitle.innerText = "Renewal Submitted!";
-        modalText.innerText = "Your renewal request has been received successfully.";
-    } else {
-        modalTitle.innerText = "Success!";
-        modalText.innerText = "Your Induction ID has been generated:";
-    }
-    
-    document.getElementById('successModal').style.display = "block";
-    document.getElementById('modalActionBtn').onclick = () => {
-        document.getElementById('successModal').style.display = "none";
-        startAppointmentFlow(id, type);
-    };
-}
+         if (result.result === 'success') {
+                currentUserData = { name: payload.fullName, id: payload.inductionNumber, type: 'renewal' };
+                document.getElementById('displayID').innerText = payload.inductionNumber;
+                document.getElementById('successModal').style.display = "block";
+
+                document.getElementById('modalActionBtn').onclick = () => {
+                    document.getElementById('successModal').style.display = "none";
+                    startAppointmentFlow(currentUserData.id, currentUserData.type);
+                };
+            }
+        } catch (err) {
+            alert("Error submitting renewal.");
+        } finally {
+            btn.innerText = "Submit Renewal Request"; btn.disabled = false;
+        }
+    });
 
     // --- APPOINTMENT SYSTEM LOGIC ---
 
