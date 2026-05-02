@@ -765,18 +765,15 @@ async function retrieveAppointment() {
             }
 
             managementData = data; 
-            currentUserData = { name: data.truckerName, id: data.truckerId, type: 'new' };
+            currentUserData = { name: data.truckerName, id: data.truckerId, type: data.type };
 
             resultDiv.style.display = "block";
             
             if (data.currentAppointment) {
                 // FIX: Safe date split for Manage Portal display
                 const dateParts = data.currentAppointment.toString().split('T')[0].split('-');
-                const y = dateParts[0];
-                const m = dateParts[1];
-                const d = dateParts[2];
-                const months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
-                const formatted = `${d} ${months[parseInt(m) - 1]} ${y}`;
+                const formatted = `${dateParts[2]} ${["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"][parseInt(dateParts[1]) - 1]} ${dateParts[0]}`;
+                
                 
                 const currentStatus = data.status || "Booked";
                 const count = data.rescheduleCount || 0;
