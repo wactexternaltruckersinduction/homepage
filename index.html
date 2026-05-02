@@ -185,7 +185,24 @@
             </div>
         </div>
     </div>
-
+    <!-- Admin Access Section -->
+<div style="margin-top: 40px; border-top: 2px dashed #e2e8f0; padding-top: 20px;">
+    <button class="btn btn-outline" style="font-size: 10px; padding: 5px 10px;" onclick="toggleAdminPanel()">Admin Login</button>
+    
+    <div id="adminPanel" style="display:none; margin-top: 20px; background: #fff7ed; padding: 20px; border-radius: 18px; border: 1px solid #ffedd5;">
+        <h3 style="margin-top:0; color: #9a3412;">Admin Bulk Verification</h3>
+        <p style="font-size: 12px; color: #c2410c;">Paste Induction Numbers (one per line or comma-separated)</p>
+        
+        <textarea id="bulkIds" rows="5" style="margin-bottom: 15px;" placeholder="SI/EXT/2026/1001, SI/EXT/2026/1002..."></textarea>
+        
+        <div class="form-group">
+            <label>Admin Passcode</label>
+            <input type="password" id="adminPass" placeholder="Enter Passcode">
+        </div>
+        
+        <button class="btn btn-primary" style="background: #f47c20;" onclick="submitBulkVerify()">Verify & Generate Cards</button>
+    </div>
+</div>
     
 <div id="pageManage" class="page">
     <div class="card">
@@ -212,24 +229,6 @@
                 <button class="btn btn-secondary" onclick="startReschedule()">Reschedule Date</button>
             </div>
         </div>
-    </div>
-</div>
-    <!-- Admin Access Section -->
-<div style="margin-top: 40px; border-top: 2px dashed #e2e8f0; padding-top: 20px;">
-    <button class="btn btn-outline" style="font-size: 10px; padding: 5px 10px;" onclick="toggleAdminPanel()">Admin Login</button>
-    
-    <div id="adminPanel" style="display:none; margin-top: 20px; background: #fff7ed; padding: 20px; border-radius: 18px; border: 1px solid #ffedd5;">
-        <h3 style="margin-top:0; color: #9a3412;">Admin Bulk Verification</h3>
-        <p style="font-size: 12px; color: #c2410c;">Paste Induction Numbers (one per line or comma-separated)</p>
-        
-        <textarea id="bulkIds" rows="5" style="margin-bottom: 15px;" placeholder="SI/EXT/2026/1001, SI/EXT/2026/1002..."></textarea>
-        
-        <div class="form-group">
-            <label>Admin Passcode</label>
-            <input type="password" id="adminPass" placeholder="Enter Passcode">
-        </div>
-        
-        <button class="btn btn-primary" style="background: #f47c20;" onclick="submitBulkVerify()">Verify & Generate Cards</button>
     </div>
 </div>
     
@@ -687,11 +686,11 @@
         element.classList.add('selected');
 
         // Split the YYYY-MM-DD string directly
-    const [year, month, day] = dateStr.split('-');
+    const parts = dateStr.split('-');
     const months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
     
     // This forces the display to match the exact string from the calendar
-    const formattedDate = `${day} ${months[parseInt(month) - 1]} ${year}`;
+    const formattedDate = `${parts[2]} ${months[parseInt(parts[1]) - 1]} ${parts}`;
     document.getElementById('selectedDateText').innerText = formattedDate;
     document.getElementById('bookingActions').style.display = "block";
     }
@@ -739,7 +738,7 @@
     
     let managementData = null; 
 
-    async function retrieveAppointment() {
+async function retrieveAppointment() {
         const queryInput = document.getElementById('manageSearchInput');
         const query = queryInput.value.trim();
         
@@ -784,7 +783,14 @@
                                      `<span style="color:var(--primary-blue);">Status: ${currentStatus}</span><br>` +
                                      `<small style="color:#64748b;">Reschedules used: ${count}/2</small>`;
 
-                if (count >= 2) {
+                // NEW BLOCK: Check if Verified or Card Generated
+                if (currentStatus === "Verified" || currentStatus === "Card Generated") {
+                    rescheduleBtn.disabled = true;
+                    rescheduleBtn.innerText = "Verified: Cannot Reschedule";
+                    rescheduleBtn.style.opacity = "0.5";
+                } 
+                // Existing Reschedule Limit Logic
+                else if (count >= 2) {
                     rescheduleBtn.disabled = true;
                     rescheduleBtn.innerText = "Limit Reached";
                     rescheduleBtn.style.opacity = "0.5";
