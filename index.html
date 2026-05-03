@@ -730,7 +730,12 @@
 
         for(let d=1; d<=totalDays; d++) {
             let dateObj = new Date(currentMonth.getFullYear(), currentMonth.getMonth(), d);
-            let dateStr = dateObj.toISOString().split('T')[0];
+            
+            // FIX: Build the YYYY-MM-DD string manually using local time to avoid the UTC shift
+            let year = dateObj.getFullYear();
+            let month = String(dateObj.getMonth() + 1).padStart(2, '0');
+            let day = String(dateObj.getDate()).padStart(2, '0');
+            let dateStr = `${year}-${month}-${day}`;
             let dayOfWeek = dateObj.getDay(); 
             
             let box = document.createElement('div');
@@ -883,22 +888,28 @@ async function retrieveAppointment() {
                     rescheduleBtn.innerText = "Verified: Cannot Reschedule";
                     rescheduleBtn.style.opacity = "0.5";
                 } 
-                //3.  Existing Reschedule Limit Logic
+                
+                // 3. Existing Reschedule Limit Logic
                 else if (count >= 2) {
                     rescheduleBtn.disabled = true;
                     rescheduleBtn.innerText = "Limit Reached";
                     rescheduleBtn.style.opacity = "0.5";
                 } else {
+                    // FIX: Standard Reschedule (Was calling wrong function)
                     rescheduleBtn.disabled = false;
                     rescheduleBtn.innerText = "Reschedule Date";
                     rescheduleBtn.style.opacity = "1";
                     rescheduleBtn.style.backgroundColor = "";
-                    // Ensure this opens your existing modal
-                    rescheduleBtn.onclick = function() { openRescheduleModal(); };
+                    rescheduleBtn.onclick = function() { startReschedule(); };
                 }
             } else {
                 statusText.innerHTML = "No active appointment found for this record.";
                 rescheduleBtn.innerText = "Book Appointment";
+                // FIX: Wake the button up!
+                rescheduleBtn.disabled = false; 
+                rescheduleBtn.style.opacity = "1";
+                rescheduleBtn.style.backgroundColor = "var(--primary-blue)";
+                rescheduleBtn.onclick = function() { startReschedule(); };
             }
         } catch (e) {
             alert("Error retrieving data. Check connection.");
