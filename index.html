@@ -893,8 +893,6 @@ async function submitBulkVerify() {
     if (!attended) return alert("You must confirm Induction attendance first.");
     if (!daPassed && !reason) return alert("Please select a reason for D/A failure.");
 
-    const passcode = prompt("Enter Admin Passcode:");
-    if (!passcode) return;
     
     const btn = document.querySelector('button[onclick="submitBulkVerify()"]');
     btn.innerText = "Processing..."; btn.disabled = true;
