@@ -767,7 +767,7 @@
     const months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
     
     // This forces the display to match the exact string from the calendar
-    const formattedDate = `${parts[2]} ${months[parseInt(parts[1]) - 1]} ${parts}`;
+    const formattedDate = `${parts[2]} ${months[parseInt(parts[1]) - 1]} ${parts[0]}`;
     document.getElementById('selectedDateText').innerText = formattedDate;
     document.getElementById('bookingActions').style.display = "block";
     }
@@ -949,46 +949,53 @@ function toggleReasonBox() {
   const failedDA = document.getElementById('daNo').checked;
   document.getElementById('reasonDiv').style.display = failedDA ? 'block' : 'none';
 }
-    function runBulkUpdate() {
+    async function runBulkUpdate() {
     const ids = document.getElementById('bulkIds').value.trim();
-    
-    // Check which radio buttons are selected
     const indYes = document.getElementById('indYes').checked;
     const indNo = document.getElementById('indNo').checked;
     const daYes = document.getElementById('daYes').checked;
     const daNo = document.getElementById('daNo').checked;
     const reason = document.getElementById('daReason').value;
 
-    // 1. Validations
     if (!ids) return alert("Please enter at least one Induction Number.");
     if (!indYes && !indNo) return alert("Please select Yes or No for Induction Attendance.");
     if (!daYes && !daNo) return alert("Please select Yes or No for the Drug & Alcohol test.");
     if (indNo) return alert("Applicants must attend induction to be verified. Status cannot be updated.");
     if (daNo && !reason) return alert("Please select a failure reason from the dropdown.");
 
-    // 3. UI State Change
+    const pass = prompt("Please enter the Admin Passcode to authorize this update:");
+    if (!pass) return; 
+
     const btn = document.getElementById('verifySubmitBtn');
     btn.innerText = "Processing...";
     btn.disabled = true;
 
-    // 4. Send to Code.gs
-    // Note: We only send "true" if 'Yes' is checked.
-    google.script.run
-        .withSuccessHandler(function(res) {
-            btn.innerText = "Update Status";
-            btn.disabled = false;
-            alert(res.message);
-            if(res.result === 'success') {
-                closeAdminModal();
-                document.getElementById('bulkIds').value = ""; // Clear for next use
-            }
-        })
-        .withFailureHandler(function(err) {
-            btn.innerText = "Update Status";
-            btn.disabled = false;
-            alert("Connection Error: " + err.message);
-        })
-        .adminBulkVerify(ids, pass, indYes, daYes, reason);
+    try {
+        const payload = {
+            action: 'adminBulkVerify',
+            ids: ids,
+            passcode: pass,
+            attended: indYes,
+            daPassed: daYes,
+            reason: reason
+        };
+
+        const response = await fetch(scriptURL, { method: 'POST', body: JSON.stringify(payload) });
+        const res = await response.json();
+
+        btn.innerText = "Update Status";
+        btn.disabled = false;
+        alert(res.message);
+        
+        if (res.result === 'success') {
+            closeAdminModal();
+            document.getElementById('bulkIds').value = ""; 
+        }
+    } catch (err) {
+        btn.innerText = "Update Status";
+        btn.disabled = false;
+        alert("Connection Error: " + err.message);
+    }
 }
     
 </script>
