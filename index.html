@@ -952,15 +952,12 @@ async function retrieveAppointment() {
     }
 }
 
-function openAdminModal() { document.getElementById('adminModal').style.display = 'flex'; }
-function closeAdminModal() { document.getElementById('adminModal').style.display = 'none'; }
-
 function toggleReasonBox() {
   // Only show the reason box if "No" is explicitly selected
   const failedDA = document.getElementById('daNo').checked;
   document.getElementById('reasonDiv').style.display = failedDA ? 'block' : 'none';
 }
-    async function runBulkUpdate() {
+async function runBulkUpdate() {
     const ids = document.getElementById('bulkIds').value.trim();
     const indYes = document.getElementById('indYes').checked;
     const indNo = document.getElementById('indNo').checked;
@@ -996,16 +993,19 @@ function toggleReasonBox() {
 
         btn.innerText = "Update Status";
         btn.disabled = false;
+        
+        // This will now successfully show your "Task Complete!" message
         alert(res.message);
         
         if (res.result === 'success') {
-            closeAdminModal();
+            // FIX: Safely hide the admin panel directly!
+            document.getElementById('adminPanel').style.display = 'none';
             document.getElementById('bulkIds').value = ""; 
         }
     } catch (err) {
         btn.innerText = "Update Status";
         btn.disabled = false;
-        alert("Connection Error: " + err.message);
+        alert("System Error: " + err.message);
     }
 }
     
