@@ -966,10 +966,6 @@ function toggleReasonBox() {
     if (indNo) return alert("Applicants must attend induction to be verified. Status cannot be updated.");
     if (daNo && !reason) return alert("Please select a failure reason from the dropdown.");
 
-    // 2. Security Passcode
-    const pass = prompt("Please enter the Admin Passcode to authorize this update:");
-    if (!pass) return; // User clicked cancel on the prompt
-
     // 3. UI State Change
     const btn = document.getElementById('verifySubmitBtn');
     btn.innerText = "Processing...";
