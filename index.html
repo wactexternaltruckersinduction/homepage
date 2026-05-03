@@ -892,27 +892,26 @@ async function submitBulkVerify() {
     if (!ids || !pass) return alert("Please fill in IDs and Passcode.");
     if (!attended) return alert("You must confirm Induction attendance first.");
     if (!daPassed && !reason) return alert("Please select a reason for D/A failure.");
+
+    const passcode = prompt("Enter Admin Passcode:");
+    if (!passcode) return;
     
     const btn = document.querySelector('button[onclick="submitBulkVerify()"]');
     btn.innerText = "Processing..."; btn.disabled = true;
 
     google.script.run
-        .withSuccessHandler(function(response) {
-            btn.innerText = "Verify & Generate Cards";
+        .withSuccessHandler(function(res) {
+            btn.innerText = originalText;
             btn.disabled = false;
-            if (response.result === 'success') {
-                alert(response.message);
-                location.reload(); 
-            } else {
-                alert("Error: " + response.message);
-            }
+            alert(res.message);
+            if (res.result === 'success') toggleAdminModal(false);
         })
         .withFailureHandler(function(err) {
-            btn.innerText = "Verify & Generate Cards";
+            btn.innerText = originalText;
             btn.disabled = false;
-            alert("Server Error: " + err.message); // This will tell us EXACTLY what broke
+            alert("Server Error: " + err.message);
         })
-        .adminBulkVerify(ids, pass);
+        .adminBulkVerify(ids, passcode, attended, daPassed, reason);
 }
     function toggleReason() {
     const daPassed = document.getElementById('checkDA').checked;
