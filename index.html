@@ -194,6 +194,22 @@
         
         <textarea id="bulkIds" rows="5" style="margin-bottom: 15px;" placeholder="SI/EXT/2026/1001, SI/EXT/2026/1002..."></textarea>
         
+        <div style="text-align: left; margin: 15px 0; color: #9a3412; font-size: 14px;">
+        <label><input type="checkbox" id="checkInduction"> Confirmed: Induction Attended</label><br>
+        <label><input type="checkbox" id="checkDA" onchange="toggleReason()"> Passed: Drug & Alcohol Test</label>
+    </div>
+
+    <!-- Hidden by default, shows if D/A is unchecked -->
+    <div id="failureReasonBox" style="display:none; margin-bottom: 15px;">
+        <select id="daReason" style="width: 100%; padding: 8px; border-radius: 8px;">
+            <option value="">Select Failure Reason...</option>
+            <option value="Positive for Drugs">Positive for Drugs</option>
+            <option value="Positive for Alcohol">Positive for Alcohol</option>
+            <option value="Positive for Both">Positive for Both</option>
+            <option value="Refusal to Test">Refusal to Test</option>
+        </select>
+    </div>
+        
         <div class="form-group">
             <label>Admin Passcode</label>
             <input type="password" id="adminPass" placeholder="Enter Passcode">
@@ -782,13 +798,33 @@ async function retrieveAppointment() {
                                      `<span style="color:var(--primary-blue);">Status: ${currentStatus}</span><br>` +
                                      `<small style="color:#64748b;">Reschedules used: ${count}/2</small>`;
 
-                // NEW BLOCK: Check if Verified or Card Generated
-                if (currentStatus === "Verified" || currentStatus === "Card Generated") {
+                // NEW: Display Failure Reason if applicable
+        if (currentStatus === "Failed D/A") {
+            statusText.innerHTML += `<br><b style="color:#ef4444;">Reason: ${data.daReason || "Contact Admin"}</b>`;
+        }
+
+        // --- BUTTON LOGIC BLOCK ---
+        
+        // 1. Handle D/A Failure
+        if (currentStatus === "Failed D/A") {
+            rescheduleBtn.disabled = false;
+            rescheduleBtn.innerText = "Revalidate Application";
+            rescheduleBtn.style.backgroundColor = "#ef4444"; // Red alert color
+            rescheduleBtn.style.color = "white";
+            rescheduleBtn.style.opacity = "1";
+            // Link to the future revalidation page/logic
+            rescheduleBtn.onclick = function() { 
+                alert("Redirecting to Revalidation Portal..."); 
+                // showPage('pageRevalidate'); 
+            };
+        }
+                //2. NEW BLOCK: Check if Verified or Card Generated
+                else if (currentStatus === "Verified" || currentStatus === "Card Generated") {
                     rescheduleBtn.disabled = true;
                     rescheduleBtn.innerText = "Verified: Cannot Reschedule";
                     rescheduleBtn.style.opacity = "0.5";
                 } 
-                // Existing Reschedule Limit Logic
+                //3.  Existing Reschedule Limit Logic
                 else if (count >= 2) {
                     rescheduleBtn.disabled = true;
                     rescheduleBtn.innerText = "Limit Reached";
@@ -797,6 +833,9 @@ async function retrieveAppointment() {
                     rescheduleBtn.disabled = false;
                     rescheduleBtn.innerText = "Reschedule Date";
                     rescheduleBtn.style.opacity = "1";
+                    rescheduleBtn.style.backgroundColor = "";
+                    // Ensure this opens your existing modal
+                    rescheduleBtn.onclick = function() { openRescheduleModal(); };
                 }
             } else {
                 statusText.innerHTML = "No active appointment found for this record.";
@@ -846,10 +885,15 @@ async function retrieveAppointment() {
 async function submitBulkVerify() {
     const ids = document.getElementById('bulkIds').value;
     const pass = document.getElementById('adminPass').value;
+    const attended = document.getElementById('checkInduction').checked;
+    const daPassed = document.getElementById('checkDA').checked;
+    const reason = document.getElementById('daReason').value;
     
     if (!ids || !pass) return alert("Please fill in IDs and Passcode.");
+    if (!attended) return alert("You must confirm Induction attendance first.");
+    if (!daPassed && !reason) return alert("Please select a reason for D/A failure.");
     
-    const btn = document.querySelector('#adminPanel .btn-primary');
+    const btn = document.querySelector('button[onclick="submitBulkVerify()"]');
     btn.innerText = "Processing..."; btn.disabled = true;
 
     google.script.run
@@ -870,6 +914,11 @@ async function submitBulkVerify() {
         })
         .adminBulkVerify(ids, pass);
 }
+    function toggleReason() {
+    const daPassed = document.getElementById('checkDA').checked;
+    document.getElementById('failureReasonBox').style.display = daPassed ? 'none' : 'block';
+}
+    
 </script>
 </body>
 </html>
