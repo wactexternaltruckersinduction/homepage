@@ -156,6 +156,30 @@
             #printArea, #printArea * { visibility: visible; }
             #printArea { position: absolute; left: 0; top: 0; width: 100%; }
         }
+
+        .modal-overlay {
+    display:none; position:fixed; top:0; left:0; width:100%; height:100%;
+    background:rgba(15, 23, 42, 0.8); backdrop-filter:blur(8px); z-index:9999;
+    align-items:center; justify-content:center;
+  }
+  .modal-content {
+    background:white; padding:32px; border-radius:24px; width:90%; max-width:450px;
+    box-shadow: 0 25px 50px -12px rgba(0,0,0,0.25);
+  }
+  .modal-header { font-size:20px; font-weight:700; margin-bottom:20px; color:#1e293b; }
+  .modern-input {
+    width:100%; padding:12px; border:2px solid #e2e8f0; border-radius:12px;
+    margin-bottom:16px; font-family:inherit;
+  }
+  .check-card {
+    display:flex; align-items:center; gap:12px; padding:12px;
+    background:#f8fafc; border-radius:12px; margin-bottom:12px; cursor:pointer;
+  }
+  .btn-group { display:flex; gap:12px; margin-top:20px; }
+  .btn-main { 
+    flex:1; padding:14px; border:none; border-radius:12px; 
+    font-weight:600; cursor:pointer; transition:0.2s;
+  }
     </style>
 </head>
 <body>
@@ -194,33 +218,35 @@
         
         <textarea id="bulkIds" rows="5" style="margin-bottom: 15px;" placeholder="SI/EXT/2026/1001, SI/EXT/2026/1002..."></textarea>
         
-        <div style="text-align: left; margin: 15px 0; color: #9a3412; font-size: 14px;">
-        <label><input type="checkbox" id="checkInduction"> Confirmed: Induction Attended</label><br>
-        <label><input type="checkbox" id="checkDA" onchange="toggleReason()"> Passed: Drug & Alcohol Test</label>
-    </div>
+        <label class="check-card">
+      <input type="checkbox" id="checkInduction"> <span>Induction Attended</span>
+    </label>
+    
+    <label class="check-card">
+      <input type="checkbox" id="checkDA" onchange="document.getElementById('reasonDiv').style.display = this.checked ? 'none' : 'block'">
+      <span>Passed Drug & Alcohol (D/A)</span>
+    </label>
 
-    <!-- Hidden by default, shows if D/A is unchecked -->
-    <div id="failureReasonBox" style="display:none; margin-bottom: 15px;">
-        <select id="daReason" style="width: 100%; padding: 8px; border-radius: 8px;">
-            <option value="">Select Failure Reason...</option>
-            <option value="Positive for Drugs">Positive for Drugs</option>
-            <option value="Positive for Alcohol">Positive for Alcohol</option>
-            <option value="Positive for Both">Positive for Both</option>
-            <option value="Refusal to Test">Refusal to Test</option>
-        </select>
+    <div id="reasonDiv" style="display:none; margin-bottom:16px;">
+      <label style="font-size:12px; color:#64748b; font-weight:600;">FAILURE REASON</label>
+      <select id="daReason" class="modern-input">
+        <option value="Positive for Drugs">Positive for Drugs</option>
+        <option value="Positive for Alcohol">Positive for Alcohol</option>
+        <option value="Refusal to Test">Refusal to Test</option>
+      </select>
     </div>
-        
         <div class="form-group">
             <label>Admin Passcode</label>
             <input type="password" id="adminPass" placeholder="Enter Passcode">
         </div>
-        
-        <button class="btn btn-primary" style="background: #f47c20;" onclick="submitBulkVerify()">Verify & Generate Cards</button>
+
+    <div class="btn-group">
+      <button class="btn-main" style="background:#f1f5f9; color:#475569;" onclick="closeAdminModal()">Cancel</button>
+      <button id="verifySubmitBtn" class="btn-main" style="background:#f47c20; color:white;" onclick="runBulkUpdate()">Verify & Generate Cards</button>
     </div>
+  </div>
 </div>
-        </div>
-    </div>
-  
+          
     
 <div id="pageManage" class="page">
     <div class="card">
