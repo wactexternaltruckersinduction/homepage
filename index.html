@@ -157,29 +157,45 @@
             #printArea { position: absolute; left: 0; top: 0; width: 100%; }
         }
 
-        .modal-overlay {
-    display:none; position:fixed; top:0; left:0; width:100%; height:100%;
-    background:rgba(15, 23, 42, 0.8); backdrop-filter:blur(8px); z-index:9999;
-    align-items:center; justify-content:center;
+.modal-overlay {
+    display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(15, 23, 42, 0.8); backdrop-filter: blur(8px); z-index: 9999;
+    align-items: center; justify-content: center;
   }
   .modal-content {
-    background:white; padding:32px; border-radius:24px; width:90%; max-width:450px;
+    background: white; padding: 32px; border-radius: 24px; width: 90%; max-width: 480px;
     box-shadow: 0 25px 50px -12px rgba(0,0,0,0.25);
   }
-  .modal-header { font-size:20px; font-weight:700; margin-bottom:20px; color:#1e293b; }
+  .modal-header { font-size: 20px; font-weight: 700; margin-bottom: 20px; color: #1e293b; }
+  
   .modern-input {
-    width:100%; padding:12px; border:2px solid #e2e8f0; border-radius:12px;
-    margin-bottom:16px; font-family:inherit;
+    width: 100%; padding: 12px; border: 2px solid #e2e8f0; border-radius: 12px;
+    margin-bottom: 16px; font-family: inherit; box-sizing: border-box;
   }
-  .check-card {
-    display:flex; align-items:center; gap:12px; padding:12px;
-    background:#f8fafc; border-radius:12px; margin-bottom:12px; cursor:pointer;
+  
+  /* Alignment Fixes for Questions */
+  .question-row {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 14px 16px; background: #f8fafc; border-radius: 12px; margin-bottom: 12px;
   }
-  .btn-group { display:flex; gap:12px; margin-top:20px; }
+  .question-text { font-size: 14px; font-weight: 600; color: #334155; }
+  
+  /* Styling the Yes/No toggles */
+  .toggle-group { display: flex; gap: 16px; }
+  .toggle-group label {
+    display: flex; align-items: center; gap: 6px; cursor: pointer;
+    font-size: 14px; font-weight: 600; color: #475569;
+  }
+  .toggle-group input[type="radio"] {
+    width: 18px; height: 18px; cursor: pointer; margin: 0; accent-color: #f47c20;
+  }
+
+  .btn-group { display: flex; gap: 12px; margin-top: 24px; }
   .btn-main { 
-    flex:1; padding:14px; border:none; border-radius:12px; 
-    font-weight:600; cursor:pointer; transition:0.2s;
+    flex: 1; padding: 14px; border: none; border-radius: 12px; 
+    font-weight: 600; cursor: pointer; transition: 0.2s; font-size: 15px;
   }
+  .btn-main:hover { opacity: 0.9; }
     </style>
 </head>
 <body>
@@ -218,31 +234,46 @@
         
         <textarea id="bulkIds" rows="5" style="margin-bottom: 15px;" placeholder="SI/EXT/2026/1001, SI/EXT/2026/1002..."></textarea>
         
-        <label class="check-card">
-      <input type="checkbox" id="checkInduction"> <span>Induction Attended</span>
-    </label>
+       <!-- Induction Question -->
+    <div class="question-row">
+      <div class="question-text">Induction Attended?</div>
+      <div class="toggle-group">
+        <label><input type="radio" name="indRadio" id="indYes" value="yes"> Yes</label>
+        <label><input type="radio" name="indRadio" id="indNo" value="no"> No</label>
+      </div>
+    </div>
     
-    <label class="check-card">
-      <input type="checkbox" id="checkDA" onchange="document.getElementById('reasonDiv').style.display = this.checked ? 'none' : 'block'">
-      <span>Passed Drug & Alcohol (D/A)</span>
-    </label>
+    <!-- D/A Question -->
+    <div class="question-row">
+      <div class="question-text">Passed Drug & Alcohol?</div>
+      <div class="toggle-group">
+        <label><input type="radio" name="daRadio" id="daYes" value="yes" onchange="toggleReasonBox()"> Yes</label>
+        <label><input type="radio" name="daRadio" id="daNo" value="no" onchange="toggleReasonBox()"> No</label>
+      </div>
+    </div>
 
-    <div id="reasonDiv" style="display:none; margin-bottom:16px;">
-      <label style="font-size:12px; color:#64748b; font-weight:600;">FAILURE REASON</label>
-      <select id="daReason" class="modern-input">
+    <!-- Hidden Reason Dropdown -->
+    <div id="reasonDiv" style="display:none; margin-top: 16px;">
+      <label style="font-size:12px; color:#ef4444; font-weight:700; letter-spacing: 0.5px;">FAILURE REASON REQUIRED</label>
+      <select id="daReason" class="modern-input" style="border-color: #fca5a5;">
+        <option value="">Select failure reason...</option>
         <option value="Positive for Drugs">Positive for Drugs</option>
         <option value="Positive for Alcohol">Positive for Alcohol</option>
-        <option value="Refusal to Test">Refusal to Test</option>
+        <option value="Both Positive">Positive for Both</option>
+        <option value="Refusal to Test">Refused Test</option>
       </select>
     </div>
+        
         <div class="form-group">
             <label>Admin Passcode</label>
             <input type="password" id="adminPass" placeholder="Enter Passcode">
         </div>
 
+         <!-- Buttons -->
     <div class="btn-group">
-      <button class="btn-main" style="background:#f1f5f9; color:#475569;" onclick="closeAdminModal()">Cancel</button>
-      <button id="verifySubmitBtn" class="btn-main" style="background:#f47c20; color:white;" onclick="runBulkUpdate()">Verify & Generate Cards</button>
+      <!-- type="button" prevents the page from refreshing when clicked -->
+      <button type="button" class="btn-main" style="background:#f1f5f9; color:#475569;" onclick="closeAdminModal()">Cancel</button>
+      <button type="button" id="verifySubmitBtn" class="btn-main" style="background:#f47c20; color:white;" onclick="runBulkUpdate()">Update Status</button>
     </div>
   </div>
 </div>
@@ -908,38 +939,58 @@ async function retrieveAppointment() {
     }
 }
 
-async function submitBulkVerify() {
-    const ids = document.getElementById('bulkIds').value;
-    const pass = document.getElementById('adminPass').value;
-    const attended = document.getElementById('checkInduction').checked;
-    const daPassed = document.getElementById('checkDA').checked;
+function openAdminModal() { document.getElementById('adminModal').style.display = 'flex'; }
+function closeAdminModal() { document.getElementById('adminModal').style.display = 'none'; }
+
+function toggleReasonBox() {
+  // Only show the reason box if "No" is explicitly selected
+  const failedDA = document.getElementById('daNo').checked;
+  document.getElementById('reasonDiv').style.display = failedDA ? 'block' : 'none';
+}
+    function runBulkUpdate() {
+    const ids = document.getElementById('bulkIds').value.trim();
+    
+    // Check which radio buttons are selected
+    const indYes = document.getElementById('indYes').checked;
+    const indNo = document.getElementById('indNo').checked;
+    const daYes = document.getElementById('daYes').checked;
+    const daNo = document.getElementById('daNo').checked;
     const reason = document.getElementById('daReason').value;
-    
-    if (!ids || !pass) return alert("Please fill in IDs and Passcode.");
-    if (!attended) return alert("You must confirm Induction attendance first.");
-    if (!daPassed && !reason) return alert("Please select a reason for D/A failure.");
 
-    
-    const btn = document.querySelector('button[onclick="submitBulkVerify()"]');
-    btn.innerText = "Processing..."; btn.disabled = true;
+    // 1. Validations
+    if (!ids) return alert("Please enter at least one Induction Number.");
+    if (!indYes && !indNo) return alert("Please select Yes or No for Induction Attendance.");
+    if (!daYes && !daNo) return alert("Please select Yes or No for the Drug & Alcohol test.");
+    if (indNo) return alert("Applicants must attend induction to be verified. Status cannot be updated.");
+    if (daNo && !reason) return alert("Please select a failure reason from the dropdown.");
 
+    // 2. Security Passcode
+    const pass = prompt("Please enter the Admin Passcode to authorize this update:");
+    if (!pass) return; // User clicked cancel on the prompt
+
+    // 3. UI State Change
+    const btn = document.getElementById('verifySubmitBtn');
+    btn.innerText = "Processing...";
+    btn.disabled = true;
+
+    // 4. Send to Code.gs
+    // Note: We only send "true" if 'Yes' is checked.
     google.script.run
         .withSuccessHandler(function(res) {
-            btn.innerText = originalText;
+            btn.innerText = "Update Status";
             btn.disabled = false;
             alert(res.message);
-            if (res.result === 'success') toggleAdminModal(false);
+            if(res.result === 'success') {
+                closeAdminModal();
+                document.getElementById('bulkIds').value = ""; // Clear for next use
+            }
         })
         .withFailureHandler(function(err) {
-            btn.innerText = originalText;
+            btn.innerText = "Update Status";
             btn.disabled = false;
-            alert("Server Error: " + err.message);
+            alert("Connection Error: " + err.message);
         })
-        .adminBulkVerify(ids, passcode, attended, daPassed, reason);
-}
-    function toggleReason() {
-    const daPassed = document.getElementById('checkDA').checked;
-    document.getElementById('failureReasonBox').style.display = daPassed ? 'none' : 'block';
+        .adminBulkVerify(ids, pass, indYes, daYes, reason);
 }
     
 </script>
