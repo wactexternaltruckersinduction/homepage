@@ -224,59 +224,61 @@
                 <button type="button" class="btn btn-outline" style="grid-column: span 2;" onclick="showPage('pageManage')">Manage / Reschedule Appointment</button>
             </div>
             
-              <!-- Admin Access Section -->
+<!-- Admin Access Section -->
 <div style="margin-top: 40px; border-top: 2px dashed #e2e8f0; padding-top: 20px;">
-    <button class="btn btn-outline" style="font-size: 10px; padding: 5px 10px;" onclick="toggleAdminPanel()">Admin Login</button>
+    <button type="button" class="btn btn-outline" style="font-size: 10px; padding: 5px 10px;" onclick="toggleAdminPanel()">Admin Login</button>
     
+    <!-- Admin Panel -->
     <div id="adminPanel" style="display:none; margin-top: 20px; background: #fff7ed; padding: 20px; border-radius: 18px; border: 1px solid #ffedd5;">
         <h3 style="margin-top:0; color: #9a3412;">Admin Bulk Verification</h3>
         <p style="font-size: 12px; color: #c2410c;">Paste Induction Numbers (one per line or comma-separated)</p>
         
         <textarea id="bulkIds" rows="5" style="margin-bottom: 15px;" placeholder="SI/EXT/2026/1001, SI/EXT/2026/1002..."></textarea>
         
-       <!-- Induction Question -->
-    <div class="question-row">
-      <div class="question-text">Induction Attended?</div>
-      <div class="toggle-group">
-        <label><input type="radio" name="indRadio" id="indYes" value="yes"> Yes</label>
-        <label><input type="radio" name="indRadio" id="indNo" value="no"> No</label>
-      </div>
-    </div>
-    
-    <!-- D/A Question -->
-    <div class="question-row">
-      <div class="question-text">Passed Drug & Alcohol?</div>
-      <div class="toggle-group">
-        <label><input type="radio" name="daRadio" id="daYes" value="yes" onchange="toggleReasonBox()"> Yes</label>
-        <label><input type="radio" name="daRadio" id="daNo" value="no" onchange="toggleReasonBox()"> No</label>
-      </div>
-    </div>
+        <!-- Induction Question -->
+        <div class="question-row">
+            <div class="question-text">Induction Attended?</div>
+            <div class="toggle-group">
+                <label><input type="radio" name="indRadio" id="indYes" value="yes"> Yes</label>
+                <label><input type="radio" name="indRadio" id="indNo" value="no"> No</label>
+            </div>
+        </div>
+        
+        <!-- D/A Question -->
+        <div class="question-row">
+            <div class="question-text">Passed Drug & Alcohol?</div>
+            <div class="toggle-group">
+                <label><input type="radio" name="daRadio" id="daYes" value="yes" onchange="toggleReasonBox()"> Yes</label>
+                <label><input type="radio" name="daRadio" id="daNo" value="no" onchange="toggleReasonBox()"> No</label>
+            </div>
+        </div>
 
-    <!-- Hidden Reason Dropdown -->
-    <div id="reasonDiv" style="display:none; margin-top: 16px;">
-      <label style="font-size:12px; color:#ef4444; font-weight:700; letter-spacing: 0.5px;">FAILURE REASON REQUIRED</label>
-      <select id="daReason" class="modern-input" style="border-color: #fca5a5;">
-        <option value="">Select failure reason...</option>
-        <option value="Positive for Drugs">Positive for Drugs</option>
-        <option value="Positive for Alcohol">Positive for Alcohol</option>
-        <option value="Both Positive">Positive for Both</option>
-        <option value="Refusal to Test">Refused Test</option>
-      </select>
-    </div>
+        <!-- Hidden Reason Dropdown -->
+        <div id="reasonDiv" style="display:none; margin-top: 16px;">
+            <label style="font-size:12px; color:#ef4444; font-weight:700; letter-spacing: 0.5px;">FAILURE REASON REQUIRED</label>
+            <select id="daReason" class="modern-input" style="border-color: #fca5a5;">
+                <option value="">Select failure reason...</option>
+                <option value="Positive for Drugs">Positive for Drugs</option>
+                <option value="Positive for Alcohol">Positive for Alcohol</option>
+                <option value="Both Positive">Positive for Both</option>
+                <option value="Refusal to Test">Refused Test</option>
+            </select>
+        </div>
         
         <div class="form-group">
             <label>Admin Passcode</label>
             <input type="password" id="adminPass" placeholder="Enter Passcode">
         </div>
 
-         <!-- Buttons -->
-    <div class="btn-group">
-      <!-- type="button" prevents the page from refreshing when clicked -->
-      <button type="button" class="btn-main" style="background:#f1f5f9; color:#475569;" onclick="closeAdminModal()">Cancel</button>
-      <button type="button" id="verifySubmitBtn" class="btn-main" style="background:#f47c20; color:white;" onclick="runBulkUpdate()">Update Status</button>
-    </div>
-  </div>
-</div>
+        <div class="btn-group">
+            <!-- FIXED: This now calls toggleAdminPanel to hide the correct div -->
+            <button type="button" class="btn-main" style="background:#f1f5f9; color:#475569;" onclick="toggleAdminPanel()">Cancel</button>
+            <button type="button" id="verifySubmitBtn" class="btn-main" style="background:#f47c20; color:white;" onclick="runBulkUpdate()">Update Status</button>
+        </div>
+    </div> <!-- Closes adminPanel -->
+</div> <!-- Closes Admin Access wrapper -->
+</div> <!-- Closes the white Card -->
+</div> <!-- Closes pageSelection (CRITICAL: Fixes navigation) -->
           
     
 <div id="pageManage" class="page">
