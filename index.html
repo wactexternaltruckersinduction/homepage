@@ -821,151 +821,135 @@
     let managementData = null; 
 
 async function retrieveAppointment() {
-        const queryInput = document.getElementById('manageSearchInput');
-        const query = queryInput.value.trim();
-        
-        if (!query) return alert("Please enter Induction or License Number.");
+    const queryInput = document.getElementById('manageSearchInput');
+    const query = queryInput.value.trim();
+    
+    if (!query) return alert("Please enter Induction or License Number.");
 
-        const resultDiv = document.getElementById('manageResult');
-        const statusText = document.getElementById('manageStatusText');
-        const findBtn = document.querySelector('button[onclick="retrieveAppointment()"]');
-        const rescheduleBtn = document.querySelector('#manageResult .btn-secondary');
-        
-        findBtn.innerText = "Searching...";
-        findBtn.disabled = true;
+    const resultDiv = document.getElementById('manageResult');
+    const statusText = document.getElementById('manageStatusText');
+    const findBtn = document.querySelector('button[onclick="retrieveAppointment()"]');
+    const rescheduleBtn = document.querySelector('#manageResult .btn-secondary');
+    
+    findBtn.innerText = "Searching...";
+    findBtn.disabled = true;
 
-        try {
-            const res = await fetch(`${scriptURL}?action=getCalendarData&id=${encodeURIComponent(query)}&type=new`);
-            const data = await res.json();
+    try {
+        const res = await fetch(`${scriptURL}?action=getCalendarData&id=${encodeURIComponent(query)}&type=new`);
+        const data = await res.json();
 
-            if (data.error) {
-                alert(data.error);
-                resultDiv.style.display = "none";
-                return;
-            }
-
-            managementData = data; 
-            currentUserData = { name: data.truckerName, id: data.truckerId, type: data.type };
-
-            resultDiv.style.display = "block";
-            
-            if (data.currentAppointment) {
-                // FIX: Safe date split for Manage Portal display
-                const dateParts = data.currentAppointment.toString().split('T')[0].split('-');
-                const formatted = `${dateParts[2]} ${["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"][parseInt(dateParts[1]) - 1]} ${dateParts[0]}`;
-                
-                
-                const currentStatus = data.status || "Booked";
-                const count = data.rescheduleCount || 0;
-                
-                statusText.innerHTML = `Confirmed Session: <b>${formatted}</b><br>` +
-                                     `<span style="color:var(--primary-blue);">Status: ${currentStatus}</span><br>` +
-                                     `<small style="color:#64748b;">Reschedules used: ${count}/2</small>`;
-
-                // NEW: Display Failure Reason if applicable
-        if (currentStatus === "Failed D/A") {
-            statusText.innerHTML += `<br><b style="color:#ef4444;">Reason: ${data.daReason || "Contact HSE at 08129915418"}</b>`;
+        if (data.error) {
+            alert(data.error);
+            resultDiv.style.display = "none";
+            return;
         }
 
-        // --- BUTTON LOGIC BLOCK ---
+        managementData = data; 
+        currentUserData = { name: data.truckerName, id: data.truckerId, type: data.type };
+
+        resultDiv.style.display = "block";
         
-        
-       // 1. Handle D/A Failure
-        if (currentStatus === "Failed D/A") {
-            // FIX: Forgiving String Match (Converts to lowercase and ignores extra spaces)
-            const reasonStr = String(data.daReason || "").toLowerCase();
+        if (data.currentAppointment) {
+            const dateParts = data.currentAppointment.toString().split('T')[0].split('-');
+            const formatted = `${dateParts[2]} ${["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"][parseInt(dateParts[1]) - 1]} ${dateParts[0]}`;
             
-            // Calculate the exact suspension end date based on their original appointment date
-            const failureDate = new Date(data.currentAppointment);
-            let suspensionEndDate = new Date(failureDate);
-            let durationText = "";
+            const currentStatus = data.status || "Booked";
+            const count = data.rescheduleCount || 0;
+            
+            statusText.innerHTML = `Confirmed Session: <b>${formatted}</b><br>` +
+                                 `<span style="color:var(--primary-blue);">Status: ${currentStatus}</span><br>` +
+                                 `<small style="color:#64748b;">Reschedules used: ${count}/2</small>`;
 
-            // Scan the string for keywords instead of exact matches
-            if (reasonStr.includes("drug") || reasonStr.includes("both")) {
-                suspensionEndDate.setMonth(suspensionEndDate.getMonth() + 1); // 1 Month Ban
-                durationText = "1 Month";
-            } else if (reasonStr.includes("alcohol")) {
-                suspensionEndDate.setDate(suspensionEndDate.getDate() + 7); // 1 Week Ban
-                durationText = "1 Week";
-            } else {
-                durationText = "No Suspension"; // For Refusals
-            }
+            // --- BUTTON LOGIC BLOCK ---
+            
+            // 1. Handle D/A Failure
+            if (currentStatus === "Failed D/A") {
+                const reasonStr = String(data.daReason || "").toLowerCase();
+                const failureDate = new Date(data.currentAppointment);
+                let suspensionEndDate = new Date(failureDate);
+                let durationText = "";
 
-            const today = new Date();
-
-            // Check if they are still serving their suspension
-            if (today < suspensionEndDate && durationText !== "No Suspension") {
-                const formattedEnd = suspensionEndDate.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
-                
-                rescheduleBtn.disabled = true;
-                rescheduleBtn.innerText = `Suspended until ${formattedEnd}`;
-                rescheduleBtn.style.backgroundColor = "#fca5a5"; // Faded red (inactive)
-                rescheduleBtn.style.color = "white";
-                rescheduleBtn.style.cursor = "not-allowed";
-                rescheduleBtn.style.opacity = "1";
-                
-                // Show the original reason and the ban countdown
-                statusText.innerHTML += `<br><b style="color:#ef4444;">Reason: ${data.daReason || "Contact Admin at 070..."}</b>`;
-                statusText.innerHTML += `<br><small style="color:#ef4444; font-weight:700;">Suspension: ${durationText} (Ends ${formattedEnd})</small>`;
-            } 
-            // If suspension is over OR they refused the test (no suspension)
-            else {
-                rescheduleBtn.disabled = false;
-                rescheduleBtn.innerText = "Revalidate Now";
-                rescheduleBtn.style.backgroundColor = "#ef4444"; // Bright red alert (active)
-                rescheduleBtn.style.color = "white";
-                rescheduleBtn.style.cursor = "pointer";
-                rescheduleBtn.style.opacity = "1";
-
-                statusText.innerHTML += `<br><b style="color:#ef4444;">Reason: ${data.daReason || "Contact Admin at 070..."}</b>`;
-
-                if (durationText !== "No Suspension") {
-                    statusText.innerHTML += `<br><small style="color:#16a34a; font-weight:700;">Suspension completed. Eligible for Revalidation.</small>`;
-                }
-
-                // Redirect logic
-                rescheduleBtn.onclick = function() { 
-                    alert("Redirecting to the Renewal portal for Revalidation. Please update your details.");
-                    startRevalidation(data.truckerId); 
-                };
-            }
-        }
-                //2. NEW BLOCK: Check if Verified or Card Generated
-                else if (currentStatus === "Verified" || currentStatus === "Card Generated") {
-                    rescheduleBtn.disabled = true;
-                    rescheduleBtn.innerText = "Verified: Cannot Reschedule";
-                    rescheduleBtn.style.opacity = "0.5";
-                } 
-                
-                // 3. Existing Reschedule Limit Logic
-                else if (count >= 2) {
-                    rescheduleBtn.disabled = true;
-                    rescheduleBtn.innerText = "Limit Reached";
-                    rescheduleBtn.style.opacity = "0.5";
+                // Ban Logic Calculation
+                if (reasonStr.includes("drug") || reasonStr.includes("both")) {
+                    suspensionEndDate.setMonth(suspensionEndDate.getMonth() + 1); // 1 Month Ban
+                    durationText = "1 Month";
+                } else if (reasonStr.includes("alcohol")) {
+                    suspensionEndDate.setDate(suspensionEndDate.getDate() + 7); // 1 Week Ban
+                    durationText = "1 Week";
                 } else {
-                    // FIX: Standard Reschedule (Was calling wrong function)
-                    rescheduleBtn.disabled = false;
-                    rescheduleBtn.innerText = "Reschedule Date";
-                    rescheduleBtn.style.opacity = "1";
-                    rescheduleBtn.style.backgroundColor = "";
-                    rescheduleBtn.onclick = function() { startReschedule(); };
+                    durationText = "No Suspension"; // For Refusals
                 }
+
+                const today = new Date();
+
+                // If they are still serving their suspension
+                if (today < suspensionEndDate && durationText !== "No Suspension") {
+                    const formattedEnd = suspensionEndDate.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
+                    
+                    rescheduleBtn.disabled = true;
+                    rescheduleBtn.innerText = `Suspended until ${formattedEnd}`;
+                    rescheduleBtn.style.backgroundColor = "#fca5a5"; 
+                    rescheduleBtn.style.color = "white";
+                    rescheduleBtn.style.cursor = "not-allowed";
+                    rescheduleBtn.style.opacity = "1";
+                    
+                    statusText.innerHTML += `<br><b style="color:#ef4444;">Reason: ${data.daReason || "Contact HSE at 08129915418"}</b>`;
+                    statusText.innerHTML += `<br><small style="color:#ef4444; font-weight:700;">Suspension: ${durationText} (Ends ${formattedEnd})</small>`;
+                } 
+                // If suspension is over OR No Suspension
+                else {
+                    rescheduleBtn.disabled = false;
+                    rescheduleBtn.innerText = "Revalidate Now";
+                    rescheduleBtn.style.backgroundColor = "#ef4444"; 
+                    rescheduleBtn.style.color = "white";
+                    rescheduleBtn.style.cursor = "pointer";
+                    rescheduleBtn.style.opacity = "1";
+
+                    statusText.innerHTML += `<br><b style="color:#ef4444;">Reason: ${data.daReason || "Contact HSE at 08129915418"}</b>`;
+
+                    if (durationText !== "No Suspension") {
+                        statusText.innerHTML += `<br><small style="color:#16a34a; font-weight:700;">Suspension completed. Eligible for Revalidation.</small>`;
+                    }
+
+                    rescheduleBtn.onclick = function() { 
+                        alert("Redirecting to the Renewal portal for Revalidation. Please update your details.");
+                        startRevalidation(data.truckerId); 
+                    };
+                }
+            }
+            // 2. Check if Verified or Card Generated
+            else if (currentStatus === "Verified" || currentStatus === "Card Generated") {
+                rescheduleBtn.disabled = true;
+                rescheduleBtn.innerText = "Verified: Cannot Reschedule";
+                rescheduleBtn.style.opacity = "0.5";
+            } 
+            // 3. Existing Reschedule Limit Logic
+            else if (count >= 2) {
+                rescheduleBtn.disabled = true;
+                rescheduleBtn.innerText = "Limit Reached";
+                rescheduleBtn.style.opacity = "0.5";
             } else {
-                statusText.innerHTML = "No active appointment found for this record.";
-                rescheduleBtn.innerText = "Book Appointment";
-                // FIX: Wake the button up!
-                rescheduleBtn.disabled = false; 
+                rescheduleBtn.disabled = false;
+                rescheduleBtn.innerText = "Reschedule Date";
                 rescheduleBtn.style.opacity = "1";
-                rescheduleBtn.style.backgroundColor = "var(--primary-blue)";
+                rescheduleBtn.style.backgroundColor = "";
                 rescheduleBtn.onclick = function() { startReschedule(); };
             }
-        } catch (e) {
-            alert("Error retrieving data. Check connection.");
-        } finally {
-            findBtn.innerText = "Find";
-            findBtn.disabled = false;
+        } else {
+            statusText.innerHTML = "No active appointment found for this record.";
+            rescheduleBtn.innerText = "Book Appointment";
+            rescheduleBtn.disabled = false; 
+            rescheduleBtn.style.opacity = "1";
+            rescheduleBtn.style.backgroundColor = "var(--primary-blue)";
+            rescheduleBtn.onclick = function() { startReschedule(); };
         }
+    } catch (e) {
+        alert("Error retrieving data. Check connection.");
+    } finally {
+        findBtn.innerText = "Find";
+        findBtn.disabled = false;
     }
+}
     
     function startRevalidation(inductionId) {
         // 1. Switch the view to the Renewal Page
