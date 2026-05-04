@@ -864,7 +864,7 @@ async function retrieveAppointment() {
 
                 // NEW: Display Failure Reason if applicable
         if (currentStatus === "Failed D/A") {
-            statusText.innerHTML += `<br><b style="color:#ef4444;">Reason: ${data.daReason || "Contact Admin"}</b>`;
+            statusText.innerHTML += `<br><b style="color:#ef4444;">Reason: ${data.daReason || "Contact HSE at 08129915418"}</b>`;
         }
 
         // --- BUTTON LOGIC BLOCK ---
@@ -970,9 +970,6 @@ async function runBulkUpdate() {
     if (!daYes && !daNo) return alert("Please select Yes or No for the Drug & Alcohol test.");
     if (indNo) return alert("Applicants must attend induction to be verified. Status cannot be updated.");
     if (daNo && !reason) return alert("Please select a failure reason from the dropdown.");
-
-    const pass = prompt("Please enter the Admin Passcode to authorize this update:");
-    if (!pass) return; 
 
     const btn = document.getElementById('verifySubmitBtn');
     btn.innerText = "Processing...";
