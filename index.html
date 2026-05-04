@@ -975,6 +975,9 @@ async function runBulkUpdate() {
     btn.innerText = "Processing...";
     btn.disabled = true;
 
+    const pass = prompt("Please enter the Admin Passcode to authorize this update:");
+    if (!pass) return;
+    
     try {
         const payload = {
             action: 'adminBulkVerify',
