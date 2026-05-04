@@ -870,7 +870,6 @@ async function retrieveAppointment() {
         // --- BUTTON LOGIC BLOCK ---
         
         // 1. Handle D/A Failure
-        // 1. Handle D/A Failure
         if (currentStatus === "Failed D/A") {
             // FIX: Forgiving String Match (Converts to lowercase and ignores extra spaces)
             const reasonStr = String(data.daReason || "").toLowerCase();
