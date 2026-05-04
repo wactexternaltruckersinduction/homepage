@@ -870,17 +870,21 @@ async function retrieveAppointment() {
         // --- BUTTON LOGIC BLOCK ---
         
         
-        // 1. Handle D/A Failure
+       // 1. Handle D/A Failure
         if (currentStatus === "Failed D/A") {
+            // FIX: Forgiving String Match (Converts to lowercase and ignores extra spaces)
+            const reasonStr = String(data.daReason || "").toLowerCase();
+            
             // Calculate the exact suspension end date based on their original appointment date
             const failureDate = new Date(data.currentAppointment);
             let suspensionEndDate = new Date(failureDate);
             let durationText = "";
 
-            if (data.daReason === "Positive for Drugs" || data.daReason === "Both Positive") {
+            // Scan the string for keywords instead of exact matches
+            if (reasonStr.includes("drug") || reasonStr.includes("both")) {
                 suspensionEndDate.setMonth(suspensionEndDate.getMonth() + 1); // 1 Month Ban
                 durationText = "1 Month";
-            } else if (data.daReason === "Positive for Alcohol") {
+            } else if (reasonStr.includes("alcohol")) {
                 suspensionEndDate.setDate(suspensionEndDate.getDate() + 7); // 1 Week Ban
                 durationText = "1 Week";
             } else {
@@ -900,6 +904,8 @@ async function retrieveAppointment() {
                 rescheduleBtn.style.cursor = "not-allowed";
                 rescheduleBtn.style.opacity = "1";
                 
+                // Show the original reason and the ban countdown
+                statusText.innerHTML += `<br><b style="color:#ef4444;">Reason: ${data.daReason || "Contact Admin at 070..."}</b>`;
                 statusText.innerHTML += `<br><small style="color:#ef4444; font-weight:700;">Suspension: ${durationText} (Ends ${formattedEnd})</small>`;
             } 
             // If suspension is over OR they refused the test (no suspension)
@@ -910,6 +916,8 @@ async function retrieveAppointment() {
                 rescheduleBtn.style.color = "white";
                 rescheduleBtn.style.cursor = "pointer";
                 rescheduleBtn.style.opacity = "1";
+
+                statusText.innerHTML += `<br><b style="color:#ef4444;">Reason: ${data.daReason || "Contact Admin at 070..."}</b>`;
 
                 if (durationText !== "No Suspension") {
                     statusText.innerHTML += `<br><small style="color:#16a34a; font-weight:700;">Suspension completed. Eligible for Revalidation.</small>`;
