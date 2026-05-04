@@ -837,7 +837,7 @@ async function retrieveAppointment() {
     try {
         const res = await fetch(`${scriptURL}?action=getCalendarData&id=${encodeURIComponent(query)}&type=new`);
         const data = await res.json();
-        alert("DEBUG DATA: " + JSON.stringify(data));
+        
 
         if (data.error) {
             alert(data.error);
