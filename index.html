@@ -871,16 +871,55 @@ async function retrieveAppointment() {
         
         // 1. Handle D/A Failure
         if (currentStatus === "Failed D/A") {
-            rescheduleBtn.disabled = false;
-            rescheduleBtn.innerText = "Revalidate Application";
-            rescheduleBtn.style.backgroundColor = "#ef4444"; // Red alert color
-            rescheduleBtn.style.color = "white";
-            rescheduleBtn.style.opacity = "1";
-            // Link to the future revalidation page/logic
-            rescheduleBtn.onclick = function() { 
-                alert("Redirecting to Revalidation Portal..."); 
-                // showPage('pageRevalidate'); 
-            };
+            // Calculate the exact suspension end date based on their original appointment date
+            const failureDate = new Date(data.currentAppointment);
+            let suspensionEndDate = new Date(failureDate);
+            let durationText = "";
+
+            if (data.daReason === "Positive for Drugs" || data.daReason === "Both Positive") {
+                suspensionEndDate.setMonth(suspensionEndDate.getMonth() + 1); // 1 Month Ban
+                durationText = "1 Month";
+            } else if (data.daReason === "Positive for Alcohol") {
+                suspensionEndDate.setDate(suspensionEndDate.getDate() + 7); // 1 Week Ban
+                durationText = "1 Week";
+            } else {
+                durationText = "No Suspension"; // For Refusals
+            }
+
+            const today = new Date();
+
+            // Check if they are still serving their suspension
+            if (today < suspensionEndDate && durationText !== "No Suspension") {
+                const formattedEnd = suspensionEndDate.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
+                
+                rescheduleBtn.disabled = true;
+                rescheduleBtn.innerText = `Suspended until ${formattedEnd}`;
+                rescheduleBtn.style.backgroundColor = "#fca5a5"; // Faded red (inactive)
+                rescheduleBtn.style.color = "white";
+                rescheduleBtn.style.cursor = "not-allowed";
+                rescheduleBtn.style.opacity = "1";
+                
+                statusText.innerHTML += `<br><small style="color:#ef4444; font-weight:700;">Suspension: ${durationText} (Ends ${formattedEnd})</small>`;
+            } 
+            // If suspension is over OR they refused the test (no suspension)
+            else {
+                rescheduleBtn.disabled = false;
+                rescheduleBtn.innerText = "Revalidate Now";
+                rescheduleBtn.style.backgroundColor = "#ef4444"; // Bright red alert (active)
+                rescheduleBtn.style.color = "white";
+                rescheduleBtn.style.cursor = "pointer";
+                rescheduleBtn.style.opacity = "1";
+
+                if (durationText !== "No Suspension") {
+                    statusText.innerHTML += `<br><small style="color:#16a34a; font-weight:700;">Suspension completed. Eligible for Revalidation.</small>`;
+                }
+
+                // Redirect logic
+                rescheduleBtn.onclick = function() { 
+                    alert("Redirecting to the Renewal portal for Revalidation. Please update your details.");
+                    startRevalidation(data.truckerId); 
+                };
+            }
         }
                 //2. NEW BLOCK: Check if Verified or Card Generated
                 else if (currentStatus === "Verified" || currentStatus === "Card Generated") {
@@ -917,6 +956,17 @@ async function retrieveAppointment() {
             findBtn.innerText = "Find";
             findBtn.disabled = false;
         }
+    }
+    
+    function startRevalidation(inductionId) {
+        // 1. Switch the view to the Renewal Page
+        showPage('pageRenewal');
+        
+        // 2. Auto-fill the trucker's ID into the search box
+        document.getElementById('searchID').value = inductionId;
+        
+        // 3. Auto-trigger the backend search so they don't have to click anything
+        searchTrucker();
     }
 
     function startReschedule() {
@@ -1008,6 +1058,7 @@ async function runBulkUpdate() {
         alert("System Error: " + err.message);
     }
 }
+    
     
 </script>
 </body>
