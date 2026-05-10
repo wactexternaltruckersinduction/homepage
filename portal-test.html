@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WACT Trucker Portal - Test Sandbox</title>
+    <style>
+        :root {
+            --primary: #1e40af;
+            --success: #16a34a;
+            --danger: #ef4444;
+            --warning: #f59e0b;
+            --bg: #f8fafc;
+            --card: #ffffff;
+        }
+
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: var(--bg); margin: 0; display: flex; justify-content: center; align-items: center; min-height: 100vh; }
+        .portal-container { background: var(--card); padding: 2rem; border-radius: 12px; box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1); width: 100%; max-width: 800px; margin: 20px; }
+        
+        /* Login Styles */
+        .login-box { max-width: 400px; text-align: center; }
+        input { width: 100%; padding: 12px; margin: 10px 0; border: 1px solid #cbd5e1; border-radius: 6px; box-sizing: border-box; }
+        button { width: 100%; padding: 12px; border: none; border-radius: 6px; cursor: pointer; font-weight: 600; transition: 0.3s; }
+        .btn-primary { background: var(--primary); color: white; }
+        .btn-primary:disabled { background: #94a3b8; }
+
+        /* Dashboard Styles */
+        .dash-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #f1f5f9; padding-bottom: 1rem; margin-bottom: 1.5rem; }
+        .profile-img { width: 80px; height: 80px; border-radius: 50%; object-fit: cover; border: 3px solid var(--primary); }
+        .badge { padding: 4px 12px; border-radius: 20px; font-size: 0.8rem; font-weight: bold; }
+        .badge-active { background: #dcfce7; color: #166534; }
+        .badge-suspended { background: #fee2e2; color: #991b1b; }
+
+        .dash-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+        .card { border: 1px solid #e2e8f0; padding: 1.5rem; border-radius: 8px; }
+        .full-width { grid-column: span 2; }
+        label { display: block; font-size: 0.8rem; color: #64748b; margin-top: 10px; }
+        .data-field { font-weight: 600; color: #1e293b; margin: 4px 0; }
+        
+        .alert-box { padding: 1rem; border-radius: 6px; margin-top: 10px; font-size: 0.9rem; }
+        .alert-warning { background: #fffbeb; border-left: 4px solid var(--warning); color: #92400e; }
+
+        .hidden { display: none !important; }
+    </style>
+</head>
+<body>
+
+    <div id="loginSection" class="portal-container login-box">
+        <img src="https://via.placeholder.com/150x50?text=WACT+LOGO" alt="WACT Logo" style="margin-bottom: 1rem;">
+        <h2>Trucker Portal</h2>
+        <p>Log in to manage your induction and appointments</p>
+        
+        <input type="text" id="loginInduction" placeholder="Induction Number (SI/EXT/...)">
+        <input type="password" id="loginPass" placeholder="Password (License or Phone)">
+        <button class="btn-primary" id="loginBtn" onclick="handleLogin()">Sign In</button>
+        <p id="loginMsg" style="color:var(--danger); font-size: 0.8rem; margin-top: 10px;"></p>
+    </div>
+
+    <div id="dashboardSection" class="portal-container hidden">
+        <div class="dash-header">
+            <div style="display: flex; align-items: center; gap: 15px;">
+                <img id="userImg" src="https://via.placeholder.com/80" class="profile-img">
+                <div>
+                    <h2 id="userName" style="margin:0;">Loading...</h2>
+                    <span id="userStatus" class="badge">Checking...</span>
+                </div>
+            </div>
+            <button onclick="location.reload()" style="width: auto; background: #f1f5f9; color: #475569;">Logout</button>
+        </div>
+
+        <div class="dash-grid">
+            <div class="card">
+                <h4><center>Profile Details</center></h4>
+                <label>Induction ID</label><p class="data-field" id="valId">-</p>
+                <label>License Details</label><p class="data-field" id="valLicense">-</p>
+                <label>Phone Number</label><p class="data-field" id="valPhone">-</p>
+                <label>Company</label><p class="data-field" id="valCompany">-</p>
+            </div>
+
+            <div class="card">
+                <h4><center>Status & Alerts</center></h4>
+                <div id="expiryAlert" class="alert-box alert-warning hidden">
+                    ⚠️ <b>Renewal Required:</b> Your induction expires in <span id="daysLeft">0</span> days.
+                </div>
+                <label>First Issued</label><p class="data-field" id="valIssued">-</p>
+                <label>Expiry Date</label><p class="data-field" id="valExpiry">-</p>
+                <label>Violations</label><p class="data-field" id="valViolations">0</p>
+            </div>
+
+            <div class="card full-width">
+                <h4>Portal Actions</h4>
+                <div style="display: flex; gap: 10px;">
+                    <button id="renewalBtn" class="btn-primary" onclick="alert('Opening Renewal Form...')">Apply for Renewal</button>
+                    <button style="background:#64748b; color:white;" onclick="alert('Viewing History...')">Appointment History</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // REPLACE THIS WITH YOUR GOOGLE APPS SCRIPT WEB APP URL
+        const scriptURL = "YOUR_GOOGLE_APPS_SCRIPT_DEV_URL_HERE";
+
+        async function handleLogin() {
+            const id = document.getElementById('loginInduction').value.trim();
+            const pass = document.getElementById('loginPass').value.trim();
+            const btn = document.getElementById('loginBtn');
+            const msg = document.getElementById('loginMsg');
+
+            if(!id || !pass) return alert("Please fill all fields.");
+
+            btn.innerText = "Authenticating...";
+            btn.disabled = true;
+            msg.innerText = "";
+
+            try {
+                // We use google.script.run for testing in Google environment
+                // Or fetch() if you've enabled CORS/DoGet
+                google.script.run
+                    .withSuccessHandler(res => {
+                        if(res.success) {
+                            showDashboard(res.profile);
+                        } else {
+                            msg.innerText = res.message;
+                            btn.innerText = "Sign In";
+                            btn.disabled = false;
+                        }
+                    })
+                    .doLogin(id, pass);
+            } catch (e) {
+                msg.innerText = "Connection Error. Ensure you are using the correct script URL.";
+                btn.disabled = false;
+            }
+        }
+
+        function showDashboard(user) {
+            document.getElementById('loginSection').classList.add('hidden');
+            document.getElementById('dashboardSection').classList.remove('hidden');
+
+            // Set Data
+            document.getElementById('userName').innerText = user.fullName || "User";
+            document.getElementById('userImg').src = user.passportUrl || "https://via.placeholder.com/80";
+            document.getElementById('valId').innerText = user.inductionNumber;
+            document.getElementById('valLicense').innerText = user.licenseDetails;
+            document.getElementById('valPhone').innerText = user.phoneNumber;
+            document.getElementById('valCompany').innerText = user.companyName || "N/A";
+            document.getElementById('valExpiry').innerText = formatDate(user.inductionExpDate);
+            document.getElementById('valIssued').innerText = formatDate(user.dateFirstIssue);
+            document.getElementById('valViolations').innerText = user.violations || "0";
+
+            // Status Badge
+            const status = document.getElementById('userStatus');
+            status.innerText = user.status || "Active";
+            status.className = `badge badge-${(user.status || 'Active').toLowerCase()}`;
+
+            // Task 6: 10-Week Renewal Logic
+            checkRenewalEligibility(user.inductionExpDate);
+        }
+
+        function checkRenewalEligibility(expiryStr) {
+            const expiry = new Date(expiryStr);
+            const today = new Date();
+            const tenWeeks = 10 * 7 * 24 * 60 * 60 * 1000;
+            const diff = expiry - today;
+            const btn = document.getElementById('renewalBtn');
+            const alertBox = document.getElementById('expiryAlert');
+
+            if (diff <= tenWeeks) {
+                btn.disabled = false;
+                btn.innerText = "Apply for Renewal Now";
+                
+                // Show warning if expiring soon
+                const days = Math.ceil(diff / (1000 * 60 * 60 * 24));
+                if(days > 0) {
+                    alertBox.classList.remove('hidden');
+                    document.getElementById('daysLeft').innerText = days;
+                }
+            } else {
+                btn.disabled = true;
+                const openDate = new Date(expiry.getTime() - tenWeeks);
+                btn.innerText = `Renewal opens on ${openDate.toLocaleDateString('en-GB', {day:'numeric', month:'short'})}`;
+            }
+        }
+
+        function formatDate(dateStr) {
+            if(!dateStr) return "N/A";
+            const d = new Date(dateStr);
+            return d.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
+        }
+    </script>
+</body>
+</html>
