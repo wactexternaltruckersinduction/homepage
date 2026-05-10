@@ -838,6 +838,14 @@ async function retrieveAppointment() {
         const res = await fetch(`${scriptURL}?action=getCalendarData&id=${encodeURIComponent(query)}&type=new`);
         const data = await res.json();
         
+        // Handle the 10-week "Too Early" block
+        if (data.error === "TOO EARLY") {
+            statusText.innerHTML = `<b style="color:#ef4444;">${data.message}</b>`;
+            rescheduleBtn.style.display = "none"; // Hide the button so they can't proceed
+            findBtn.innerText = "Find";
+            findBtn.disabled = false;
+            return; // Stop the rest of the function from running
+        }
 
         if (data.error) {
             alert(data.error);
