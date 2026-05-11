@@ -505,7 +505,8 @@
                 <button class="btn btn-primary" onclick="window.print()">Print Slip</button>
                 <div style="display: flex; gap: 5px;">
                     <input type="email" id="emailInput" placeholder="Enter email">
-                    <button class="btn btn-secondary" style="white-space: nowrap;" onclick="alert('Email functionality requires server setup')">Email Slip</button>
+                    <button id="sendEmailBtn" class="btn btn-secondary" style="white-space: nowrap;" onclick="sendSlipViaEmail()">Email Slip</button>
+                    <p id="emailStatusMsg" style="font-size: 12px; margin-top: 5px; text-align: center;"></p>
                 </div>
                 <button class="btn btn-outline" onclick="location.reload()">Finish</button>
             </div>
