@@ -1062,28 +1062,42 @@ async function runBulkUpdate() {
     }
 }
     async function sendSlipViaEmail() {
-    // 1. Get the email from the box (Change 'slipEmailBox' to match your actual input ID)
-    const email = document.getElementById('slipEmailBox').value.trim();
-    const btn = document.getElementById('sendEmailBtn'); // Your button ID
-    const msg = document.getElementById('emailStatusMsg'); // A paragraph to show success/error
+    // 1. Locate elements with high-priority selection
+    const emailField = document.getElementById('emailInput');
+    const btn = document.getElementById('sendEmailBtn');
+    const msg = document.getElementById('emailStatusMsg');
 
-    if (!email) {
-        alert("Please enter a valid email address.");
+    // 2. Immediate Safety Check
+    if (!emailField) {
+        alert("Technical Error: The email input box cannot be found. Please refresh the page.");
+        console.error("Missing Element: #emailInput");
         return;
     }
 
-    // 2. Get the trucker details currently showing on the slip
-    // NOTE: Change these IDs to match where the data is displayed on your slip!
-    const name = document.getElementById('slipName').innerText; 
-    const id = document.getElementById('slipId').innerText;
-    const date = document.getElementById('slipDate').innerText;
+    const email = emailField.value.trim();
 
-    // 3. Update UI to show it's working
+    // 3. Validation
+    if (!email || !email.includes('@')) {
+        alert("Please enter a valid email address.");
+        emailField.focus();
+        return;
+    }
+
+    // 4. Gather Data from Spans
+    // We use .textContent or .innerText to get the values showing on the slip
+    const name = document.getElementById('slip_name')?.textContent || "N/A";
+    const id = document.getElementById('slip_id')?.textContent || "N/A";
+    const date = document.getElementById('slip_date')?.textContent || "N/A";
+
+    // 5. Update UI
     btn.innerText = "Sending...";
     btn.disabled = true;
-    if(msg) { msg.innerText = ""; msg.style.color = "#1e40af"; }
+    if (msg) {
+        msg.innerText = "Talking to server...";
+        msg.style.color = "#1e40af";
+    }
 
-    // 4. Send the request to Google Apps Script
+    // 6. The API Call
     const finalURL = `${scriptURL}?action=sendEmail&email=${encodeURIComponent(email)}&name=${encodeURIComponent(name)}&id=${encodeURIComponent(id)}&date=${encodeURIComponent(date)}`;
 
     try {
@@ -1091,18 +1105,26 @@ async function runBulkUpdate() {
         const res = await response.json();
         
         if (res.success) {
-            if(msg) { msg.style.color = "green"; msg.innerText = "Slip sent to your email!"; }
-            document.getElementById('slipEmailBox').value = ""; // Clear the box
+            if (msg) {
+                msg.style.color = "green";
+                msg.innerText = "✅ Slip sent to " + email;
+            }
+            emailField.value = ""; // Clear box on success
         } else {
-            if(msg) { msg.style.color = "red"; msg.innerText = res.message; }
+            throw new Error(res.message || "Server rejected the request");
         }
     } catch (error) {
-        if(msg) { msg.style.color = "red"; msg.innerText = "Connection error. Please try again."; }
+        console.error("Fetch Error:", error);
+        if (msg) {
+            msg.style.color = "red";
+            msg.innerText = "❌ Failed: " + error.message;
+        }
+    } finally {
+        // Reset button state regardless of success or failure
+        btn.innerText = "Email Slip";
+        btn.disabled = false;
     }
-    
-    // Reset button
-    btn.innerText = "Send to Email";
-    btn.disabled = false;
+}
 }
     
     
