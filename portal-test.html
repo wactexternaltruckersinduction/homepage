@@ -101,37 +101,39 @@
         // REPLACE THIS WITH YOUR GOOGLE APPS SCRIPT WEB APP URL
         const scriptURL = "https://script.google.com/macros/s/AKfycbylwE_5jDqOi3P3HY3UyMCExAJE5IPYJVSdi53jlMOz/dev";
 
-        async function handleLogin() {
-            const id = document.getElementById('loginInduction').value.trim();
-            const pass = document.getElementById('loginPass').value.trim();
-            const btn = document.getElementById('loginBtn');
-            const msg = document.getElementById('loginMsg');
+    async function handleLogin() {
+    const id = document.getElementById('loginInduction').value.trim();
+    const pass = document.getElementById('loginPass').value.trim();
+    const btn = document.getElementById('loginBtn');
+    const msg = document.getElementById('loginMsg');
 
-            if(!id || !pass) return alert("Please fill all fields.");
+    if(!id || !pass) return alert("Please fill all fields.");
 
-            btn.innerText = "Authenticating...";
-            btn.disabled = true;
-            msg.innerText = "";
+    btn.innerText = "Authenticating...";
+    btn.disabled = true;
+    msg.innerText = "";
 
-            try {
-                // We use google.script.run for testing in Google environment
-                // Or fetch() if you've enabled CORS/DoGet
-                google.script.run
-                    .withSuccessHandler(res => {
-                        if(res.success) {
-                            showDashboard(res.profile);
-                        } else {
-                            msg.innerText = res.message;
-                            btn.innerText = "Sign In";
-                            btn.disabled = false;
-                        }
-                    })
-                    .doLogin(id, pass);
-            } catch (e) {
-                msg.innerText = "Connection Error. Ensure you are using the correct script URL.";
-                btn.disabled = false;
-            }
+    // The "Long Distance Call" to Google
+    const finalURL = `${scriptURL}?action=login&id=${encodeURIComponent(id)}&pass=${encodeURIComponent(pass)}`;
+
+    try {
+        const response = await fetch(finalURL);
+        const res = await response.json();
+
+        if(res.success) {
+            showDashboard(res.profile);
+        } else {
+            msg.innerText = res.message;
+            btn.innerText = "Sign In";
+            btn.disabled = false;
         }
+    } catch (e) {
+        console.error(e);
+        msg.innerText = "Connection Error: Check if your Script URL is correct and deployed to 'Anyone'.";
+        btn.innerText = "Sign In";
+        btn.disabled = false;
+    }
+}
 
         function showDashboard(user) {
             document.getElementById('loginSection').classList.add('hidden');
