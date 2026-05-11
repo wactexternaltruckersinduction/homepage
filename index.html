@@ -1098,7 +1098,8 @@ async function runBulkUpdate() {
     }
 
     // 6. The API Call
-    const finalURL = `${scriptURL}?action=sendEmail&email=${encodeURIComponent(email)}&name=${encodeURIComponent(name)}&id=${encodeURIComponent(id)}&date=${encodeURIComponent(date)}`;
+    // Changed "sendEmail" to "dispatchSlip" and "email" to "contact"
+const finalURL = `${scriptURL}?action=dispatchSlip&contact=${encodeURIComponent(email)}&name=${encodeURIComponent(name)}&id=${encodeURIComponent(id)}&date=${encodeURIComponent(date)}`;
 
     try {
         const response = await fetch(finalURL);
