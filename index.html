@@ -3,199 +3,111 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>WACT Truckers Induction</title>
+    <title>Welcome - WACT Truckers Portal</title>
     <style>
-        :root {
-            --primary-blue: #004a99;
-            --bg-light: #f8fafc;
-            --text-dark: #1e293b;
-            --shadow-soft: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.05);
-            --squarcle-radius: 24px;
+        :root { 
+            --primary-blue: #004a99; 
+            --bg-light: #f8fafc; 
+            --text-dark: #1e293b; 
+            --shadow-soft: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.05); 
+            --squarcle-radius: 24px; 
         }
-
-        /* FLEXBODY TO PUSH FOOTER TO BOTTOM */
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: var(--bg-light);
-            color: var(--text-dark);
-            margin: 0;
-            padding: 0;
-            line-height: 1.6;
-            display: flex;
-            flex-direction: column;
-            min-height: 100vh;
+        body { 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+            background-color: var(--bg-light); 
+            color: var(--text-dark); 
+            margin: 0; padding: 0; 
+            line-height: 1.6; 
+            display: flex; flex-direction: column; 
+            min-height: 100vh; 
         }
-
-        /* --- CENTERED HEADER --- */
-        header {
-            background: white;
-            padding: 30px 20px;
-            display: flex;
-            flex-direction: column; 
-            align-items: center;
-            justify-content: center;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.03);
-            text-align: center;
+        header { 
+            background: white; padding: 30px 20px; 
+            display: flex; flex-direction: column; 
+            align-items: center; justify-content: center; 
+            box-shadow: 0 2px 10px rgba(0,0,0,0.03); 
+            text-align: center; 
         }
-
-        .logo-circle {
-            width: 80px;
-            height: 80px;
-            border: 2px solid var(--primary-blue);
-            border-radius: 50%;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            margin: 0 auto 15px auto;
-            overflow: hidden;
-            background: white;
+        .logo-circle { 
+            width: 80px; height: 80px; 
+            border: 2px solid var(--primary-blue); 
+            border-radius: 50%; 
+            display: flex; justify-content: center; align-items: center; 
+            margin: 0 auto 15px auto; overflow: hidden; background: white; 
         }
-
         .logo-circle img { max-width: 85%; height: auto; }
-
-        .brand-text .name { 
-            font-weight: 800; 
-            color: var(--primary-blue); 
-            font-size: 20px; 
-            display: block; 
-            line-height: 1.2;
-            max-width: 400px;
-        }
+        .brand-text .name { font-weight: 800; color: var(--primary-blue); font-size: 20px; display: block; line-height: 1.2; max-width: 400px; }
         .brand-text .sub { font-size: 13px; color: #64748b; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; margin-top: 5px; display: block;}
-
-        .container { flex: 1; max-width: 850px; margin: 30px auto; padding: 0 20px; width: 100%; box-sizing: border-box;}
         
-        .card {
-            background: white;
-            border-radius: var(--squarcle-radius);
-            padding: 35px;
-            margin-bottom: 30px;
-            box-shadow: var(--shadow-soft);
-        }
-
-        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
-        .form-group { margin-bottom: 20px; }
+        .container { flex: 1; max-width: 900px; margin: 30px auto; padding: 0 20px; width: 100%; box-sizing: border-box;}
         
-        h3 { font-size: 14px; text-transform: uppercase; color: #64748b; border-bottom: 1px solid #eee; padding-bottom: 8px; margin-top: 30px; margin-bottom: 20px; letter-spacing: 1px; }
+        /* Navigation Style */
+        .top-nav { display: flex; gap: 10px; margin-bottom: 30px; flex-wrap: wrap; justify-content: center; }
+        .top-nav a { text-decoration: none; text-align: center; flex: 1; min-width: 120px; }
 
-        label { display: block; font-size: 11px; font-weight: 700; color: #64748b; margin-bottom: 8px; text-transform: uppercase; }
-        
-        input, select, textarea {
+        /* IMAGE CAROUSEL/SLIDER */
+        .carousel-container {
+            position: relative;
             width: 100%;
-            padding: 12px 16px;
-            border: 2px solid #e2e8f0;
-            border-radius: 12px;
-            font-size: 14px;
-            box-sizing: border-box;
-            transition: border-color 0.2s;
-        }
-
-        input:focus { outline: none; border-color: var(--primary-blue); }
-
-        .referee-box { background: #f8fafc; padding: 20px; border-radius: 18px; margin-bottom: 20px; border: 1px solid #e2e8f0; }
-
-        .btn {
-            padding: 14px 28px;
-            border-radius: 14px;
-            font-weight: 700;
-            cursor: pointer;
-            border: none;
-            transition: 0.3s;
-            text-transform: uppercase;
-            font-size: 13px;
-        }
-
-        .btn-primary { background: var(--primary-blue); color: white; width: 100%; }
-        .btn-secondary { background: #64748b; color: white; width: 100%; }
-        .btn-outline { background: transparent; border: 2px solid #e2e8f0; color: #64748b; }
-
-        .page { display: none; }
-        .page.active { display: block; }
-
-        #successModal {
-            display: none;
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.6);
-            backdrop-filter: blur(4px);
-            z-index: 1000;
-
-        }
-
-        .modal-content {
-            background: white;
-            width: 90%; max-width: 400px;
-            margin: 15vh auto; padding: 40px;
+            height: 380px;
             border-radius: var(--squarcle-radius);
+            overflow: hidden;
+            box-shadow: var(--shadow-soft);
+            margin-bottom: 35px;
+            background: #000;
+        }
+        .carousel-slide {
+            display: none;
+            position: absolute;
+            width: 100%; height: 100%;
+        }
+        .carousel-slide.active { display: block; }
+        .carousel-slide img {
+            width: 100%; height: 100%;
+            object-fit: cover;
+            opacity: 0.75; /* Slightly darkened to ensure text readability */
+        }
+        .carousel-caption {
+            position: absolute;
+            bottom: 0; left: 0; right: 0;
+            background: linear-gradient(transparent, rgba(15, 23, 42, 0.9));
+            color: white;
+            padding: 40px 30px 25px 30px;
+            font-size: 20px; font-weight: 700;
+            text-shadow: 1px 1px 3px rgba(0,0,0,0.5);
+        }
+
+        /* PORTAL TILES */
+        .portal-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; margin-bottom: 40px; }
+        .portal-card {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
             text-align: center;
+            box-shadow: var(--shadow-soft);
+            border: 1px solid #e2e8f0;
+            transition: transform 0.2s, border-color 0.2s;
+            text-decoration: none;
+            color: inherit;
+            display: flex; flex-direction: column; justify-content: space-between;
         }
-
-        .id-display { font-size: 24px; font-weight: 800; margin: 20px 0; color: var(--primary-blue); background: #f0f7ff; padding: 15px; border-radius: 12px; border: 2px dashed var(--primary-blue); }
-
-        footer {
-            background: #fff;
-            color: #64748b;
-            text-align: center;
-            padding: 20px;
-            font-size: 12px;
-            border-top: 1px solid #e2e8f0;
-            margin-top: auto;
+        .portal-card:hover {
+            transform: translateY(-4px);
+            border-color: var(--primary-blue);
         }
+        .portal-card h3 { margin: 0 0 10px 0; color: var(--primary-blue); font-size: 18px; font-weight: 700; }
+        .portal-card p { margin: 0 0 20px 0; color: #64748b; font-size: 13px; }
+        
+        .btn { padding: 12px 24px; border-radius: 12px; font-weight: 700; cursor: pointer; border: none; transition: 0.3s; text-transform: uppercase; font-size: 12px; text-decoration: none; display: inline-block;}
+        .btn-primary { background: var(--primary-blue); color: white; }
+        .btn-outline { background: transparent; border: 2px solid #e2e8f0; color: #64748b; }
+        .btn-card { width: 100%; box-sizing: border-box; }
 
-        /* CALENDAR STYLING */
-        .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 10px; }
-        .day-box { border: 1px solid #ddd; padding: 10px; border-radius: 12px; text-align: center; cursor: pointer; position: relative; transition: 0.3s; }
-        .day-box.disabled { background: #f1f5f9; color: #ccc; cursor: not-allowed; border: none; }
-        .day-box.available { border: 2px solid var(--primary-blue); color: var(--primary-blue); font-weight: bold; }
-        .day-box.selected { background: var(--primary-blue) !important; color: white !important; }
-        .day-box.full { background: #fee2e2; color: #ef4444; border: 1px solid #fecaca; cursor: not-allowed; }
-        .slots-left { font-size: 10px; display: block; margin-top: 5px; }
+        /* Animation utilities */
+        .fade { animation: fadeEffect 1s; }
+        @keyframes fadeEffect { from { opacity: 0.4; } to { opacity: 1; } }
 
-        @media print {
-            body * { visibility: hidden; }
-            #printArea, #printArea * { visibility: visible; }
-            #printArea { position: absolute; left: 0; top: 0; width: 100%; }
-        }
-
-.modal-overlay {
-    display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-    background: rgba(15, 23, 42, 0.8); backdrop-filter: blur(8px); z-index: 9999;
-    align-items: center; justify-content: center;
-  }
-  .modal-content {
-    background: white; padding: 32px; border-radius: 24px; width: 90%; max-width: 480px;
-    box-shadow: 0 25px 50px -12px rgba(0,0,0,0.25);
-  }
-  .modal-header { font-size: 20px; font-weight: 700; margin-bottom: 20px; color: #1e293b; }
-  
-  .modern-input {
-    width: 100%; padding: 12px; border: 2px solid #e2e8f0; border-radius: 12px;
-    margin-bottom: 16px; font-family: inherit; box-sizing: border-box;
-  }
-  
-  /* Alignment Fixes for Questions */
-  .question-row {
-    display: flex; justify-content: space-between; align-items: center;
-    padding: 14px 16px; background: #f8fafc; border-radius: 12px; margin-bottom: 12px;
-  }
-  .question-text { font-size: 14px; font-weight: 600; color: #334155; }
-  
-  /* Styling the Yes/No toggles */
-  .toggle-group { display: flex; gap: 16px; }
-  .toggle-group label {
-    display: flex; align-items: center; gap: 6px; cursor: pointer;
-    font-size: 14px; font-weight: 600; color: #475569;
-  }
-  .toggle-group input[type="radio"] {
-    width: 18px; height: 18px; cursor: pointer; margin: 0; accent-color: #f47c20;
-  }
-
-  .btn-group { display: flex; gap: 12px; margin-top: 24px; }
-  .btn-main { 
-    flex: 1; padding: 14px; border: none; border-radius: 12px; 
-    font-weight: 600; cursor: pointer; transition: 0.2s; font-size: 15px;
-  }
-  .btn-main:hover { opacity: 0.9; }
+        footer { background: #fff; color: #64748b; text-align: center; padding: 20px; font-size: 12px; border-top: 1px solid #e2e8f0; margin-top: auto; }
     </style>
 </head>
 <body>
@@ -213,921 +125,102 @@
 
 <div class="container">
     
-    <!-- PAGE 1: SELECTION -->
-    <div id="pageSelection" class="page active">
-        <div class="card" style="text-align: center;">
-            <h2 style="color: var(--primary-blue); margin-top: 0;">Welcome</h2>
-            <p style="color: #64748b; margin-bottom: 30px;">Please select an application type to continue.</p>
-            <div class="grid">
-                <button type="button" class="btn btn-primary" onclick="showPage('pageNew')">New Induction</button>
-                <button type="button" class="btn btn-secondary" onclick="showPage('pageRenewal')">Renewal</button>
-                <button type="button" class="btn btn-outline" style="grid-column: span 2;" onclick="showPage('pageManage')">Manage / Reschedule Appointment</button>
-            </div>
-            
-<!-- Admin Access Section -->
-<div style="margin-top: 40px; border-top: 2px dashed #e2e8f0; padding-top: 20px;">
-    <button type="button" class="btn btn-outline" style="font-size: 10px; padding: 5px 10px;" onclick="toggleAdminPanel()">Admin Login</button>
-    
-    <!-- Admin Panel -->
-    <div id="adminPanel" style="display:none; margin-top: 20px; background: #fff7ed; padding: 20px; border-radius: 18px; border: 1px solid #ffedd5;">
-        <h3 style="margin-top:0; color: #9a3412;">Admin Bulk Verification</h3>
-        <p style="font-size: 12px; color: #c2410c;">Paste Induction Numbers (one per line or comma-separated)</p>
-        
-        <textarea id="bulkIds" rows="5" style="margin-bottom: 15px;" placeholder="SI/EXT/2026/1001, SI/EXT/2026/1002..."></textarea>
-        
-        <!-- Induction Question -->
-        <div class="question-row">
-            <div class="question-text">Induction Attended?</div>
-            <div class="toggle-group">
-                <label><input type="radio" name="indRadio" id="indYes" value="yes"> Yes</label>
-                <label><input type="radio" name="indRadio" id="indNo" value="no"> No</label>
-            </div>
-        </div>
-        
-        <!-- D/A Question -->
-        <div class="question-row">
-            <div class="question-text">Passed Drug & Alcohol?</div>
-            <div class="toggle-group">
-                <label><input type="radio" name="daRadio" id="daYes" value="yes" onchange="toggleReasonBox()"> Yes</label>
-                <label><input type="radio" name="daRadio" id="daNo" value="no" onchange="toggleReasonBox()"> No</label>
-            </div>
-        </div>
-
-        <!-- Hidden Reason Dropdown -->
-        <div id="reasonDiv" style="display:none; margin-top: 16px;">
-            <label style="font-size:12px; color:#ef4444; font-weight:700; letter-spacing: 0.5px;">FAILURE REASON REQUIRED</label>
-            <select id="daReason" class="modern-input" style="border-color: #fca5a5;">
-                <option value="">Select failure reason...</option>
-                <option value="Positive for Drugs">Positive for Drugs</option>
-                <option value="Positive for Alcohol">Positive for Alcohol</option>
-                <option value="Both Positive">Positive for Both</option>
-                <option value="Refusal to Test">Refused Test</option>
-            </select>
-        </div>
-        
-        <div class="form-group">
-            <label>Admin Passcode</label>
-            <input type="password" id="adminPass" placeholder="Enter Passcode">
-        </div>
-
-        <div class="btn-group">
-            <!-- FIXED: This now calls toggleAdminPanel to hide the correct div -->
-            <button type="button" class="btn-main" style="background:#f1f5f9; color:#475569;" onclick="toggleAdminPanel()">Cancel</button>
-            <button type="button" id="verifySubmitBtn" class="btn-main" style="background:#f47c20; color:white;" onclick="runBulkUpdate()">Update Status</button>
-        </div>
-    </div> <!-- Closes adminPanel -->
-</div> <!-- Closes Admin Access wrapper -->
-</div> <!-- Closes the white Card -->
-</div> <!-- Closes pageSelection (CRITICAL: Fixes navigation) -->
-          
-    
-<div id="pageManage" class="page">
-    <div class="card">
-        <!-- Back Button for Navigation -->
-        <button class="btn btn-outline" style="margin-bottom: 20px; padding: 5px 15px;" onclick="showPage('pageSelection')">← Back</button>
-        
-        <h2 style="color: var(--primary-blue);">Manage Appointment</h2>
-        <p style="font-size: 13px; text-align: center; color: #64748b; margin-bottom: 20px;">
-            Enter your <b>Induction Number</b> or <b>License Number</b> to view or change your date.
-        </p>
-
-        <div style="display: flex; gap: 10px; margin-bottom: 20px;">
-            <input type="text" id="manageSearchInput" placeholder="Induction or License Number">
-            <button class="btn btn-primary" style="width: auto;" onclick="retrieveAppointment()">Find</button>
-        </div>
-
-        <div id="manageResult" style="display:none; text-align: center; border-top: 1px solid #eee; padding-top: 20px;">
-            <div id="appointmentStatusCard" style="background: #f0fdf4; padding: 15px; border-radius: 12px; margin-bottom: 20px;">
-                <p id="manageStatusText" style="margin: 0; font-weight: 600; color: #166534;"></p>
-            </div>
-            
-            <div class="grid">
-                <button class="btn btn-primary" onclick="reprintSlip()">Print Slip</button>
-                <button class="btn btn-secondary" onclick="startReschedule()">Reschedule Date</button>
-            </div>
-        </div>
-    </div>
-</div>
-    
-    <!-- PAGE: NEW TRUCKER FORM -->
-    <div id="pageNew" class="page">
-        <button type="button" class="btn btn-outline" style="margin-bottom: 20px;" onclick="showPage('pageSelection')">← Back</button>
-        <form id="newTruckerForm" class="card">
-            <h2 style="margin-top:0; color: var(--primary-blue);">New Trucker Induction</h2>
-            
-            <h3>Biodata</h3>
-            <div class="form-group">
-                <label>Full Name (AS SEEN ON DRIVER'S LICENSE)</label>
-                <input type="text" name="fullName" placeholder="John Doe" required>
-            </div>
-            <div class="form-group">
-                <label>Present Residential Address</label>
-                <input type="text" name="address" placeholder="House Address" required>
-            </div>
-
-            <div class="grid">
-                <div class="form-group"><label>STATE OF ORIGIN</label><input type="text" name="state" required></div>
-                <div class="form-group"><label>LOCAL GOVERNMENT</label><input type="text" name="lga" required></div>
-            </div>
-
-            <div class="grid">
-                <div class="form-group"><label>RELIGION</label><input type="text" name="religion"></div>
-                <div class="form-group"><label>MOBILE NUMBER</label><input type="tel" name="mobile" required></div>
-            </div>
-
-            <div class="grid">
-                <div class="form-group"><label>DATE OF BIRTH</label><input type="date" name="dob" required></div>
-                <div class="form-group">
-                    <label>Marital Status</label>
-                    <select name="maritalStatus"> 
-                        <option value="Single">Single</option>
-                        <option value="Married">Married</option>
-                        <option value="Divorced">Divorced</option>
-                    </select>
-                </div>
-            </div>
-
-            <div class="grid">
-                <div class="form-group"><label>Drivers License No</label><input type="text" name="licenseDetails" placeholder="ABC12345DD" required></div>
-                <div class="form-group"><label>License Expiration Date</label><input type="date" name="licenseExpDate" required></div>
-            </div>
-               
-            <div class="form-group">
-                <label>Company Name</label>
-                <input type="text" name="companyName" required>
-            </div>
-
-            <h3>REFEREES</h3>
-            <div class="referee-box">
-                <label>REFEREE 1 NAME</label>
-                <input type="text" name="ref1Name" required style="margin-bottom: 15px;">
-                <div class="grid">
-                    <input type="text" name="ref1Address" placeholder="Address">
-                    <input type="text" name="ref1Position" placeholder="Position/Occupation">
-                    <input type="text" name="ref1Duration" placeholder="How long known">
-                    <input type="text" name="ref1Contact" placeholder="Contact Number">
-                </div>
-            </div>
-
-            <div class="referee-box">
-                <label>REFEREE 2 NAME</label>
-                <input type="text" name="ref2Name" required style="margin-bottom: 15px;">
-                <div class="grid">
-                    <input type="text" name="ref2Address" placeholder="Address">
-                    <input type="text" name="ref2Position" placeholder="Position/Occupation">
-                    <input type="text" name="ref2Duration" placeholder="How long known">
-                    <input type="text" name="ref2Contact" placeholder="Contact Number">
-                </div>
-            </div>
-
-            <h3>DOCUMENT UPLOADS</h3>
-            <div class="grid">
-                <div class="form-group">
-                    <label>PASSPORT PHOTO (Required)</label>
-                    <input type="file" id="new_passport" accept="image/*" required>
-                </div>
-                <div class="form-group">
-                    <label>DRIVER'S LICENSE (Required)</label>
-                    <input type="file" id="new_license" accept="image/*,application/pdf" required>
-                </div>
-            </div>
-            <div class="form-group">
-                <label>RECOMMENDATION LETTER (Optional)</label>
-                <input type="file" id="new_recLetter" accept="image/*,application/pdf">
-            </div>
-
-            <div class="form-group" style="margin-top:20px;">
-                <label style="display: flex; align-items: center; gap: 10px; text-transform: none;">
-                    <input type="checkbox" name="consent" required style="width: auto;"> I confirm that the details provided are correct and accurate.
-                </label>
-            </div>
-
-            <button type="submit" class="btn btn-primary" id="newSubmitBtn">Submit Application</button>
-        </form>
+    <!-- TOP NAVIGATION BAR -->
+    <div class="top-nav">
+        <a href="index.html" class="btn btn-primary">Home</a>
+        <a href="new_induction.html" class="btn btn-outline">New Induction</a>
+        <a href="renewal.html" class="btn btn-outline">Renewal</a>
+        <a href="manage.html" class="btn btn-outline">Manage Appt</a>
+        <a href="admin.html" class="btn btn-outline">Admin</a>
     </div>
 
-    <!-- PAGE: RENEWAL FORM -->
-    <div id="pageRenewal" class="page">
-        <button type="button" class="btn btn-outline" style="margin-bottom: 20px;" onclick="showPage('pageSelection')">← Back</button>
-        <div class="card">
-            <h2 style="margin-top:0; color: var(--primary-blue);">Induction Card Renewal</h2>
-            <p style="font-size: 13px; text-align: center; color: #64748b; margin-bottom: 20px;">Search for your existing record</p>
-            
-            <div style="display: flex; gap: 10px; margin-bottom: 20px;">
-                <input type="text" id="searchID" placeholder="Enter Induction Number or License No.">
-                <button type="button" class="btn btn-primary" style="width: auto;" onclick="searchTrucker()" id="searchBtn">Search</button>
-            </div>
-            <div id="loading" style="display:none; text-align: center; color: var(--primary-blue); font-weight: 600;">Searching database...</div>
-            <div id="searchResults"></div>
-
-            <form id="renewalForm" style="display:none; margin-top: 30px; border-top: 1px solid #eee; padding-top: 20px;">
-                <h3>Verified Information</h3>
-                <div class="grid">
-                    <div class="form-group"><label>Name</label><input type="text" id="ren_name" readonly style="background:#f1f5f9;"></div>
-                    <div class="form-group"><label>Induction ID</label><input type="text" id="ren_id" readonly style="background:#f1f5f9;"></div>
-                </div>
-
-                <h3>Update Details</h3>
-                <div class="form-group"><label>Current Address</label><input type="text" name="address" id="ren_address" required></div>
-                <div class="grid">
-                    <div class="form-group"><label>Mobile</label><input type="tel" name="mobile" id="ren_mobile" required></div>
-                    <div class="form-group"><label>Company</label><input type="text" name="companyName" id="ren_company" required></div>
-                </div>
-                
-                <div class="grid">
-                    <div class="form-group"><label>LICENSE EXPIRATION DATE</label><input type="date" name="licenseExDate" id="ren_lic_exp" required></div>
-                    <div class="form-group"><label>INDUCTION CARD EXPIRATION DATE</label><input type="date" name="inductionExDate" id="ren_ind_exp" required></div>
-                </div>
-
-                <h3>Card Status</h3>
-                <div class="referee-box">
-                    <label>Is your Induction Card lost or seized?</label>
-                    <select name="cardStatus" id="cardStatus">
-                        <option value="No">No (In Possession)</option>
-                        <option value="Lost">Yes - Lost</option>
-                        <option value="Seized">Yes - Seized</option>
-                    </select>
-                </div>
-
-                <h3>Document Uploads</h3>
-                <div class="grid">
-                    <div class="form-group"><label>Old Induction Card</label><input type="file" id="file_oldCard"></div>
-                    <div class="form-group"><label>Police Report (If Lost)</label><input type="file" id="file_police"></div>
-                </div>
-                <div class="grid">
-                    <div class="form-group"><label>Driver's License Update</label><input type="file" id="file_license" required></div>
-                    <div class="form-group"><label>Recent Passport Photo</label><input type="file" id="file_passport" required></div>
-                </div>
-
-                <button type="submit" class="btn btn-primary" id="renSubmitBtn" style="margin-top:20px;">Submit Renewal Request</button>
-            </form>
+    <!-- CAROUSEL SECTION -->
+    <div class="carousel-container">
+        <!-- Slide 1 -->
+        <div class="carousel-slide fade active">
+            <img src="https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?auto=format&fit=crop&q=80&w=1200" alt="Terminal Logistic Trucks">
+            <div class="carousel-caption">Welcome to West Africa Container Terminal Logistics Portal</div>
+        </div>
+        <!-- Slide 2 -->
+        <div class="carousel-slide fade">
+            <img src="https://images.unsplash.com/photo-1578575437130-527eed3abbec?auto=format&fit=crop&q=80&w=1200" alt="Port Infrastructure">
+            <div class="carousel-caption">Onne Port: Safety First, Operations Always</div>
+        </div>
+        <!-- Slide 3 -->
+        <div class="carousel-slide fade">
+            <img src="https://images.unsplash.com/photo-1601584115197-04ecc0da31d7?auto=format&fit=crop&q=80&w=1200" alt="Cargo Containers">
+            <div class="carousel-caption">Streamlining Approvals for Certified Professional Drivers</div>
         </div>
     </div>
 
-    <!-- PAGE: APPOINTMENT SCHEDULING -->
-    <div id="pageAppointment" class="page">
-        <div class="card">
-            <h2>Schedule Induction Session</h2>
-            <div id="calHeader" style="display:flex; justify-content: space-between; margin-bottom: 15px;">
-                <button class="btn btn-outline" style="padding: 5px 15px;" onclick="changeMonth(-1)">Prev</button>
-                <h3 id="monthDisplay">Month Year</h3>
-                <button class="btn btn-outline" style="padding: 5px 15px;" onclick="changeMonth(1)">Next</button>
-            </div>
-            <div class="calendar-grid" id="calendarGrid"></div>
-            
-            <div id="bookingActions" style="margin-top:20px; display:none; text-align:center;">
-                <p>Selected Date: <strong id="selectedDateText"></strong></p>
-                <button class="btn btn-primary" onclick="confirmBooking()">Book Appointment</button>
-            </div>
-        </div>
-    </div>
+    <h2 style="text-align: center; color: var(--primary-blue); font-size: 22px; margin-bottom: 25px;">Select an Action to Get Started</h2>
 
-    <!-- PAGE: CONFIRMATION SLIP -->
-    <div id="pageSlip" class="page">
-        <div class="card" id="printArea">
-            <div style="border: 2px solid #000; padding: 20px; text-align: center;">
-                <img src="https://cms-cd.apmterminals.com/onne/-/jssmedia/mainsite/africa-and-middle-east/Onne/Standard-Hero-images/wact-logo-square-400-ext.png" style="width: 60px; margin-bottom: 10px;">
-                <h1 style="font-size: 20px; margin-bottom: 5px;">WACT INDUCTION SLIP</h1>
-                <hr>
-                <div style="text-align: left; margin-top: 20px;">
-                    <p><strong>NAME:</strong> <span id="slip_name"></span></p>
-                    <p><strong>INDUCTION ID:</strong> <span id="slip_id"></span></p>
-                    <p><strong>APPT DATE:</strong> <span id="slip_date"></span></p>
-                    <p><strong>APPT ID:</strong> <span id="slip_apt_id"></span></p>
-                    <p><strong>STATUS:</strong> <span id="slip_status"></span></p>
-                    <p><strong>TIME:</strong> 09:00 AM Prompt</p>
-                <p><strong>LOCATION:</strong> WACT Training Center, Onne Port.</p>
-                </div>
-                <hr>
-                <p style="font-size: 11px; margin-top: 20px;">Please bring a printed copy or screenshot of this slip to the security gate on your appointment day.</p>
+    <!-- PORTAL TILES -->
+    <div class="portal-grid">
+        <!-- Tile 1: New Induction -->
+        <a href="new_induction.html" class="portal-card">
+            <div>
+                <h3>New Induction</h3>
+                <p>Register as a new trucker, upload required document clearances, and book your onsite physical safety training slot.</p>
             </div>
-            <div style="margin-top: 20px; display: flex; flex-direction: column; gap: 10px;">
-                <button class="btn btn-primary" onclick="window.print()">Print Slip</button>
-                <div style="display: flex; gap: 5px;">
-                    <input type="email" id="emailInput" placeholder="Enter email">
-                    <button id="sendEmailBtn" class="btn btn-secondary" style="white-space: nowrap;" onclick="sendSlipViaEmail()">Email Slip</button>
-                    <p id="emailStatusMsg" style="font-size: 12px; margin-top: 5px; text-align: center;"></p>
-                </div>
-                <button class="btn btn-outline" onclick="location.reload()">Finish</button>
+            <span class="btn btn-primary btn-card">Start Application</span>
+        </a>
+
+        <!-- Tile 2: Renewal -->
+        <a href="renewal.html" class="portal-card">
+            <div>
+                <h3>Card Renewal</h3>
+                <p>Is your existing induction slip expired, lost, or compromised? Re-verify your baseline details to issue an updated terminal pass.</p>
             </div>
-        </div>
+            <span class="btn btn-primary btn-card">Renew Passes</span>
+        </a>
+
+        <!-- Tile 3: Manage Appointment -->
+        <a href="manage.html" class="portal-card">
+            <div>
+                <h3>Manage Appt</h3>
+                <p>Query historical applications via license numbers to verify safety review statuses, reprint gate codes, or alter booking days.</p>
+            </div>
+            <span class="btn btn-primary btn-card">Lookup Record</span>
+        </a>
     </div>
 
 </div>
 
-<!-- SUCCESS MODAL -->
-<div id="successModal">
-    <div class="modal-content">
-        <div style="font-size: 50px;">✅</div>
-        <h2 style="color: var(--primary-blue);">Submitted Successfully!</h2>
-        <p>Your Induction ID has been generated:</p>
-        <div class="id-display" id="displayID">---</div>
-        <p style="font-size: 12px; color: #64748b;">Please proceed to book your physical induction session.</p>
-        <button class="btn btn-primary" id="modalActionBtn">Continue to Appointment</button>
-    </div>
-</div>
-  
 <footer>
     &copy; 2026 West Africa Container Terminal | Confidential Induction Portal
 </footer>
 
 <script>
-    const scriptURL = 'https://script.google.com/macros/s/AKfycbyT9VU1LktpavOtbkIKlsvjWV5_7kx_xctn1dVZS6LtiDQnMAagX4Xk5xC0zH_MhouoBg/exec';
-
-    document.getElementById('currentDate').innerText = new Date().toLocaleDateString('en-GB', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
-
-    // Global variables for appointment flow
-    let currentUserData = { name: '', id: '', type: '' };
-    let calendarData = {};
-    let currentMonth = new Date();
-    let selectedDateStr = "";
-
-    function showPage(id) {
-        document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-        document.getElementById(id).classList.add('active');
-        window.scrollTo(0,0);
-    }
-
-    async function getFileData(fileInput) {
-        if (!fileInput || !fileInput.files[0]) return null;
-        const file = fileInput.files[0];
-        return new Promise((resolve) => {
-            const reader = new FileReader();
-            reader.onload = () => resolve({
-                base64: reader.result.split(',')[1],
-                type: file.type,
-                name: file.name
-            });
-            reader.readAsDataURL(file);
-        });
-    }
-
-    // --- NEW TRUCKER SUBMISSION ---
-    document.getElementById('newTruckerForm').addEventListener('submit', async function(e) {
-        e.preventDefault();
-        const btn = document.getElementById('newSubmitBtn');
-        btn.innerText = "Processing..."; btn.disabled = true;
-
-        try {
-            const payload = {
-                action: 'submitNew',
-                fullName: this.fullName.value,
-                address: this.address.value,
-                state: this.state.value,
-                lga: this.lga.value,
-                mobile: this.mobile.value,
-                dob: this.dob.value,
-                maritalStatus: this.maritalStatus.value,
-                licenseDetails: this.licenseDetails.value,
-                licenseExpDate: this.licenseExpDate.value,
-                companyName: this.companyName.value,
-                ref1Name: this.ref1Name.value,
-                ref1Address: this.ref1Address.value,
-                ref1Position: this.ref1Position.value,
-                ref1Duration: this.ref1Duration.value,
-                ref1Contact: this.ref1Contact.value,
-                ref2Name: this.ref2Name.value,
-                ref2Address: this.ref2Address.value,
-                ref2Position: this.ref2Position.value,
-                ref2Duration: this.ref2Duration.value,
-                ref2Contact: this.ref2Contact.value,
-                consent: this.consent.checked ? "Yes" : "No",
-                passportPhoto: await getFileData(document.getElementById('new_passport')),
-                driversLicense: await getFileData(document.getElementById('new_license')),
-                recLetter: await getFileData(document.getElementById('new_recLetter'))
-            };
-
-            const response = await fetch(scriptURL, { method: 'POST', body: JSON.stringify(payload) });
-            const result = await response.json();
-
-            if (result.result === 'success' || result.inductionNumber) {
-                currentUserData = { name: this.fullName.value, id: result.inductionNumber, type: 'new' };
-                document.getElementById('displayID').innerText = result.inductionNumber;
-                document.getElementById('successModal').style.display = "block";
-                
-                document.getElementById('modalActionBtn').onclick = () => {
-                    document.getElementById('successModal').style.display = "none";
-                    startAppointmentFlow(currentUserData.id, currentUserData.type);
-                };
-                this.reset();
-            } else {
-                alert("Error: " + (result.message || "Something went wrong."));
-            }
-        } catch (err) {
-            alert("System Error: Check internet connection.");
-        } finally {
-            btn.innerText = "Submit Application"; btn.disabled = false;
-        }
+    // System Clock Layout Configuration
+    document.getElementById('currentDate').innerText = new Date().toLocaleDateString('en-GB', { 
+        weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' 
     });
 
-    // --- SEARCH LOGIC ---
-    async function searchTrucker() {
-        const id = document.getElementById('searchID').value;
-        const resultsDiv = document.getElementById('searchResults');
-        if (id.length < 3) return alert("Enter at least 3 characters.");
+    // Automatically Cycling Slide Operations
+    let slideIndex = 0;
+    const slides = document.getElementsByClassName("carousel-slide");
 
-        document.getElementById('loading').style.display = "block";
-        resultsDiv.innerHTML = "";
-
-        try {
-            const response = await fetch(`${scriptURL}?action=search&inductionNumber=${encodeURIComponent(id)}`);
-            const data = await response.json();
-            document.getElementById('loading').style.display = "none";
-
-            if (data.length === 0) {
-                resultsDiv.innerHTML = "<p style='color:red; text-align:center;'>No records found.</p>";
-            } else {
-                data.forEach(item => {
-                    const b = document.createElement('button');
-                    b.className = "btn btn-outline"; b.style.width = "100%"; b.style.marginBottom = "8px";
-                    b.innerText = `SELECT: ${item.fullName} (${item.inductionNumber})`;
-                    b.onclick = () => {
-                        document.getElementById('renewalForm').style.display = "block";
-                        document.getElementById('ren_name').value = item.fullName;
-                        document.getElementById('ren_id').value = item.inductionNumber;
-                        document.getElementById('ren_address').value = item.address || "";
-                        document.getElementById('ren_mobile').value = item.mobile || "";
-                        document.getElementById('ren_company').value = item.companyName || "";
-                        resultsDiv.innerHTML = `<p style='color:green; text-align:center;'>Selected: ${item.fullName}</p>`;
-                    };
-                    resultsDiv.appendChild(b);
-                });
-            }
-        } catch (e) {
-            alert("Search failed.");
-            document.getElementById('loading').style.display = "none";
-        }
-    }
-
-    // --- RENEWAL SUBMISSION ---
-    document.getElementById('renewalForm').addEventListener('submit', async function(e) {
-        e.preventDefault();
-        const btn = document.getElementById('renSubmitBtn');
-        btn.innerText = "Saving..."; btn.disabled = true;
-
-        try {
-            const payload = {
-                action: 'submitRenewal',
-                fullName: document.getElementById('ren_name').value,
-                inductionNumber: document.getElementById('ren_id').value,
-                address: document.getElementById('ren_address').value,
-                mobile: document.getElementById('ren_mobile').value,
-                companyName: document.getElementById('ren_company').value,
-                licenseExDate: document.getElementById('ren_lic_exp').value,
-                inductionExDate: document.getElementById('ren_ind_exp').value,
-                cardStatus: document.getElementById('cardStatus').value,
-                oldCard: await getFileData(document.getElementById('file_oldCard')),
-                policeReport: await getFileData(document.getElementById('file_police')),
-                driversLicense: await getFileData(document.getElementById('file_license')),
-                passportPhoto: await getFileData(document.getElementById('file_passport'))
-            };
-
-            const response = await fetch(scriptURL, { method: 'POST', body: JSON.stringify(payload) });
-            const result = await response.json();
-
-         if (result.result === 'success') {
-                currentUserData = { name: payload.fullName, id: payload.inductionNumber, type: 'renewal' };
-                document.getElementById('displayID').innerText = payload.inductionNumber;
-                document.getElementById('successModal').style.display = "block";
-
-                document.getElementById('modalActionBtn').onclick = () => {
-                    document.getElementById('successModal').style.display = "none";
-                    startAppointmentFlow(currentUserData.id, currentUserData.type);
-                };
-            }
-        } catch (err) {
-            alert("Error submitting renewal.");
-        } finally {
-            btn.innerText = "Submit Renewal Request"; btn.disabled = false;
-        }
-    });
-
-// --- APPOINTMENT SYSTEM LOGIC ---
-
-    async function startAppointmentFlow(id, type) {
-        showPage('pageAppointment');
-        document.getElementById('calendarGrid').innerHTML = "<p style='grid-column: span 7; text-align:center;'>Loading Calendar...</p>";
-        
-        try {
-            const res = await fetch(`${scriptURL}?action=getCalendarData&id=${id}&type=${type}`);
-            calendarData = await res.json();
-            renderCalendar();
-        } catch(e) {
-            alert("Failed to load appointment data.");
-        }
-    }
-
-    function renderCalendar() {
-        const grid = document.getElementById('calendarGrid');
-        const monthDisplay = document.getElementById('monthDisplay');
-        grid.innerHTML = "";
-        
-        monthDisplay.innerText = currentMonth.toLocaleDateString('en-GB', { month: 'long', year: 'numeric' });
-
-        let firstDay = new Date(currentMonth.getFullYear(), currentMonth.getMonth(), 1).getDay();
-        let totalDays = new Date(currentMonth.getFullYear(), currentMonth.getMonth() + 1, 0).getDate();
-
-        for(let i=0; i<firstDay; i++) grid.appendChild(document.createElement('div'));
-
-        for(let d=1; d<=totalDays; d++) {
-            let dateObj = new Date(currentMonth.getFullYear(), currentMonth.getMonth(), d);
-            
-            // FIX: Build the YYYY-MM-DD string manually using local time to avoid the UTC shift
-            let year = dateObj.getFullYear();
-            let month = String(dateObj.getMonth() + 1).padStart(2, '0');
-            let day = String(dateObj.getDate()).padStart(2, '0');
-            let dateStr = `${year}-${month}-${day}`;
-            let dayOfWeek = dateObj.getDay(); 
-            
-            let box = document.createElement('div');
-            box.className = "day-box";
-            box.innerText = d;
-
-            let isWedFri = (dayOfWeek === 3 || dayOfWeek === 5);
-            let inRange = (dateStr >= calendarData.allowedMin && dateStr <= calendarData.allowedMax);
-            let bookings = calendarData.existingBookings[dateStr] || 0;
-
-            if (isWedFri && inRange) {
-                if (bookings >= 10) {
-                    box.classList.add('full');
-                    box.innerHTML += `<span class="slots-left">FULL</span>`;
-                } else {
-                    box.classList.add('available');
-                    box.innerHTML += `<span class="slots-left">${10 - bookings} left</span>`;
-                    box.onclick = () => selectDate(dateStr, box);
-                }
-            } else {
-                box.classList.add('disabled');
-            }
-            grid.appendChild(box);
-        }
-    }
-
-    function selectDate(dateStr, element) {
-        selectedDateStr = dateStr; 
-        document.querySelectorAll('.day-box').forEach(el => el.classList.remove('selected'));
-        element.classList.add('selected');
-
-        // Split the YYYY-MM-DD string directly
-    const parts = dateStr.split('-');
-    const months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
-    
-    // This forces the display to match the exact string from the calendar
-    const formattedDate = `${parts[2]} ${months[parseInt(parts[1]) - 1]} ${parts[0]}`;
-    document.getElementById('selectedDateText').innerText = formattedDate;
-    document.getElementById('bookingActions').style.display = "block";
-    }
-
-    function changeMonth(offset) {
-        currentMonth.setMonth(currentMonth.getMonth() + offset);
-        renderCalendar();
-    }
-
-    async function confirmBooking() {
-        const btn = document.querySelector('#bookingActions button');
-        btn.innerText = "Booking..."; 
-        btn.disabled = true;
-
-        try {
-            const payload = { 
-                action: 'book', 
-                id: currentUserData.id, 
-                type: currentUserData.type, 
-                date: selectedDateStr 
-            };
-
-            const response = await fetch(scriptURL, { method: 'POST', body: JSON.stringify(payload) });
-            const result = await response.json();
-
-            if (result.result === 'success') {
-                document.getElementById('slip_name').innerText = currentUserData.name;
-                document.getElementById('slip_id').innerText = currentUserData.id;
-                document.getElementById('slip_date').innerText = selectedDateStr;
-                document.getElementById('slip_apt_id').innerText = result.aptId;
-                document.getElementById('slip_status').innerText = result.status || "Booked";
-                showPage('pageSlip');
-            } else { 
-                alert(result.message); 
-            }
-        } catch (e) { 
-            alert("Booking failed."); 
-        } finally { 
-            btn.innerText = "Book Appointment"; 
-            btn.disabled = false; 
-        }
-    }
-
-    // --- MANAGE APPOINTMENT FUNCTIONS ---
-    
-    let managementData = null; 
-
-async function retrieveAppointment() {
-    const queryInput = document.getElementById('manageSearchInput');
-    const query = queryInput.value.trim();
-    
-    if (!query) return alert("Please enter Induction or License Number.");
-
-    const resultDiv = document.getElementById('manageResult');
-    const statusText = document.getElementById('manageStatusText');
-    const findBtn = document.querySelector('button[onclick="retrieveAppointment()"]');
-    const rescheduleBtn = document.querySelector('#manageResult .btn-secondary');
-    
-    findBtn.innerText = "Searching...";
-    findBtn.disabled = true;
-
-    try {
-        const res = await fetch(`${scriptURL}?action=getCalendarData&id=${encodeURIComponent(query)}&type=new`);
-        const data = await res.json();
-        
-        // Handle the 10-week "Too Early" block
-        if (data.error === "TOO EARLY") {
-            statusText.innerHTML = `<b style="color:#ef4444;">${data.message}</b>`;
-            rescheduleBtn.style.display = "none"; // Hide the button so they can't proceed
-            findBtn.innerText = "Find";
-            findBtn.disabled = false;
-            return; // Stop the rest of the function from running
-        }
-
-        if (data.error) {
-            alert(data.error);
-            resultDiv.style.display = "none";
-            return;
-        }
-
-        managementData = data; 
-        currentUserData = { name: data.truckerName, id: data.truckerId, type: data.type };
-
-        resultDiv.style.display = "block";
-        
-        if (data.currentAppointment) {
-            const dateParts = data.currentAppointment.toString().split('T')[0].split('-');
-            const formatted = `${dateParts[2]} ${["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"][parseInt(dateParts[1]) - 1]} ${dateParts[0]}`;
-            
-            const currentStatus = data.status || "Booked";
-            const count = data.rescheduleCount || 0;
-            
-            statusText.innerHTML = `Confirmed Session: <b>${formatted}</b><br>` +
-                                 `<span style="color:var(--primary-blue);">Status: ${currentStatus}</span><br>` +
-                                 `<small style="color:#64748b;">Reschedules used: ${count}/2</small>`;
-
-            // --- BUTTON LOGIC BLOCK ---
-            
-            // 1. Handle D/A Failure
-            if (currentStatus === "Failed D/A") {
-                const reasonStr = String(data.daReason || "").toLowerCase();
-                const failureDate = new Date(data.currentAppointment);
-                let suspensionEndDate = new Date(failureDate);
-                let durationText = "";
-
-                // Ban Logic Calculation
-                if (reasonStr.includes("drug") || reasonStr.includes("both")) {
-                    suspensionEndDate.setMonth(suspensionEndDate.getMonth() + 1); // 1 Month Ban
-                    durationText = "1 Month";
-                } else if (reasonStr.includes("alcohol")) {
-                    suspensionEndDate.setDate(suspensionEndDate.getDate() + 7); // 1 Week Ban
-                    durationText = "1 Week";
-                } else {
-                    durationText = "No Suspension"; // For Refusals
-                }
-
-                const today = new Date();
-
-                // If they are still serving their suspension
-                if (today < suspensionEndDate && durationText !== "No Suspension") {
-                    const formattedEnd = suspensionEndDate.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
-                    
-                    rescheduleBtn.disabled = true;
-                    rescheduleBtn.innerText = `Suspended until ${formattedEnd}`;
-                    rescheduleBtn.style.backgroundColor = "#fca5a5"; 
-                    rescheduleBtn.style.color = "white";
-                    rescheduleBtn.style.cursor = "not-allowed";
-                    rescheduleBtn.style.opacity = "1";
-                    
-                    statusText.innerHTML += `<br><b style="color:#ef4444;">Reason: ${data.daReason || "Contact HSE at 08129915418"}</b>`;
-                    statusText.innerHTML += `<br><small style="color:#ef4444; font-weight:700;">Suspension: ${durationText} (Ends ${formattedEnd})</small>`;
-                } 
-                // If suspension is over OR No Suspension
-                else {
-                    rescheduleBtn.disabled = false;
-                    rescheduleBtn.innerText = "Revalidate Now";
-                    rescheduleBtn.style.backgroundColor = "#ef4444"; 
-                    rescheduleBtn.style.color = "white";
-                    rescheduleBtn.style.cursor = "pointer";
-                    rescheduleBtn.style.opacity = "1";
-
-                    statusText.innerHTML += `<br><b style="color:#ef4444;">Reason: ${data.daReason || "Contact HSE at 08129915418"}</b>`;
-
-                    if (durationText !== "No Suspension") {
-                        statusText.innerHTML += `<br><small style="color:#16a34a; font-weight:700;">Suspension completed. Eligible for Revalidation.</small>`;
-                    }
-
-                    rescheduleBtn.onclick = function() { 
-                        alert("Redirecting to the Renewal portal for Revalidation. Please update your details.");
-                        startRevalidation(data.truckerId); 
-                    };
-                }
-            }
-            // 2. Check if Verified or Card Generated
-            else if (currentStatus === "Verified" || currentStatus === "Card Generated") {
-                rescheduleBtn.disabled = true;
-                rescheduleBtn.innerText = "Verified: Cannot Reschedule";
-                rescheduleBtn.style.opacity = "0.5";
-            } 
-            // 3. Existing Reschedule Limit Logic
-            else if (count >= 2) {
-                rescheduleBtn.disabled = true;
-                rescheduleBtn.innerText = "Limit Reached";
-                rescheduleBtn.style.opacity = "0.5";
-            } else {
-                rescheduleBtn.disabled = false;
-                rescheduleBtn.innerText = "Reschedule Date";
-                rescheduleBtn.style.opacity = "1";
-                rescheduleBtn.style.backgroundColor = "";
-                rescheduleBtn.onclick = function() { startReschedule(); };
-            }
-        } else {
-            statusText.innerHTML = "No active appointment found for this record.";
-            rescheduleBtn.innerText = "Book Appointment";
-            rescheduleBtn.disabled = false; 
-            rescheduleBtn.style.opacity = "1";
-            rescheduleBtn.style.backgroundColor = "var(--primary-blue)";
-            rescheduleBtn.onclick = function() { startReschedule(); };
-        }
-    } catch (e) {
-        alert("Error retrieving data. Check connection.");
-    } finally {
-        findBtn.innerText = "Find";
-        findBtn.disabled = false;
-    }
-}
-    
-    function startRevalidation(inductionId) {
-        // 1. Switch the view to the Renewal Page
-        showPage('pageRenewal');
-        
-        // 2. Auto-fill the trucker's ID into the search box
-        document.getElementById('searchID').value = inductionId;
-        
-        // 3. Auto-trigger the backend search so they don't have to click anything
-        searchTrucker();
-    }
-
-    function startReschedule() {
-        startAppointmentFlow(currentUserData.id, currentUserData.type);
-    }
-
-    function reprintSlip() {
-        if (!managementData || !managementData.currentAppointment) {
-            return alert("No appointment found to print.");
+    function cycleSlides() {
+        // Turn off the currently active picture frame
+        for (let i = 0; i < slides.length; i++) {
+            slides[i].classList.remove("active");
         }
         
-        document.getElementById('slip_name').innerText = managementData.truckerName;
-        document.getElementById('slip_id').innerText = currentUserData.id;
-
-        // FIX: Safe date split for Slip printout
-        const dateStr = managementData.currentAppointment.toString().split('T')[0];
-        const [y, m, d] = dateStr.split('-');
-        document.getElementById('slip_date').innerText = `${d}/${m}/${y}`;
-
-        document.getElementById('slip_status').innerText = managementData.status || "Booked";
-        document.getElementById('slip_apt_id').innerText = "APT-" + Math.floor(Math.random()*100000);
+        slideIndex++;
+        if (slideIndex > slides.length) { slideIndex = 1; }
         
-        showPage('pageSlip');
-    }
-    
-    function toggleAdminPanel() {
-    const panel = document.getElementById('adminPanel');
-    const pass = prompt("Enter Admin Access Code:");
-    if (pass === "WACT2026") { // Quick check before showing UI
-        panel.style.display = panel.style.display === 'none' ? 'block' : 'none';
-    } else {
-        alert("Incorrect Code.");
-    }
-}
-
-function toggleReasonBox() {
-  // Only show the reason box if "No" is explicitly selected
-  const failedDA = document.getElementById('daNo').checked;
-  document.getElementById('reasonDiv').style.display = failedDA ? 'block' : 'none';
-}
-async function runBulkUpdate() {
-    const ids = document.getElementById('bulkIds').value.trim();
-    const indYes = document.getElementById('indYes').checked;
-    const indNo = document.getElementById('indNo').checked;
-    const daYes = document.getElementById('daYes').checked;
-    const daNo = document.getElementById('daNo').checked;
-    const reason = document.getElementById('daReason').value;
-
-    if (!ids) return alert("Please enter at least one Induction Number.");
-    if (!indYes && !indNo) return alert("Please select Yes or No for Induction Attendance.");
-    if (!daYes && !daNo) return alert("Please select Yes or No for the Drug & Alcohol test.");
-    if (indNo) return alert("Applicants must attend induction to be verified. Status cannot be updated.");
-    if (daNo && !reason) return alert("Please select a failure reason from the dropdown.");
-
-    const btn = document.getElementById('verifySubmitBtn');
-    btn.innerText = "Processing...";
-    btn.disabled = true;
-
-    const pass = prompt("Please enter the Admin Passcode to authorize this update:");
-    if (!pass) return;
-    
-    try {
-        const payload = {
-            action: 'adminBulkVerify',
-            ids: ids,
-            passcode: pass,
-            attended: indYes,
-            daPassed: daYes,
-            reason: reason
-        };
-
-        const response = await fetch(scriptURL, { method: 'POST', body: JSON.stringify(payload) });
-        const res = await response.json();
-
-        btn.innerText = "Update Status";
-        btn.disabled = false;
+        // Expose the targeted picture context frame
+        slides[slideIndex - 1].classList.add("active");
         
-        // This will now successfully show your "Task Complete!" message
-        alert(res.message);
-        
-        if (res.result === 'success') {
-            // FIX: Safely hide the admin panel directly!
-            document.getElementById('adminPanel').style.display = 'none';
-            document.getElementById('bulkIds').value = ""; 
-        }
-    } catch (err) {
-        btn.innerText = "Update Status";
-        btn.disabled = false;
-        alert("System Error: " + err.message);
-    }
-}
-    async function sendSlipViaEmail() {
-    // 1. Locate elements with high-priority selection
-    const emailField = document.getElementById('emailInput');
-    const btn = document.getElementById('sendEmailBtn');
-    const msg = document.getElementById('emailStatusMsg');
-
-    // 2. Immediate Safety Check
-    if (!emailField) {
-        alert("Technical Error: The email input box cannot be found. Please refresh the page.");
-        console.error("Missing Element: #emailInput");
-        return;
+        // Execute frame transitions seamlessly every 4 seconds
+        setTimeout(cycleSlides, 4000);
     }
 
-    const email = emailField.value.trim();
-
-    // 3. Validation
-    if (!email || !email.includes('@')) {
-        alert("Please enter a valid email address.");
-        emailField.focus();
-        return;
-    }
-
-    // 4. Gather Data from Spans
-    // We use .textContent or .innerText to get the values showing on the slip
-    const name = document.getElementById('slip_name')?.textContent || "N/A";
-    const id = document.getElementById('slip_id')?.textContent || "N/A";
-    const date = document.getElementById('slip_date')?.textContent || "N/A";
-
-    // 5. Update UI
-    btn.innerText = "Sending...";
-    btn.disabled = true;
-    if (msg) {
-        msg.innerText = "Talking to server...";
-        msg.style.color = "#1e40af";
-    }
-
-    // 6. The API Call
-    // Changed "sendEmail" to "dispatchSlip" and "email" to "contact"
-const finalURL = `${scriptURL}?action=dispatchSlip&contact=${encodeURIComponent(email)}&name=${encodeURIComponent(name)}&id=${encodeURIComponent(id)}&date=${encodeURIComponent(date)}`;
-
-    try {
-        const response = await fetch(finalURL);
-        const res = await response.json();
-        
-        if (res.success) {
-            if (msg) {
-                msg.style.color = "green";
-                msg.innerText = "✅ Slip sent to " + email;
-            }
-            emailField.value = ""; // Clear box on success
-        } else {
-            throw new Error(res.message || "Server rejected the request");
-        }
-    } catch (error) {
-        console.error("Fetch Error:", error);
-        if (msg) {
-            msg.style.color = "red";
-            msg.innerText = "❌ Failed: " + error.message;
-        }
-    } finally {
-        // Reset button state regardless of success or failure
-        btn.innerText = "Email Slip";
-        btn.disabled = false;
-    }
-}
-    
-    
+    // Initialize slide configuration when browser parsing completes
+    window.onload = function() {
+        cycleSlides();
+    };
 </script>
 </body>
 </html>
