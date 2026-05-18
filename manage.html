@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manage Appointment - WACT</title>
+    <style>
+        :root { --primary-blue: #004a99; --bg-light: #f8fafc; --text-dark: #1e293b; --shadow-soft: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.05); --squarcle-radius: 24px; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: var(--bg-light); color: var(--text-dark); margin: 0; padding: 0; line-height: 1.6; display: flex; flex-direction: column; min-height: 100vh; }
+        header { background: white; padding: 30px 20px; display: flex; flex-direction: column; align-items: center; justify-content: center; box-shadow: 0 2px 10px rgba(0,0,0,0.03); text-align: center; }
+        .logo-circle { width: 80px; height: 80px; border: 2px solid var(--primary-blue); border-radius: 50%; display: flex; justify-content: center; align-items: center; margin: 0 auto 15px auto; overflow: hidden; background: white; }
+        .logo-circle img { max-width: 85%; height: auto; }
+        .brand-text .name { font-weight: 800; color: var(--primary-blue); font-size: 20px; display: block; line-height: 1.2; max-width: 400px; }
+        .brand-text .sub { font-size: 13px; color: #64748b; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; margin-top: 5px; display: block;}
+        .container { flex: 1; max-width: 850px; margin: 30px auto; padding: 0 20px; width: 100%; box-sizing: border-box;}
+        .top-nav { display: flex; gap: 10px; margin-bottom: 30px; flex-wrap: wrap; justify-content: center; }
+        .top-nav a { text-decoration: none; text-align: center; flex: 1; min-width: 120px; }
+        .card { background: white; border-radius: var(--squarcle-radius); padding: 35px; margin-bottom: 30px; box-shadow: var(--shadow-soft); }
+        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+        input { width: 100%; padding: 12px 16px; border: 2px solid #e2e8f0; border-radius: 12px; font-size: 14px; box-sizing: border-box; transition: border-color 0.2s; }
+        input:focus { outline: none; border-color: var(--primary-blue); }
+        .btn { padding: 14px 28px; border-radius: 14px; font-weight: 700; cursor: pointer; border: none; transition: 0.3s; text-transform: uppercase; font-size: 13px; }
+        .btn-primary { background: var(--primary-blue); color: white; width: 100%; }
+        .btn-secondary { background: #64748b; color: white; width: 100%; }
+        .btn-outline { background: transparent; border: 2px solid #e2e8f0; color: #64748b; }
+        .page { display: none; }
+        .page.active { display: block; }
+        footer { background: #fff; color: #64748b; text-align: center; padding: 20px; font-size: 12px; border-top: 1px solid #e2e8f0; margin-top: auto; }
+        .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 10px; }
+        .day-box { border: 1px solid #ddd; padding: 10px; border-radius: 12px; text-align: center; cursor: pointer; position: relative; transition: 0.3s; }
+        .day-box.disabled { background: #f1f5f9; color: #ccc; cursor: not-allowed; border: none; }
+        .day-box.available { border: 2px solid var(--primary-blue); color: var(--primary-blue); font-weight: bold; }
+        .day-box.selected { background: var(--primary-blue) !important; color: white !important; }
+        .day-box.full { background: #fee2e2; color: #ef4444; border: 1px solid #fecaca; cursor: not-allowed; }
+        .slots-left { font-size: 10px; display: block; margin-top: 5px; }
+        @media print { body * { visibility: hidden; } #printArea, #printArea * { visibility: visible; } #printArea { position: absolute; left: 0; top: 0; width: 100%; } }
+    </style>
+</head>
+<body>
+
+<header>
+    <div class="logo-circle">
+        <img src="https://cms-cd.apmterminals.com/onne/-/jssmedia/mainsite/africa-and-middle-east/Onne/Standard-Hero-images/wact-logo-square-400-ext.png" alt="WACT Logo">
+    </div>
+    <div class="brand-text">
+        <span class="name">WEST AFRICA CONTAINER TERMINAL EXTERNAL TRUCKERS</span>
+        <span class="sub">Trucker Induction Portal</span>
+    </div>
+    <div id="currentDate" style="font-size: 12px; font-weight: 600; color: #64748b; margin-top: 10px;"></div>
+</header>
+
+<div class="container">
+    <div class="top-nav">
+        <a href="new_induction.html" class="btn btn-outline">New Induction</a>
+        <a href="renewal.html" class="btn btn-outline">Renewal</a>
+        <a href="manage.html" class="btn btn-primary">Manage Appt</a>
+        <a href="admin.html" class="btn btn-outline">Admin</a>
+    </div>
+
+    <!-- MANAGE SEARCH PAGE -->
+    <div id="pageManage" class="page active">
+        <div class="card">
+            <h2 style="color: var(--primary-blue);">Manage Appointment</h2>
+            <p style="font-size: 13px; text-align: center; color: #64748b; margin-bottom: 20px;">
+                Enter your <b>Induction Number</b> or <b>License Number</b> to view or change your date.
+            </p>
+
+            <div style="display: flex; gap: 10px; margin-bottom: 20px;">
+                <input type="text" id="manageSearchInput" placeholder="Induction or License Number">
+                <button class="btn btn-primary" style="width: auto;" onclick="retrieveAppointment()">Find</button>
+            </div>
+
+            <div id="manageResult" style="display:none; text-align: center; border-top: 1px solid #eee; padding-top: 20px;">
+                <div id="appointmentStatusCard" style="background: #f0fdf4; padding: 15px; border-radius: 12px; margin-bottom: 20px;">
+                    <p id="manageStatusText" style="margin: 0; font-weight: 600; color: #166534;"></p>
+                </div>
+                
+                <div class="grid">
+                    <button class="btn btn-primary" onclick="reprintSlip()">Print Slip</button>
+                    <button class="btn btn-secondary" id="rescheduleBtn" onclick="startReschedule()">Reschedule Date</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- CALENDAR (Hidden until Reschedule is clicked) -->
+    <div id="pageAppointment" class="page">
+        <div class="card">
+            <h2>Reschedule Induction Session</h2>
+            <div id="calHeader" style="display:flex; justify-content: space-between; margin-bottom: 15px;">
+                <button class="btn btn-outline" style="padding: 5px 15px;" onclick="changeMonth(-1)">Prev</button>
+                <h3 id="monthDisplay">Month Year</h3>
+                <button class="btn btn-outline" style="padding: 5px 15px;" onclick="changeMonth(1)">Next</button>
+            </div>
+            <div class="calendar-grid" id="calendarGrid"></div>
+            
+            <div id="bookingActions" style="margin-top:20px; display:none; text-align:center;">
+                <p>Selected Date: <strong id="selectedDateText"></strong></p>
+                <button class="btn btn-primary" onclick="confirmBooking()">Book Appointment</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- SLIP (Hidden until Booked or Printed) -->
+    <div id="pageSlip" class="page">
+        <div class="card" id="printArea">
+            <div style="border: 2px solid #000; padding: 20px; text-align: center;">
+                <img src="https://cms-cd.apmterminals.com/onne/-/jssmedia/mainsite/africa-and-middle-east/Onne/Standard-Hero-images/wact-logo-square-400-ext.png" style="width: 60px; margin-bottom: 10px;">
+                <h1 style="font-size: 20px; margin-bottom: 5px;">WACT INDUCTION SLIP</h1>
+                <hr>
+                <div style="text-align: left; margin-top: 20px;">
+                    <p><strong>NAME:</strong> <span id="slip_name"></span></p>
+                    <p><strong>INDUCTION ID:</strong> <span id="slip_id"></span></p>
+                    <p><strong>APPT DATE:</strong> <span id="slip_date"></span></p>
+                    <p><strong>APPT ID:</strong> <span id="slip_apt_id"></span></p>
+                    <p><strong>STATUS:</strong> <span id="slip_status"></span></p>
+                    <p><strong>TIME:</strong> 09:00 AM Prompt</p>
+                    <p><strong>LOCATION:</strong> WACT Training Center, Onne Port.</p>
+                </div>
+                <hr>
+                <p style="font-size: 11px; margin-top: 20px;">Please bring a printed copy or screenshot of this slip to the security gate on your appointment day.</p>
+            </div>
+            <div style="margin-top: 20px; display: flex; flex-direction: column; gap: 10px;">
+                <button class="btn btn-primary" onclick="window.print()">Print Slip</button>
+                <div style="display: flex; gap: 5px;">
+                    <input type="email" id="emailInput" placeholder="Enter email">
+                    <button id="sendEmailBtn" class="btn btn-secondary" style="white-space: nowrap;" onclick="sendSlipViaEmail()">Email Slip</button>
+                    <p id="emailStatusMsg" style="font-size: 12px; margin-top: 5px; text-align: center;"></p>
+                </div>
+                <button class="btn btn-outline" onclick="location.reload()">Finish</button>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<footer>&copy; 2026 West Africa Container Terminal | Confidential Induction Portal</footer>
+
+<script>
+    const scriptURL = 'https://script.google.com/macros/s/AKfycbyT9VU1LktpavOtbkIKlsvjWV5_7kx_xctn1dVZS6LtiDQnMAagX4Xk5xC0zH_MhouoBg/exec';
+    document.getElementById('currentDate').innerText = new Date().toLocaleDateString('en-GB', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+
+    let currentUserData = { name: '', id: '', type: '' };
+    let managementData = null; 
+    let calendarData = {};
+    let currentMonth = new Date();
+    let selectedDateStr = "";
+
+    function showPage(id) {
+        document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+        document.getElementById(id).classList.add('active');
+        window.scrollTo(0,0);
+    }
+
+    async function retrieveAppointment() {
+        const queryInput = document.getElementById('manageSearchInput');
+        const query = queryInput.value.trim();
+        if (!query) return alert("Please enter Induction or License Number.");
+
+        const resultDiv = document.getElementById('manageResult');
+        const statusText = document.getElementById('manageStatusText');
+        const findBtn = document.querySelector('button[onclick="retrieveAppointment()"]');
+        const rescheduleBtn = document.getElementById('rescheduleBtn');
+        
+        findBtn.innerText = "Searching..."; findBtn.disabled = true;
+
+        try {
+            const res = await fetch(`${scriptURL}?action=getCalendarData&id=${encodeURIComponent(query)}&type=new`);
+            const data = await res.json();
+            
+            if (data.error === "TOO EARLY") {
+                statusText.innerHTML = `<b style="color:#ef4444;">${data.message}</b>`;
+                rescheduleBtn.style.display = "none";
+                return;
+            }
+            if (data.error) {
+                alert(data.error); resultDiv.style.display = "none"; return;
+            }
+
+            managementData = data; 
+            currentUserData = { name: data.truckerName, id: data.truckerId, type: data.type };
+            resultDiv.style.display = "block";
+            
+            if (data.currentAppointment) {
+                const dateParts = data.currentAppointment.toString().split('T')[0].split('-');
+                const formatted = `${dateParts[2]} ${["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"][parseInt(dateParts[1]) - 1]} ${dateParts[0]}`;
+                
+                const currentStatus = data.status || "Booked";
+                const count = data.rescheduleCount || 0;
+                
+                statusText.innerHTML = `Confirmed Session: <b>${formatted}</b><br>` +
+                                     `<span style="color:var(--primary-blue);">Status: ${currentStatus}</span><br>` +
+                                     `<small style="color:#64748b;">Reschedules used: ${count}/2</small>`;
+
+                if (currentStatus === "Failed D/A") {
+                    const reasonStr = String(data.daReason || "").toLowerCase();
+                    const failureDate = new Date(data.currentAppointment);
+                    let suspensionEndDate = new Date(failureDate);
+                    let durationText = "";
+
+                    if (reasonStr.includes("drug") || reasonStr.includes("both")) {
+                        suspensionEndDate.setMonth(suspensionEndDate.getMonth() + 1); durationText = "1 Month";
+                    } else if (reasonStr.includes("alcohol")) {
+                        suspensionEndDate.setDate(suspensionEndDate.getDate() + 7); durationText = "1 Week";
+                    } else { durationText = "No Suspension"; }
+
+                    const today = new Date();
+
+                    if (today < suspensionEndDate && durationText !== "No Suspension") {
+                        const formattedEnd = suspensionEndDate.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
+                        rescheduleBtn.disabled = true; rescheduleBtn.innerText = `Suspended until ${formattedEnd}`;
+                        rescheduleBtn.style.backgroundColor = "#fca5a5"; rescheduleBtn.style.cursor = "not-allowed";
+                        statusText.innerHTML += `<br><b style="color:#ef4444;">Reason: ${data.daReason || "Contact HSE at 08129915418"}</b>`;
+                        statusText.innerHTML += `<br><small style="color:#ef4444; font-weight:700;">Suspension: ${durationText} (Ends ${formattedEnd})</small>`;
+                    } else {
+                        rescheduleBtn.disabled = false; rescheduleBtn.innerText = "Revalidate Now";
+                        rescheduleBtn.style.backgroundColor = "#ef4444"; 
+                        statusText.innerHTML += `<br><b style="color:#ef4444;">Reason: ${data.daReason || "Contact HSE at 08129915418"}</b>`;
+                        if (durationText !== "No Suspension") { statusText.innerHTML += `<br><small style="color:#16a34a; font-weight:700;">Suspension completed. Eligible for Revalidation.</small>`; }
+                        rescheduleBtn.onclick = function() { startRevalidation(); };
+                    }
+                } else if (currentStatus === "Verified" || currentStatus === "Card Generated") {
+                    rescheduleBtn.disabled = true; rescheduleBtn.innerText = "Verified: Cannot Reschedule"; rescheduleBtn.style.opacity = "0.5";
+                } else if (count >= 2) {
+                    rescheduleBtn.disabled = true; rescheduleBtn.innerText = "Limit Reached"; rescheduleBtn.style.opacity = "0.5";
+                } else {
+                    rescheduleBtn.disabled = false; rescheduleBtn.innerText = "Reschedule Date";
+                    rescheduleBtn.style.backgroundColor = ""; rescheduleBtn.onclick = function() { startReschedule(); };
+                }
+            } else {
+                statusText.innerHTML = "No active appointment found for this record.";
+                rescheduleBtn.innerText = "Book Appointment"; rescheduleBtn.disabled = false; 
+                rescheduleBtn.onclick = function() { startReschedule(); };
+            }
+        } catch (e) { alert("Error retrieving data. Check connection."); } 
+        finally { findBtn.innerText = "Find"; findBtn.disabled = false; }
+    }
+
+    function startRevalidation() {
+        alert("To revalidate, please use the Renewal portal and search your Induction Number.");
+        window.location.href = 'renewal.html';
+    }
+
+    function startReschedule() { startAppointmentFlow(currentUserData.id, currentUserData.type); }
+
+    function reprintSlip() {
+        if (!managementData || !managementData.currentAppointment) return alert("No appointment found to print.");
+        document.getElementById('slip_name').innerText = managementData.truckerName;
+        document.getElementById('slip_id').innerText = currentUserData.id;
+        const dateStr = managementData.currentAppointment.toString().split('T')[0];
+        const [y, m, d] = dateStr.split('-');
+        document.getElementById('slip_date').innerText = `${d}/${m}/${y}`;
+        document.getElementById('slip_status').innerText = managementData.status || "Booked";
+        document.getElementById('slip_apt_id').innerText = "APT-" + Math.floor(Math.random()*100000);
+        showPage('pageSlip');
+    }
+
+    // -- Calendar & Booking Logic --
+    async function startAppointmentFlow(id, type) {
+        showPage('pageAppointment');
+        document.getElementById('calendarGrid').innerHTML = "<p style='grid-column: span 7; text-align:center;'>Loading Calendar...</p>";
+        try {
+            const res = await fetch(`${scriptURL}?action=getCalendarData&id=${id}&type=${type}`);
+            calendarData = await res.json(); renderCalendar();
+        } catch(e) { alert("Failed to load appointment data."); }
+    }
+
+    function renderCalendar() {
+        const grid = document.getElementById('calendarGrid');
+        const monthDisplay = document.getElementById('monthDisplay');
+        grid.innerHTML = "";
+        monthDisplay.innerText = currentMonth.toLocaleDateString('en-GB', { month: 'long', year: 'numeric' });
+
+        let firstDay = new Date(currentMonth.getFullYear(), currentMonth.getMonth(), 1).getDay();
+        let totalDays = new Date(currentMonth.getFullYear(), currentMonth.getMonth() + 1, 0).getDate();
+
+        for(let i=0; i<firstDay; i++) grid.appendChild(document.createElement('div'));
+
+        for(let d=1; d<=totalDays; d++) {
+            let dateObj = new Date(currentMonth.getFullYear(), currentMonth.getMonth(), d);
+            let year = dateObj.getFullYear();
+            let month = String(dateObj.getMonth() + 1).padStart(2, '0');
+            let day = String(dateObj.getDate()).padStart(2, '0');
+            let dateStr = `${year}-${month}-${day}`;
+            let dayOfWeek = dateObj.getDay(); 
+            
+            let box = document.createElement('div');
+            box.className = "day-box"; box.innerText = d;
+
+            let isWedFri = (dayOfWeek === 3 || dayOfWeek === 5);
+            let inRange = (dateStr >= calendarData.allowedMin && dateStr <= calendarData.allowedMax);
+            let bookings = calendarData.existingBookings[dateStr] || 0;
+
+            if (isWedFri && inRange) {
+                if (bookings >= 10) {
+                    box.classList.add('full'); box.innerHTML += `<span class="slots-left">FULL</span>`;
+                } else {
+                    box.classList.add('available'); box.innerHTML += `<span class="slots-left">${10 - bookings} left</span>`;
+                    box.onclick = () => selectDate(dateStr, box);
+                }
+            } else { box.classList.add('disabled'); }
+            grid.appendChild(box);
+        }
+    }
+
+    function selectDate(dateStr, element) {
+        selectedDateStr = dateStr; 
+        document.querySelectorAll('.day-box').forEach(el => el.classList.remove('selected'));
+        element.classList.add('selected');
+        const parts = dateStr.split('-');
+        const months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+        document.getElementById('selectedDateText').innerText = `${parts[2]} ${months[parseInt(parts[1]) - 1]} ${parts[0]}`;
+        document.getElementById('bookingActions').style.display = "block";
+    }
+
+    function changeMonth(offset) { currentMonth.setMonth(currentMonth.getMonth() + offset); renderCalendar(); }
+
+    async function confirmBooking() {
+        const btn = document.querySelector('#bookingActions button');
+        btn.innerText = "Booking..."; btn.disabled = true;
+        try {
+            const payload = { action: 'book', id: currentUserData.id, type: currentUserData.type, date: selectedDateStr };
+            const response = await fetch(scriptURL, { method: 'POST', body: JSON.stringify(payload) });
+            const result = await response.json();
+
+            if (result.result === 'success') {
+                document.getElementById('slip_name').innerText = currentUserData.name;
+                document.getElementById('slip_id').innerText = currentUserData.id;
+                document.getElementById('slip_date').innerText = selectedDateStr;
+                document.getElementById('slip_apt_id').innerText = result.aptId;
+                document.getElementById('slip_status').innerText = result.status || "Booked";
+                showPage('pageSlip');
+            } else { alert(result.message); }
+        } catch (e) { alert("Booking failed."); } finally { btn.innerText = "Book Appointment"; btn.disabled = false; }
+    }
+
+    async function sendSlipViaEmail() {
+        const emailField = document.getElementById('emailInput');
+        const btn = document.getElementById('sendEmailBtn');
+        const msg = document.getElementById('emailStatusMsg');
+        const email = emailField.value.trim();
+
+        if (!email || !email.includes('@')) return alert("Please enter a valid email address.");
+
+        const name = document.getElementById('slip_name')?.textContent || "N/A";
+        const id = document.getElementById('slip_id')?.textContent || "N/A";
+        const date = document.getElementById('slip_date')?.textContent || "N/A";
+
+        btn.innerText = "Sending..."; btn.disabled = true;
+        if (msg) { msg.innerText = "Talking to server..."; msg.style.color = "#1e40af"; }
+
+        const finalURL = `${scriptURL}?action=dispatchSlip&contact=${encodeURIComponent(email)}&name=${encodeURIComponent(name)}&id=${encodeURIComponent(id)}&date=${encodeURIComponent(date)}`;
+
+        try {
+            const response = await fetch(finalURL);
+            const res = await response.json();
+            if (res.success) {
+                if (msg) { msg.style.color = "green"; msg.innerText = "✅ Slip sent to " + email; }
+                emailField.value = "";
+            } else { throw new Error(res.message || "Server rejected the request"); }
+        } catch (error) {
+            if (msg) { msg.style.color = "red"; msg.innerText = "❌ Failed: " + error.message; }
+        } finally { btn.innerText = "Email Slip"; btn.disabled = false; }
+    }
+</script>
+</body>
+</html>
