@@ -5,35 +5,71 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Manage Appointment - WACT</title>
     <style>
-        :root { --primary-blue: #004a99; --bg-light: #f8fafc; --text-dark: #0f172a; --text-muted: #475569; --shadow-soft: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.05); --squarcle-radius: 24px; }
-        body { font-family: 'Segoe UI', system-ui, sans-serif; background-color: var(--bg-light); color: var(--text-dark); margin: 0; padding: 0; line-height: 1.6; display: flex; flex-direction: column; min-height: 100vh; }
-        header { background: white; padding: 20px 40px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid #e2e8f0; }
+        :root { 
+            --primary-blue: #004a99; 
+            --bg-light: #f8fafc; 
+            --text-dark: #0f172a; 
+            --text-muted: #475569; 
+            --squarcle-radius: 24px;
+            --shadow-soft: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+        }
+        body { 
+            font-family: 'Segoe UI', system-ui, sans-serif; 
+            background-color: var(--bg-light); 
+            color: var(--text-dark); 
+            margin: 0; padding: 0; 
+            line-height: 1.6; 
+            display: flex; flex-direction: column; 
+            min-height: 100vh; 
+        }
+        
+        /* CLEAN FIXED HEADER */
+        header { 
+            background: white; 
+            padding: 20px 40px; 
+            display: flex; 
+            align-items: center; 
+            justify-content: space-between; 
+            border-bottom: 1px solid #e2e8f0; 
+        }
         .header-brand { display: flex; align-items: center; gap: 16px; }
         .logo-circle { width: 55px; height: 55px; border-radius: 16px; display: flex; justify-content: center; align-items: center; overflow: hidden; background: #fafafa; border: 1px solid #e2e8f0; }
         .logo-circle img { max-width: 80%; height: auto; }
         .brand-text .name { font-weight: 800; color: var(--primary-blue); font-size: 16px; display: block; line-height: 1.2; }
         .brand-text .sub { font-size: 11px; color: var(--text-muted); font-weight: 600; text-transform: uppercase; letter-spacing: 1px; margin-top: 2px; display: block;}
-        .btn-home { padding: 10px 18px; border-radius: 12px; font-weight: 700; font-size: 12px; text-transform: uppercase; text-decoration: none; color: var(--text-muted); border: 2px solid #e2e8f0; transition: 0.2s; }
+        
+        .btn-home { padding: 10px 18px; border-radius: 12px; font-weight: 700; font-size: 12px; text-transform: uppercase; text-decoration: none; color: var(--text-muted); border: 2px solid #e2e8f0; transition: 0.2s; background: white; cursor: pointer;}
         .btn-home:hover { background: #f1f5f9; color: var(--text-dark); }
-        .container { flex: 1; max-width: 850px; margin: 30px auto; padding: 0 20px; width: 100%; box-sizing: border-box;}
-        .card { background: white; border-radius: var(--squarcle-radius); padding: 35px; margin-bottom: 30px; box-shadow: var(--shadow-soft); border: 1px solid #e2e8f0; }
+        
+        /* STABLE CONTAINER */
+        .container { flex: 1; max-width: 850px; margin: 40px auto; padding: 0 20px; width: 100%; box-sizing: border-box;}
+        .card { background: white; border-radius: var(--squarcle-radius); padding: 40px; margin-bottom: 30px; box-shadow: var(--shadow-soft); border: 1px solid #e2e8f0; }
+        
         .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
-        input { width: 100%; padding: 12px 16px; border: 2px solid #e2e8f0; border-radius: 12px; font-size: 14px; box-sizing: border-box; transition: border-color 0.2s; }
+        .search-group { display: flex; gap: 12px; margin-bottom: 24px; }
+        
+        input { flex: 1; padding: 14px 16px; border: 2px solid #e2e8f0; border-radius: 14px; font-size: 14px; box-sizing: border-box; transition: border-color 0.2s; }
         input:focus { outline: none; border-color: var(--primary-blue); }
-        .btn { padding: 14px 28px; border-radius: 14px; font-weight: 700; cursor: pointer; border: none; transition: 0.3s; text-transform: uppercase; font-size: 13px; }
-        .btn-primary { background: var(--primary-blue); color: white; width: 100%; }
-        .btn-secondary { background: #64748b; color: white; width: 100%; }
-        .btn-outline { background: transparent; border: 2px solid #e2e8f0; color: #64748b; }
+        
+        .btn { padding: 14px 28px; border-radius: 14px; font-weight: 700; cursor: pointer; border: none; transition: 0.2s; text-transform: uppercase; font-size: 13px; }
+        .btn-primary { background: var(--primary-blue); color: white; }
+        .btn-primary:hover { opacity: 0.9; }
+        .btn-secondary { background: #64748b; color: white; }
+        .btn-secondary:hover { opacity: 0.9; }
+        
         .page { display: none; }
         .page.active { display: block; }
-        footer { background: white; color: var(--text-muted); text-align: center; padding: 20px; font-size: 12px; border-top: 1px solid #e2e8f0; }
-        .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 10px; }
-        .day-box { border: 1px solid #ddd; padding: 10px; border-radius: 12px; text-align: center; cursor: pointer; position: relative; transition: 0.3s; }
-        .day-box.disabled { background: #f1f5f9; color: #ccc; cursor: not-allowed; border: none; }
-        .day-box.available { border: 2px solid var(--primary-blue); color: var(--primary-blue); font-weight: bold; }
+        
+        /* CALENDAR SELECTION MATRIX */
+        .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 10px; margin-top: 20px; }
+        .day-box { border: 1px solid #e2e8f0; padding: 12px; border-radius: 12px; text-align: center; cursor: pointer; transition: 0.2s; background: white; font-weight: 600; }
+        .day-box.disabled { background: #f1f5f9; color: #cbd5e1; cursor: not-allowed; border: transparent; }
+        .day-box.available { border: 2px solid var(--primary-blue); color: var(--primary-blue); }
         .day-box.selected { background: var(--primary-blue) !important; color: white !important; }
         .day-box.full { background: #fee2e2; color: #ef4444; border: 1px solid #fecaca; cursor: not-allowed; }
-        .slots-left { font-size: 10px; display: block; margin-top: 5px; }
+        .slots-left { font-size: 10px; display: block; margin-top: 4px; font-weight: 700; }
+        
+        footer { background: white; color: var(--text-muted); text-align: center; padding: 24px; font-size: 12px; border-top: 1px solid #e2e8f0; }
         @media print { body * { visibility: hidden; } #printArea, #printArea * { visibility: visible; } #printArea { position: absolute; left: 0; top: 0; width: 100%; } }
     </style>
 </head>
@@ -53,21 +89,22 @@
 </header>
 
 <div class="container">
+    <!-- BASE SEARCH INTERFACE -->
     <div id="pageManage" class="page active">
         <div class="card">
-            <h2 style="color: var(--primary-blue); font-weight:800; margin-top:0;">Manage Appointment</h2>
-            <p style="font-size: 13px; text-align: center; color: #64748b; margin-bottom: 20px;">
-                Enter your <b>Induction Number</b> or <b>License Number</b> to view or change your date.
+            <h2 style="color: var(--primary-blue); font-weight: 800; margin-top: 0; font-size: 24px; letter-spacing: -0.5px;">Manage Appointment</h2>
+            <p style="font-size: 14px; color: var(--text-muted); margin-bottom: 24px;">
+                Enter your system-assigned <b>Induction Number</b> or matching <b>Driver's License Number</b> to audit current standing configurations.
             </p>
 
-            <div style="display: flex; gap: 10px; margin-bottom: 20px;">
-                <input type="text" id="manageSearchInput" placeholder="Induction or License Number">
-                <button class="btn btn-primary" style="width: auto;" onclick="retrieveAppointment()">Find Record</button>
+            <div class="search-group">
+                <input type="text" id="manageSearchInput" placeholder="Induction ID or License String">
+                <button class="btn btn-primary" onclick="retrieveAppointment()">Find Record</button>
             </div>
 
-            <div id="manageResult" style="display:none; text-align: center; border-top: 1px solid #eee; padding-top: 20px;">
-                <div id="appointmentStatusCard" style="background: #f0fdf4; padding: 15px; border-radius: 12px; margin-bottom: 20px;">
-                    <p id="manageStatusText" style="margin: 0; font-weight: 600; color: #166534;"></p>
+            <div id="manageResult" style="display:none; text-align: center; border-top: 2px dashed #e2e8f0; margin-top: 30px; padding-top: 25px;">
+                <div id="appointmentStatusCard" style="background: #f0fdf4; padding: 20px; border-radius: 16px; margin-bottom: 24px; border: 1px solid #bbf7d0;">
+                    <p id="manageStatusText" style="margin: 0; font-weight: 600; color: #166534; font-size: 15px; line-height: 1.6;"></p>
                 </div>
                 
                 <div class="grid">
@@ -78,49 +115,51 @@
         </div>
     </div>
 
+    <!-- CALENDAR FLOW INTERFACE -->
     <div id="pageAppointment" class="page">
         <div class="card">
-            <h2 style="margin-top:0; color:var(--primary-blue); font-weight:800;">Reschedule Induction Session</h2>
-            <div id="calHeader" style="display:flex; justify-content: space-between; margin-bottom: 15px;">
-                <button class="btn btn-home" onclick="changeMonth(-1)">Prev</button>
-                <h3 id="monthDisplay" style="border:none; margin:0; padding:0; font-size:16px;">Month Year</h3>
-                <button class="btn btn-home" onclick="changeMonth(1)">Next</button>
+            <h2 style="margin-top:0; color:var(--primary-blue); font-weight:800; font-size: 24px; letter-spacing: -0.5px;">Reschedule Induction Session</h2>
+            <div style="display:flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                <button class="btn-home" onclick="changeMonth(-1)">Prev Month</button>
+                <h3 id="monthDisplay" style="margin:0; font-size:18px; font-weight: 800; color: var(--text-dark);">Month Year</h3>
+                <button class="btn-home" onclick="changeMonth(1)">Next Month</button>
             </div>
             <div class="calendar-grid" id="calendarGrid"></div>
             
-            <div id="bookingActions" style="margin-top:20px; display:none; text-align:center;">
-                <p>Selected Target Date: <strong id="selectedDateText"></strong></p>
-                <button class="btn btn-primary" onclick="confirmBooking()">Book Appointment Pass</button>
+            <div id="bookingActions" style="margin-top:30px; display:none; text-align:center; border-top: 1px solid #e2e8f0; padding-top: 20px;">
+                <p style="font-size: 15px; font-weight: 600;">Selected Target Window: <strong id="selectedDateText" style="color: var(--primary-blue);"></strong></p>
+                <button class="btn btn-primary" style="width: 100%; max-width: 300px;" onclick="confirmBooking()">Commit Appointment Pass</button>
             </div>
         </div>
     </div>
 
+    <!-- GATE SLIP DOCUMENT OUTPUT -->
     <div id="pageSlip" class="page">
         <div class="card" id="printArea">
-            <div style="border: 2px solid #000; padding: 20px; text-align: center; border-radius:12px;">
-                <img src="https://cms-cd.apmterminals.com/onne/-/jssmedia/mainsite/africa-and-middle-east/Onne/Standard-Hero-images/wact-logo-square-400-ext.png" style="width: 60px; margin-bottom: 10px;">
-                <h1 style="font-size: 20px; margin-bottom: 5px; font-weight:800;">WACT INDUCTION SLIP</h1>
-                <hr style="border:1px solid #000;">
-                <div style="text-align: left; margin-top: 20px; font-size:14px; line-height:1.8;">
-                    <p><strong>NAME:</strong> <span id="slip_name"></span></p>
-                    <p><strong>INDUCTION ID:</strong> <span id="slip_id"></span></p>
-                    <p><strong>APPT DATE:</strong> <span id="slip_date"></span></p>
-                    <p><strong>APPT ID:</strong> <span id="slip_apt_id"></span></p>
-                    <p><strong>STATUS:</strong> <span id="slip_status"></span></p>
-                    <p><strong>TIME:</strong> 09:00 AM Prompt</p>
-                    <p><strong>LOCATION:</strong> WACT Training Center, Onne Port.</p>
+            <div style="border: 2px solid #0f172a; padding: 30px; text-align: center; border-radius:16px; background: white;">
+                <img src="https://cms-cd.apmterminals.com/onne/-/jssmedia/mainsite/africa-and-middle-east/Onne/Standard-Hero-images/wact-logo-square-400-ext.png" style="width: 65px; margin-bottom: 12px;">
+                <h1 style="font-size: 22px; margin: 0 0 8px 0; font-weight:800; color: var(--text-dark); letter-spacing: -0.5px;">WACT INDUCTION PASS</h1>
+                <hr style="border:0; border-top: 2px dashed #e2e8f0; margin-bottom: 20px;">
+                <div style="text-align: left; font-size: 15px; line-height: 1.9; max-width: 450px; margin: 0 auto;">
+                    <p style="margin: 6px 0;"><strong>TRUCKER NAME:</strong> <span id="slip_name" style="color: var(--text-dark);"></span></p>
+                    <p style="margin: 6px 0;"><strong>INDUCTION ID:</strong> <span id="slip_id" style="color: var(--text-dark); font-family: monospace; font-weight: 700;"></span></p>
+                    <p style="margin: 6px 0;"><strong>TARGET DATE:</strong> <span id="slip_date" style="color: var(--text-dark);"></span></p>
+                    <p style="margin: 6px 0;"><strong>GATE PASS ID:</strong> <span id="slip_apt_id" style="color: var(--primary-blue); font-weight: 700;"></span></p>
+                    <p style="margin: 6px 0;"><strong>CLEARANCE:</strong> <span id="slip_status" style="font-weight: 700; color: #166534;"></span></p>
+                    <p style="margin: 6px 0;"><strong>REPORT TIME:</strong> 09:00 AM Prompt</p>
+                    <p style="margin: 6px 0;"><strong>LOCATION:</strong> WACT Training Center, Onne Port Complex.</p>
                 </div>
-                <hr style="border:1px solid #000;">
-                <p style="font-size: 11px; margin-top: 20px; font-weight:600;">Please bring a printed copy or screenshot of this slip to the security gate on your appointment day.</p>
+                <hr style="border:0; border-top: 2px dashed #e2e8f0; margin-top: 20px; margin-bottom: 15px;">
+                <p style="font-size: 12px; margin: 0; font-weight:600; color: var(--text-muted);">Present either a physical hard-copy printout or a digital screen capture at the main terminal entrance checkpoint.</p>
             </div>
-            <div style="margin-top: 20px; display: flex; flex-direction: column; gap: 10px;">
-                <button class="btn btn-primary" onclick="window.print()">Print Slip Paper</button>
-                <div style="display: flex; gap: 5px;">
-                    <input type="email" id="emailInput" placeholder="Enter email address">
-                    <button id="sendEmailBtn" class="btn btn-home" style="white-space: nowrap;" onclick="sendSlipViaEmail()">Email Slip</button>
+            <div style="margin-top: 24px; display: flex; flex-direction: column; gap: 12px;">
+                <button class="btn btn-primary" onclick="window.print()">Print Pass Paper</button>
+                <div style="display: flex; gap: 8px;">
+                    <input type="email" id="emailInput" placeholder="Enter recipient email address" style="padding: 12px;">
+                    <button id="sendEmailBtn" class="btn btn-secondary" style="white-space: nowrap;" onclick="sendSlipViaEmail()">Dispatch Email</button>
                 </div>
-                <p id="emailStatusMsg" style="font-size: 12px; margin:0; text-align: center; font-weight:700;"></p>
-                <button class="btn btn-outline" onclick="location.reload()">Complete & Exit</button>
+                <p id="emailStatusMsg" style="font-size: 13px; margin:0; text-align: center; font-weight:700;"></p>
+                <button class="btn btn-outline" style="border: 2px solid #e2e8f0; padding: 14px; border-radius: 14px; font-weight: 700;" onclick="location.reload()">Terminate Session</button>
             </div>
         </div>
     </div>
@@ -153,7 +192,7 @@
         const findBtn = document.querySelector('button[onclick="retrieveAppointment()"]');
         const rescheduleBtn = document.getElementById('rescheduleBtn');
         
-        findBtn.innerText = "Searching Matrix..."; findBtn.disabled = true;
+        findBtn.innerText = "Querying Database..."; findBtn.disabled = true;
 
         try {
             const res = await fetch(`${scriptURL}?action=getCalendarData&id=${encodeURIComponent(query)}&type=new`);
@@ -176,9 +215,9 @@
                 const currentStatus = data.status || "Booked";
                 const count = data.rescheduleCount || 0;
                 
-                statusText.innerHTML = `Confirmed Session: <b>${formatted}</b><br>` +
-                                     `<span style="color:var(--primary-blue); font-weight:700;">Status: ${currentStatus}</span><br>` +
-                                     `<small style="color:#64748b; font-weight:600;">Reschedules used: ${count}/2</small>`;
+                statusText.innerHTML = `Confirmed Session Date: <b>${formatted}</b><br>` +
+                                     `Verification Status: <span style="color:var(--primary-blue); font-weight:700;">${currentStatus}</span><br>` +
+                                     `<small style="color:var(--text-muted); font-weight:600;">Rescheduling Allocations Consumed: ${count}/2</small>`;
 
                 if (currentStatus === "Failed D/A") {
                     const reasonStr = String(data.daReason || "").toLowerCase();
@@ -196,43 +235,39 @@
 
                     if (today < suspensionEndDate && durationText !== "No Suspension") {
                         const formattedEnd = suspensionEndDate.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
-                        rescheduleBtn.disabled = true; rescheduleBtn.innerText = `Suspended until ${formattedEnd}`;
+                        rescheduleBtn.disabled = true; rescheduleBtn.innerText = `Suspended Until ${formattedEnd}`;
                         rescheduleBtn.style.backgroundColor = "#fca5a5"; rescheduleBtn.style.cursor = "not-allowed";
-                        statusText.innerHTML += `<br><b style="color:#ef4444;">Reason: ${data.daReason || "Contact HSE at 08129915418"}</b>`;
-                        statusText.innerHTML += `<br><small style="color:#ef4444; font-weight:700;">Suspension: ${durationText} (Ends ${formattedEnd})</small>`;
+                        statusText.innerHTML += `<br><b style="color:#ef4444;">Reason File: ${data.daReason || "Contact HSE Office"}</b>`;
+                        statusText.innerHTML += `<br><small style="color:#ef4444; font-weight:700;">Suspension Protocol: ${durationText} (Terminates ${formattedEnd})</small>`;
                     } else {
                         rescheduleBtn.disabled = false; rescheduleBtn.innerText = "Revalidate Now";
                         rescheduleBtn.style.backgroundColor = "#ef4444"; 
-                        statusText.innerHTML += `<br><b style="color:#ef4444;">Reason: ${data.daReason || "Contact HSE at 08129915418"}</b>`;
-                        if (durationText !== "No Suspension") { statusText.innerHTML += `<br><small style="color:#16a34a; font-weight:700;">Suspension completed. Eligible for Revalidation.</small>`; }
+                        statusText.innerHTML += `<br><b style="color:#ef4444;">Reason File: ${data.daReason || "Contact HSE Office"}</b>`;
+                        if (durationText !== "No Suspension") { statusText.innerHTML += `<br><small style="color:#16a34a; font-weight:700;">Suspension timeline expired. Eligible for Revalidation.</small>`; }
                         rescheduleBtn.onclick = function() { startRevalidation(); };
                     }
                 } else if (currentStatus === "Verified" || currentStatus === "Card Generated") {
-                    rescheduleBtn.disabled = true; rescheduleBtn.innerText = "Verified: Cannot Reschedule"; rescheduleBtn.style.opacity = "0.5";
+                    rescheduleBtn.disabled = true; rescheduleBtn.innerText = "Profile Verified: Locking Modifications"; rescheduleBtn.style.opacity = "0.5"; rescheduleBtn.style.cursor = "not-allowed";
                 } else if (count >= 2) {
-                    rescheduleBtn.disabled = true; rescheduleBtn.innerText = "Limit Reached"; rescheduleBtn.style.opacity = "0.5";
+                    rescheduleBtn.disabled = true; rescheduleBtn.innerText = "Reschedule Limit Reached"; rescheduleBtn.style.opacity = "0.5"; rescheduleBtn.style.cursor = "not-allowed";
                 } else {
                     rescheduleBtn.disabled = false; rescheduleBtn.innerText = "Reschedule Session Date";
                     rescheduleBtn.style.backgroundColor = ""; rescheduleBtn.onclick = function() { startReschedule(); };
                 }
             } else {
-                statusText.innerHTML = "No active appointment found for this record.";
-                rescheduleBtn.innerText = "Book Appointment Pass"; rescheduleBtn.disabled = false; 
+                statusText.innerHTML = "No active training appointment captured for this token.";
+                rescheduleBtn.innerText = "Book Training Pass"; rescheduleBtn.disabled = false; 
                 rescheduleBtn.onclick = function() { startReschedule(); };
             }
-        } catch (e) { alert("Error retrieving data. Check connection."); } 
+        } catch (e) { alert("Error retrieving record vectors. Check line link."); } 
         finally { findBtn.innerText = "Find Record"; findBtn.disabled = false; }
     }
 
-    function startRevalidation() {
-        alert("Redirecting to Renewal desk. Re-run your validation check parameters.");
-        window.location.href = 'renewal.html';
-    }
-
+    function startRevalidation() { window.location.href = 'renewal.html'; }
     function startReschedule() { startAppointmentFlow(currentUserData.id, currentUserData.type); }
 
     function reprintSlip() {
-        if (!managementData || !managementData.currentAppointment) return alert("No appointment found to print.");
+        if (!managementData || !managementData.currentAppointment) return alert("No active parameter file captured.");
         document.getElementById('slip_name').innerText = managementData.truckerName;
         document.getElementById('slip_id').innerText = currentUserData.id;
         const dateStr = managementData.currentAppointment.toString().split('T')[0];
@@ -245,11 +280,11 @@
 
     async function startAppointmentFlow(id, type) {
         showPage('pageAppointment');
-        document.getElementById('calendarGrid').innerHTML = "<p style='grid-column: span 7; text-align:center;'>Loading Calendar...</p>";
+        document.getElementById('calendarGrid').innerHTML = "<p style='grid-column: span 7; text-align:center;'>Accessing WACT Scheduling Parameters...</p>";
         try {
             const res = await fetch(`${scriptURL}?action=getCalendarData&id=${id}&type=${type}`);
             calendarData = await res.json(); renderCalendar();
-        } catch(e) { alert("Failed to load appointment data."); }
+        } catch(e) { alert("Failed to fetch calendar allocations."); }
     }
 
     function renderCalendar() {
@@ -282,7 +317,7 @@
                 if (bookings >= 10) {
                     box.classList.add('full'); box.innerHTML += `<span class="slots-left">FULL</span>`;
                 } else {
-                    box.classList.add('available'); box.innerHTML += `<span class="slots-left">${10 - bookings} left</span>`;
+                    box.classList.add('available'); box.innerHTML += `<span class="slots-left">${10 - bookings} Open</span>`;
                     box.onclick = () => selectDate(dateStr, box);
                 }
             } else { box.classList.add('disabled'); }
@@ -304,7 +339,7 @@
 
     async function confirmBooking() {
         const btn = document.querySelector('#bookingActions button');
-        btn.innerText = "Booking Session..."; btn.disabled = true;
+        btn.innerText = "Writing Row Vectors..."; btn.disabled = true;
         try {
             const payload = { action: 'book', id: currentUserData.id, type: currentUserData.type, date: selectedDateStr };
             const response = await fetch(scriptURL, { method: 'POST', body: JSON.stringify(payload) });
@@ -318,7 +353,7 @@
                 document.getElementById('slip_status').innerText = result.status || "Booked";
                 showPage('pageSlip');
             } else { alert(result.message); }
-        } catch (e) { alert("Booking failed."); } finally { btn.innerText = "Book Appointment Pass"; btn.disabled = false; }
+        } catch (e) { alert("Booking engine failure."); } finally { btn.innerText = "Commit Appointment Pass"; btn.disabled = false; }
     }
 
     async function sendSlipViaEmail() {
@@ -333,8 +368,8 @@
         const id = document.getElementById('slip_id')?.textContent || "N/A";
         const date = document.getElementById('slip_date')?.textContent || "N/A";
 
-        btn.innerText = "Sending..."; btn.disabled = true;
-        if (msg) { msg.innerText = "Talking to WACT mail system..."; msg.style.color = "#004a99"; }
+        btn.innerText = "Transmitting..."; btn.disabled = true;
+        if (msg) { msg.innerText = "Connecting to SMTP relay..."; msg.style.color = "#004a99"; }
 
         const finalURL = `${scriptURL}?action=dispatchSlip&contact=${encodeURIComponent(email)}&name=${encodeURIComponent(name)}&id=${encodeURIComponent(id)}&date=${encodeURIComponent(date)}`;
 
@@ -342,12 +377,12 @@
             const response = await fetch(finalURL);
             const res = await response.json();
             if (res.success) {
-                if (msg) { msg.style.color = "green"; msg.innerText = "✅ Pass slip successfully emailed to " + email; }
+                if (msg) { msg.style.color = "green"; msg.innerText = "✅ Pass document successfully transmitted to " + email; }
                 emailField.value = "";
-            } else { throw new Error(res.message || "Server rejected the request"); }
+            } else { throw new Error(res.message || "Relay rejected dispatch vector"); }
         } catch (error) {
-            if (msg) { msg.style.color = "red"; msg.innerText = "❌ Failed: " + error.message; }
-        } finally { btn.innerText = "Email Slip"; btn.disabled = false; }
+            if (msg) { msg.style.color = "red"; msg.innerText = "❌ Transmission Fault: " + error.message; }
+        } finally { btn.innerText = "Dispatch Email"; btn.disabled = false; }
     }
 </script>
 </body>
