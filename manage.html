@@ -143,9 +143,9 @@
                 <div style="text-align: left; font-size: 15px; line-height: 1.9; max-width: 450px; margin: 0 auto;">
                     <p style="margin: 6px 0;"><strong>TRUCKER NAME:</strong> <span id="slip_name" style="color: var(--text-dark);"></span></p>
                     <p style="margin: 6px 0;"><strong>INDUCTION ID:</strong> <span id="slip_id" style="color: var(--text-dark); font-family: monospace; font-weight: 700;"></span></p>
-                    <p style="margin: 6px 0;"><strong>TARGET DATE:</strong> <span id="slip_date" style="color: var(--text-dark);"></span></p>
-                    <p style="margin: 6px 0;"><strong>GATE PASS ID:</strong> <span id="slip_apt_id" style="color: var(--primary-blue); font-weight: 700;"></span></p>
-                    <p style="margin: 6px 0;"><strong>CLEARANCE:</strong> <span id="slip_status" style="font-weight: 700; color: #166534;"></span></p>
+                    <p style="margin: 6px 0;"><strong>APPOINTMENT DATE:</strong> <span id="slip_date" style="color: var(--text-dark);"></span></p>
+                    <p style="margin: 6px 0;"><strong>APPOINTMENT ID:</strong> <span id="slip_apt_id" style="color: var(--primary-blue); font-weight: 700;"></span></p>
+                    <p style="margin: 6px 0;"><strong>INDUCTION STATUS:</strong> <span id="slip_status" style="font-weight: 700; color: #166534;"></span></p>
                     <p style="margin: 6px 0;"><strong>REPORT TIME:</strong> 09:00 AM Prompt</p>
                     <p style="margin: 6px 0;"><strong>LOCATION:</strong> WACT Training Center, Onne Port Complex.</p>
                 </div>
@@ -377,7 +377,7 @@
         const date = document.getElementById('slip_date')?.textContent || "N/A";
 
         btn.innerText = "Transmitting..."; btn.disabled = true;
-        if (msg) { msg.innerText = "Connecting to SMTP relay..."; msg.style.color = "#004a99"; }
+        if (msg) { msg.innerText = "Sending Appointment Slip..."; msg.style.color = "#004a99"; }
 
         const finalURL = `${scriptURL}?action=dispatchSlip&contact=${encodeURIComponent(email)}&name=${encodeURIComponent(name)}&id=${encodeURIComponent(id)}&date=${encodeURIComponent(date)}`;
 
@@ -385,7 +385,7 @@
             const response = await fetch(finalURL);
             const res = await response.json();
             if (res.success) {
-                if (msg) { msg.style.color = "green"; msg.innerText = "✅ Pass document successfully transmitted to " + email; }
+                if (msg) { msg.style.color = "green"; msg.innerText = "✅ Appointment Slip sent successfully to " + email; }
                 emailField.value = "";
             } else { throw new Error(res.message || "Relay rejected dispatch vector"); }
         } catch (error) {
