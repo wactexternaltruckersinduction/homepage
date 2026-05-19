@@ -369,27 +369,34 @@
         } finally { btn.innerText = "Email Slip"; btn.disabled = false; }
     }
     // Listens for an incoming driver ID argument upon page loading
+    // Aggressive Auto-Search Listener
     window.addEventListener('DOMContentLoaded', () => {
         const urlParams = new URLSearchParams(window.location.search);
         const idParam = urlParams.get('id');
         
         if (idParam) {
-            // Adds a half-second delay to ensure the browser has fully drawn the page
-            setTimeout(() => {
-                // Looks for "searchID", OR "inductionInput", OR whichever text box is first
-                const searchBox = document.getElementById('searchID') || document.getElementById('inductionNumber') || document.querySelector('input[type="text"]');
+            let attempts = 0;
+            const searchInterval = setInterval(() => {
+                // Hunt for the first text input box on your renewal page
+                const searchBox = document.querySelector('input[type="text"]');
                 
                 if (searchBox) {
                     searchBox.value = idParam;
-                    // Automatically click the search button
-                    const searchBtn = document.querySelector('button[onclick="searchTrucker()"]') || document.getElementById('searchBtn');
-                    if (searchBtn) {
-                        searchBtn.click();
-                    } else if (typeof searchTrucker === "function") {
+                    clearInterval(searchInterval); // Stop hunting
+                    
+                    // Trigger the search function
+                    if (typeof searchTrucker === "function") {
                         searchTrucker();
+                    } else {
+                        // Fallback: manually click the first button
+                        const btn = document.querySelector('button');
+                        if(btn) btn.click();
                     }
                 }
-            }, 500);
+                
+                attempts++;
+                if (attempts > 20) clearInterval(searchInterval); // Give up after 10 seconds
+            }, 500); // Check every half-second
         }
     });
 </script>
