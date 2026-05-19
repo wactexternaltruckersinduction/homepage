@@ -3,34 +3,25 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Verification - WACT</title>
+    <title>Admin Dashboard - WACT</title>
     <style>
         :root { 
-            --primary-blue: #004a99; 
-            --bg-light: #f1f5f9; 
-            --text-dark: #0f172a; 
-            --text-muted: #475569;
-            --squarcle-radius: 24px; 
-            --shadow-soft: 0 20px 25px -5px rgba(0, 0, 0, 0.05), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+            --primary-blue: #004a99; --bg-light: #f1f5f9; --text-dark: #0f172a; --text-muted: #475569;
+            --squarcle-radius: 24px; --shadow-soft: 0 20px 25px -5px rgba(0, 0, 0, 0.05), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
         }
         body { font-family: 'Segoe UI', system-ui, sans-serif; background-color: var(--bg-light); color: var(--text-dark); margin: 0; padding: 0; min-height: 100vh; display: flex; flex-direction: column; }
-        
-        header { background: white; padding: 20px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid #e2e8f0; }
+        header { background: white; padding: 20px 40px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid #e2e8f0; }
         .header-brand { display: flex; align-items: center; gap: 16px; }
         .logo-circle { width: 55px; height: 55px; border-radius: 16px; display: flex; justify-content: center; align-items: center; overflow: hidden; background: #fafafa; border: 1px solid #e2e8f0; }
         .logo-circle img { max-width: 80%; height: auto; }
         .brand-text .name { font-weight: 800; color: var(--primary-blue); font-size: 16px; display: block; line-height: 1.2; }
         .brand-text .sub { font-size: 11px; color: var(--text-muted); font-weight: 600; text-transform: uppercase; letter-spacing: 1px; margin-top: 2px; display: block;}
-        .top-nav { display: flex; gap: 10px; }
-        .btn-nav { padding: 10px 20px; border-radius: 12px; font-weight: 700; font-size: 12px; text-transform: uppercase; text-decoration: none; color: var(--text-muted); border: 2px solid #e2e8f0; }
-        .btn-nav.active { background: var(--primary-blue); color: white; border-color: var(--primary-blue); }
+        .btn-home { padding: 10px 18px; border-radius: 12px; font-weight: 700; font-size: 12px; text-transform: uppercase; text-decoration: none; color: var(--text-muted); border: 2px solid #e2e8f0; transition: 0.2s; }
+        .btn-home:hover { background: #f1f5f9; color: var(--text-dark); }
 
         .container { flex: 1; max-width: 850px; margin: 30px auto; padding: 0 20px; width: 100%; box-sizing: border-box; }
-        
-        /* HIDDEN CONTENT EYEWALL CONTAINER */
         #protectedContent { display: none; }
-        
-        .card { background: white; border-radius: var(--squarcle-radius); padding: 35px; box-shadow: var(--shadow-soft); }
+        .card { background: white; border-radius: var(--squarcle-radius); padding: 35px; box-shadow: var(--shadow-soft); border: 1px solid #e2e8f0; }
         textarea { width: 100%; padding: 14px; border: 2px solid #e2e8f0; border-radius: 14px; font-family: inherit; box-sizing: border-box; font-size: 14px; }
         textarea:focus { outline: none; border-color: var(--primary-blue); }
         
@@ -39,39 +30,27 @@
         .toggle-group { display: flex; gap: 16px; }
         .toggle-group label { display: flex; align-items: center; gap: 6px; cursor: pointer; font-size: 14px; font-weight: 600; color: #475569; }
         .toggle-group input[type="radio"] { width: 18px; height: 18px; cursor: pointer; accent-color: #f47c20; margin: 0; }
-        
         .modern-input { width: 100%; padding: 12px; border: 2px solid #e2e8f0; border-radius: 12px; margin-bottom: 16px; font-family: inherit; box-sizing: border-box; }
         .btn-main { width: 100%; padding: 16px; border: none; border-radius: 14px; font-weight: 700; cursor: pointer; font-size: 14px; text-transform: uppercase; letter-spacing: 0.5px; }
 
-        /* MANDATORY SQUARCLE GATE LOCKSCREEN SCREEN */
-        #authGateModal {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(15, 23, 42, 0.7); backdrop-filter: blur(12px);
-            display: flex; align-items: center; justify-content: center; z-index: 99999;
-        }
-        .gate-card {
-            background: white; width: 90%; max-width: 400px;
-            padding: 40px; border-radius: var(--squarcle-radius);
-            text-align: center; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.4);
-        }
+        #authGateModal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(15, 23, 42, 0.75); backdrop-filter: blur(12px); display: flex; align-items: center; justify-content: center; z-index: 99999; }
+        .gate-card { background: white; width: 90%; max-width: 400px; padding: 40px; border-radius: var(--squarcle-radius); text-align: center; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.4); }
         .gate-card h2 { margin: 0 0 10px 0; color: var(--text-dark); font-size: 22px; font-weight: 800; }
-        .gate-card p { margin: 0 0 24px 0; color: var(--text-muted); font-size: 13px; }
+        .gate-card p { margin: 0 0 24px 0; color: var(--text-muted); font-size: 13px; line-height:1.5; }
         .gate-input { width: 100%; padding: 14px; border: 2px solid #e2e8f0; border-radius: 14px; font-size: 16px; text-align: center; margin-bottom: 20px; box-sizing: border-box; }
         .gate-input:focus { outline: none; border-color: var(--primary-blue); }
-
-        footer { background: white; color: var(--text-muted); text-align: center; padding: 20px; font-size: 12px; border-top: 1px solid #e2e8f0; margin-top: auto; }
+        footer { background: white; color: var(--text-muted); text-align: center; padding: 20px; font-size: 12px; border-top: 1px solid #e2e8f0; }
     </style>
 </head>
 <body>
 
-<!-- GATE LOCKSCREEN MODAL -->
 <div id="authGateModal">
     <div class="gate-card">
         <div style="font-size: 40px; margin-bottom: 15px;">🔒</div>
         <h2>Access Restricted</h2>
-        <p>This terminal panel requires high-clearance administration authorization keys to initiate content render.</p>
+        <p>This terminal panel requires high-clearance administration keys before interface access is granted.</p>
         <input type="password" id="gatePasscodeField" class="gate-input" placeholder="Enter Admin Access Code">
-        <button type="button" class="btn-main" style="background: var(--primary-blue); color: white;" onclick="unlockAdminPanel()">Verify Identity</button>
+        <button type="button" class="btn-main" style="background: var(--primary-blue); color: white;" onclick="unlockAdminPanel()">Verify Identity Credentials</button>
     </div>
 </div>
 
@@ -85,20 +64,16 @@
             <span class="sub">Trucker Induction Portal</span>
         </div>
     </div>
-    <div class="top-nav">
-        <a href="index.html" class="btn-nav">Home</a>
-        <a href="admin.html" class="btn-nav active">Admin</a>
-    </div>
+    <a href="index.html" class="btn-home">← Back to Home</a>
 </header>
 
-<!-- DASHBOARD LAYER CONTAINER -->
 <div id="protectedContent" class="container">
     <div class="card">
-        <h2 style="margin-top:0; color: var(--primary-blue); font-weight: 800; font-size: 24px; letter-spacing: -0.5px;">Admin Dashboard</h2>
+        <h2 style="margin-top:0; color: var(--primary-blue); font-weight: 800; font-size: 24px;">Admin Dashboard</h2>
         
         <div style="background: #fff7ed; padding: 24px; border-radius: 18px; border: 1px solid #ffedd5; margin-top: 20px;">
             <h3 style="margin-top:0; color: #9a3412; font-size: 16px; font-weight: 700;">Admin Bulk Verification Engine</h3>
-            <p style="font-size: 13px; color: #c2410c; margin-bottom: 16px;">Paste generated tracking numbers down line below (Supports line breaking or comma split strings)</p>
+            <p style="font-size: 13px; color: #c2410c; margin-bottom: 16px;">Paste tracking numbers below (Supports line breaking or comma splits)</p>
             
             <textarea id="bulkIds" rows="5" style="margin-bottom: 20px;" placeholder="SI/EXT/2026/1001, SI/EXT/2026/1002..."></textarea>
             
@@ -119,8 +94,8 @@
             </div>
 
             <div id="reasonDiv" style="display:none; margin-top: 16px;">
-                <label style="font-size:11px; color:#ef4444; font-weight:800; letter-spacing: 0.5px; display: block; margin-bottom: 6px;">FAILURE REASON REQUIRED</label>
-                <select id="daReason" class="modern-input" style="border-color: #fca5a5; border-radius: 12px; padding: 12px;">
+                <label style="font-size:11px; color:#ef4444; font-weight:800; display: block; margin-bottom: 6px;">FAILURE REASON REQUIRED</label>
+                <select id="daReason" class="modern-input" style="border-color: #fca5a5;">
                     <option value="">Select failure reason...</option>
                     <option value="Positive for Drugs">Positive for Drugs</option>
                     <option value="Positive for Alcohol">Positive for Alcohol</option>
@@ -140,19 +115,15 @@
     const scriptURL = 'https://script.google.com/macros/s/AKfycbyT9VU1LktpavOtbkIKlsvjWV5_7kx_xctn1dVZS6LtiDQnMAagX4Xk5xC0zH_MhouoBg/exec';
     let activeSessionKey = "";
 
-    // INTERCEPT IMMEDIATELY ON LOAD TO ENFORCE SYSTEM LOGIN
     function unlockAdminPanel() {
         const passInput = document.getElementById('gatePasscodeField').value;
         if (passInput === "WACT2026") {
             activeSessionKey = passInput;
             document.getElementById('authGateModal').style.display = 'none';
             document.getElementById('protectedContent').style.display = 'block';
-        } else {
-            alert("Access Refused. Invalid Administrative Key.");
-        }
+        } else { alert("Access Refused. Invalid Administrative Key."); }
     }
 
-    // Trigger unlock if user presses Enter inside the input field
     document.getElementById('gatePasscodeField').addEventListener('keyup', function(e) {
         if (e.key === 'Enter') unlockAdminPanel();
     });
@@ -190,11 +161,8 @@
 
             alert(res.message);
             if (res.result === 'success') { document.getElementById('bulkIds').value = ""; }
-        } catch (err) {
-            alert("System Communication Failure: " + err.message);
-        } finally {
-            btn.innerText = "Execute Status Modifications"; btn.disabled = false;
-        }
+        } catch (err) { alert("System Communication Failure: " + err.message); } 
+        finally { btn.innerText = "Execute Status Modifications"; btn.disabled = false; }
     }
 </script>
 </body>
