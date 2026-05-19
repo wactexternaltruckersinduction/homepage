@@ -259,7 +259,7 @@
                 rescheduleBtn.innerText = "Book Training Pass"; rescheduleBtn.disabled = false; 
                 rescheduleBtn.onclick = function() { startReschedule(); };
             }
-        } catch (e) { alert("Error retrieving record vectors. Check line link."); } 
+            } catch (e) { alert("System Error: " + e.message); }
         finally { findBtn.innerText = "Find Record"; findBtn.disabled = false; }
     }
 
