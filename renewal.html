@@ -372,9 +372,24 @@
     window.addEventListener('DOMContentLoaded', () => {
         const urlParams = new URLSearchParams(window.location.search);
         const idParam = urlParams.get('id');
+        
         if (idParam) {
-            document.getElementById('searchID').value = idParam;
-            searchTrucker(); // Fires the query automatically!
+            // Adds a half-second delay to ensure the browser has fully drawn the page
+            setTimeout(() => {
+                // Looks for "searchID", OR "inductionInput", OR whichever text box is first
+                const searchBox = document.getElementById('searchID') || document.getElementById('inductionNumber') || document.querySelector('input[type="text"]');
+                
+                if (searchBox) {
+                    searchBox.value = idParam;
+                    // Automatically click the search button
+                    const searchBtn = document.querySelector('button[onclick="searchTrucker()"]') || document.getElementById('searchBtn');
+                    if (searchBtn) {
+                        searchBtn.click();
+                    } else if (typeof searchTrucker === "function") {
+                        searchTrucker();
+                    }
+                }
+            }, 500);
         }
     });
 </script>
