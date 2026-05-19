@@ -370,33 +370,47 @@
     }
     // Listens for an incoming driver ID argument upon page loading
     // Aggressive Auto-Search Listener
+    // Indestructible Auto-Search Listener
     window.addEventListener('DOMContentLoaded', () => {
-        const urlParams = new URLSearchParams(window.location.search);
-        const idParam = urlParams.get('id');
-        
+        // Fallback checks multiple ways to find the ID in the URL
+        let idParam = new URLSearchParams(window.location.search).get('id');
+        if (!idParam && window.location.href.includes('id=')) {
+            idParam = window.location.href.split('id=')[1].split('&')[0];
+        }
+
         if (idParam) {
+            const cleanId = decodeURIComponent(idParam);
             let attempts = 0;
+            
+            // Checks every 500ms for up to 10 seconds to ensure the page is fully drawn
             const searchInterval = setInterval(() => {
-                // Hunt for the first text input box on your renewal page
-                const searchBox = document.querySelector('input[type="text"]');
-                
-                if (searchBox) {
-                    searchBox.value = idParam;
-                    clearInterval(searchInterval); // Stop hunting
+                // Finds the literal first visible text input box on the page
+                const inputs = document.querySelectorAll('input[type="text"], input[type="search"]');
+                let targetInput = null;
+                for (let input of inputs) {
+                    if (input.style.display !== 'none') {
+                        targetInput = input;
+                        break;
+                    }
+                }
+
+                if (targetInput) {
+                    targetInput.value = cleanId; // Pastes the ID into the box
+                    clearInterval(searchInterval); // Stops the loop
                     
-                    // Trigger the search function
+                    // Force the search to run
                     if (typeof searchTrucker === "function") {
                         searchTrucker();
                     } else {
-                        // Fallback: manually click the first button
+                        // If it can't find the function, it physically clicks the first button
                         const btn = document.querySelector('button');
                         if(btn) btn.click();
                     }
                 }
                 
                 attempts++;
-                if (attempts > 20) clearInterval(searchInterval); // Give up after 10 seconds
-            }, 500); // Check every half-second
+                if (attempts > 20) clearInterval(searchInterval); // Timeout failsafe
+            }, 500);
         }
     });
 </script>
