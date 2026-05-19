@@ -113,11 +113,29 @@
 
     <div class="card" id="masterWorkspaceCard" style="display: none;">
         <h2 style="margin-top:0; color: var(--primary-blue); font-weight: 800;">Induction Pass Printing Terminal</h2>
-        <p style="font-size:14px; color:var(--text-muted); margin-bottom:20px;">Reviewing all driver clearances successfully verified across terminal registries for today.</p>
+        <p style="font-size:14px; color:var(--text-muted); margin-bottom:20px;">Filter driver clearances across terminal registries by Date and Status.</p>
         
-        <button type="button" class="btn-main" style="background:#16a34a; color:white; margin-bottom: 25px; font-size:15px;" onclick="openPrintBatch()">🖨️ Generate & Print Batch Induction Cards (A4)</button>
-        
-        <h3 style="font-size:15px; text-transform:uppercase; color:var(--text-dark); margin-bottom:10px; font-weight:700;">Verified Drivers Register</h3>
+        <div style="background: #f8fafc; padding: 15px; border-radius: 12px; border: 1px solid #e2e8f0; margin-bottom: 20px; display: flex; gap: 15px; align-items: flex-end; flex-wrap: wrap;">
+            <div style="flex: 1; min-width: 150px;">
+                <label style="font-size: 11px; font-weight: 700; color: #475569; display: block; margin-bottom: 4px;">Target Date</label>
+                <input type="date" id="filterDate" class="modern-input" style="margin-bottom: 0;">
+            </div>
+            <div style="flex: 1; min-width: 150px;">
+                <label style="font-size: 11px; font-weight: 700; color: #475569; display: block; margin-bottom: 4px;">Driver Status</label>
+                <select id="filterStatus" class="modern-input" style="margin-bottom: 0;">
+                    <option value="Verified">Verified</option>
+                    <option value="Booked">Booked</option>
+                    <option value="Failed D/A">Failed D/A</option>
+                    <option value="Card Generated">Card Generated</option>
+                </select>
+            </div>
+            <button onclick="fetchFilteredDrivers()" class="btn-main" style="background: var(--primary-blue); color: white; width: auto; padding: 12px 24px; margin-bottom: 0;">Search DB</button>
+        </div>
+
+        <button type="button" id="masterPrintBtn" class="btn-main" style="background:#16a34a; color:white; margin-bottom: 25px; font-size:15px; display: none;" onclick="openPrintBatch()">
+            🖨️ Generate PDF Print Batch
+        </button>
+        <h3 style="font-size:15px; text-transform:uppercase; color:var(--text-dark); margin-bottom:10px; font-weight:700;">Filtered Drivers Register</h3>
         <div style="overflow-x: auto;">
             <table class="driver-table">
                 <thead>
@@ -129,7 +147,7 @@
                     </tr>
                 </thead>
                 <tbody id="verifiedRowsContainer">
-                    <tr><td colspan="4" style="text-align:center; color:var(--text-muted);">Querying live logs...</td></tr>
+                    <tr><td colspan="4" style="text-align:center; color:var(--text-muted);">Use the filter above to load drivers.</td></tr>
                 </tbody>
             </table>
         </div>
@@ -142,6 +160,7 @@
 <script>
     const scriptURL = 'https://script.google.com/macros/s/AKfycbyT9VU1LktpavOtbkIKlsvjWV5_7kx_xctn1dVZS6LtiDQnMAagX4Xk5xC0zH_MhouoBg/exec';
     let activeSessionKey = "";
+    let currentFilteredIds = []; // Global array to hold the currently filtered drivers
 
     function unlockAdminPanel() {
         const passInput = document.getElementById('gatePasscodeField').value.trim();
@@ -161,7 +180,7 @@
             document.getElementById('inputWorkspaceCard').style.display = 'none';
             document.getElementById('masterWorkspaceCard').style.display = 'block';
             showWorkspace();
-            fetchVerifiedToday();
+            fetchFilteredDrivers(); // Initializes the table right when they log in
         }
         else { alert("Access Refused. Invalid Department Passcode Key."); }
     }
@@ -176,17 +195,32 @@
         document.getElementById('reasonDiv').style.display = failedDA ? 'block' : 'none';
     }
 
-    async function fetchVerifiedToday() {
+    // ==============================================
+    // REPLACED: fetchVerifiedToday -> fetchFilteredDrivers
+    // ==============================================
+    async function fetchFilteredDrivers() {
         const container = document.getElementById('verifiedRowsContainer');
+        const printBtn = document.getElementById('masterPrintBtn');
+        const fDate = document.getElementById('filterDate').value;
+        const fStatus = document.getElementById('filterStatus').value;
+
+        container.innerHTML = "<tr><td colspan='4' style='text-align:center; color:var(--text-muted);'>Querying live database... please wait.</td></tr>";
+        printBtn.style.display = 'none';
+        currentFilteredIds = [];
+
         try {
-            const res = await fetch(`${scriptURL}?action=getVerifiedList`);
+            const queryUrl = `${scriptURL}?action=getFilteredList&date=${fDate}&status=${fStatus}`;
+            const res = await fetch(queryUrl);
             const list = await res.json();
+            
             container.innerHTML = "";
             if(list.length === 0) {
-                container.innerHTML = "<tr><td colspan='4' style='text-align:center; color:var(--text-muted);'>No drivers marked Verified today yet.</td></tr>";
+                container.innerHTML = `<tr><td colspan='4' style='text-align:center; color:var(--text-muted);'>No drivers found for ${fDate || 'All Dates'} with status '${fStatus}'.</td></tr>`;
                 return;
             }
+
             list.forEach(driver => {
+                currentFilteredIds.push(driver.id);
                 container.innerHTML += `<tr>
                     <td style="font-family:monospace; font-weight:700;">${driver.id}</td>
                     <td>${driver.name}</td>
@@ -194,6 +228,13 @@
                     <td><span style="padding:4px 8px; border-radius:6px; font-size:11px; font-weight:700; background:#f1f5f9;">${driver.type}</span></td>
                 </tr>`;
             });
+
+            // Only show the Print Batch button if we are looking at 'Verified' drivers
+            if (fStatus === "Verified" && currentFilteredIds.length > 0) {
+                printBtn.style.display = 'block';
+                printBtn.innerText = `🖨️ Generate PDF for ${currentFilteredIds.length} Verified Drivers`;
+            }
+
         } catch(e) { container.innerHTML = "<tr><td colspan='4' style='text-align:center; color:red;'>Failed to load register records.</td></tr>"; }
     }
 
@@ -235,7 +276,20 @@
         finally { btn.innerText = "Execute Updates"; btn.disabled = false; }
     }
 
-    function openPrintBatch() { window.open(scriptURL + "?action=printBatch", "_blank"); }
+    // Pass the specifically filtered IDs to the print engine
+    function openPrintBatch() { 
+        if (currentFilteredIds.length === 0) return alert("No drivers to print.");
+        const idString = currentFilteredIds.join(",");
+        window.open(scriptURL + "?action=printBatch&ids=" + encodeURIComponent(idString), "_blank"); 
+    }
+
+    // Set today's date automatically in the filter when the page loads
+    window.addEventListener('DOMContentLoaded', () => {
+        const localDate = new Date();
+        const offset = localDate.getTimezoneOffset() * 60000;
+        const todayStr = new Date(localDate - offset).toISOString().split('T')[0];
+        document.getElementById('filterDate').value = todayStr;
+    });
 </script>
 </body>
 </html>
