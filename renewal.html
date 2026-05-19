@@ -5,34 +5,33 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Renewal - WACT</title>
     <style>
-        :root { --primary-blue: #004a99; --bg-light: #f8fafc; --text-dark: #1e293b; --shadow-soft: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.05); --squarcle-radius: 24px; }
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: var(--bg-light); color: var(--text-dark); margin: 0; padding: 0; line-height: 1.6; display: flex; flex-direction: column; min-height: 100vh; }
-        header { background: white; padding: 30px 20px; display: flex; flex-direction: column; align-items: center; justify-content: center; box-shadow: 0 2px 10px rgba(0,0,0,0.03); text-align: center; }
-        .logo-circle { width: 80px; height: 80px; border: 2px solid var(--primary-blue); border-radius: 50%; display: flex; justify-content: center; align-items: center; margin: 0 auto 15px auto; overflow: hidden; background: white; }
-        .logo-circle img { max-width: 85%; height: auto; }
-        .brand-text .name { font-weight: 800; color: var(--primary-blue); font-size: 20px; display: block; line-height: 1.2; max-width: 400px; }
-        .brand-text .sub { font-size: 13px; color: #64748b; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; margin-top: 5px; display: block;}
+        :root { --primary-blue: #004a99; --bg-light: #f8fafc; --text-dark: #0f172a; --text-muted: #475569; --shadow-soft: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.05); --squarcle-radius: 24px; }
+        body { font-family: 'Segoe UI', system-ui, sans-serif; background-color: var(--bg-light); color: var(--text-dark); margin: 0; padding: 0; line-height: 1.6; display: flex; flex-direction: column; min-height: 100vh; }
+        header { background: white; padding: 20px 40px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid #e2e8f0; }
+        .header-brand { display: flex; align-items: center; gap: 16px; }
+        .logo-circle { width: 55px; height: 55px; border-radius: 16px; display: flex; justify-content: center; align-items: center; overflow: hidden; background: #fafafa; border: 1px solid #e2e8f0; }
+        .logo-circle img { max-width: 80%; height: auto; }
+        .brand-text .name { font-weight: 800; color: var(--primary-blue); font-size: 16px; display: block; line-height: 1.2; }
+        .brand-text .sub { font-size: 11px; color: var(--text-muted); font-weight: 600; text-transform: uppercase; letter-spacing: 1px; margin-top: 2px; display: block;}
+        .btn-home { padding: 10px 18px; border-radius: 12px; font-weight: 700; font-size: 12px; text-transform: uppercase; text-decoration: none; color: var(--text-muted); border: 2px solid #e2e8f0; transition: 0.2s; }
+        .btn-home:hover { background: #f1f5f9; color: var(--text-dark); }
         .container { flex: 1; max-width: 850px; margin: 30px auto; padding: 0 20px; width: 100%; box-sizing: border-box;}
-        .top-nav { display: flex; gap: 10px; margin-bottom: 30px; flex-wrap: wrap; justify-content: center; }
-        .top-nav a { text-decoration: none; text-align: center; flex: 1; min-width: 120px; }
-        .card { background: white; border-radius: var(--squarcle-radius); padding: 35px; margin-bottom: 30px; box-shadow: var(--shadow-soft); }
+        .card { background: white; border-radius: var(--squarcle-radius); padding: 35px; margin-bottom: 30px; box-shadow: var(--shadow-soft); border: 1px solid #e2e8f0; }
         .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
         .form-group { margin-bottom: 20px; }
-        h3 { font-size: 14px; text-transform: uppercase; color: #64748b; border-bottom: 1px solid #eee; padding-bottom: 8px; margin-top: 30px; margin-bottom: 20px; letter-spacing: 1px; }
+        h3 { font-size: 13px; text-transform: uppercase; color: var(--primary-blue); border-bottom: 2px solid #f1f5f9; padding-bottom: 8px; margin-top: 30px; margin-bottom: 20px; letter-spacing: 1px; font-weight: 800; }
         label { display: block; font-size: 11px; font-weight: 700; color: #64748b; margin-bottom: 8px; text-transform: uppercase; }
         input, select, textarea { width: 100%; padding: 12px 16px; border: 2px solid #e2e8f0; border-radius: 12px; font-size: 14px; box-sizing: border-box; transition: border-color 0.2s; }
         input:focus { outline: none; border-color: var(--primary-blue); }
         .referee-box { background: #f8fafc; padding: 20px; border-radius: 18px; margin-bottom: 20px; border: 1px solid #e2e8f0; }
         .btn { padding: 14px 28px; border-radius: 14px; font-weight: 700; cursor: pointer; border: none; transition: 0.3s; text-transform: uppercase; font-size: 13px; }
         .btn-primary { background: var(--primary-blue); color: white; width: 100%; }
-        .btn-secondary { background: #64748b; color: white; width: 100%; }
-        .btn-outline { background: transparent; border: 2px solid #e2e8f0; color: #64748b; }
         .page { display: none; }
         .page.active { display: block; }
-        #successModal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); backdrop-filter: blur(4px); z-index: 1000; }
-        .modal-content { background: white; width: 90%; max-width: 400px; margin: 15vh auto; padding: 40px; border-radius: var(--squarcle-radius); text-align: center; }
+        #successModal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(15,23,42,0.6); backdrop-filter: blur(4px); z-index: 1000; }
+        .modal-content { background: white; width: 90%; max-width: 400px; margin: 15vh auto; padding: 40px; border-radius: var(--squarcle-radius); text-align: center; box-shadow: var(--shadow-soft); }
         .id-display { font-size: 24px; font-weight: 800; margin: 20px 0; color: var(--primary-blue); background: #f0f7ff; padding: 15px; border-radius: 12px; border: 2px dashed var(--primary-blue); }
-        footer { background: #fff; color: #64748b; text-align: center; padding: 20px; font-size: 12px; border-top: 1px solid #e2e8f0; margin-top: auto; }
+        footer { background: white; color: var(--text-muted); text-align: center; padding: 20px; font-size: 12px; border-top: 1px solid #e2e8f0; }
         .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 10px; }
         .day-box { border: 1px solid #ddd; padding: 10px; border-radius: 12px; text-align: center; cursor: pointer; position: relative; transition: 0.3s; }
         .day-box.disabled { background: #f1f5f9; color: #ccc; cursor: not-allowed; border: none; }
@@ -46,44 +45,38 @@
 <body>
 
 <header>
-    <div class="logo-circle">
-        <img src="https://cms-cd.apmterminals.com/onne/-/jssmedia/mainsite/africa-and-middle-east/Onne/Standard-Hero-images/wact-logo-square-400-ext.png" alt="WACT Logo">
+    <div class="header-brand">
+        <div class="logo-circle">
+            <img src="https://cms-cd.apmterminals.com/onne/-/jssmedia/mainsite/africa-and-middle-east/Onne/Standard-Hero-images/wact-logo-square-400-ext.png" alt="WACT Logo">
+        </div>
+        <div class="brand-text">
+            <span class="name">WEST AFRICA CONTAINER TERMINAL</span>
+            <span class="sub">Trucker Induction Portal</span>
+        </div>
     </div>
-    <div class="brand-text">
-        <span class="name">WEST AFRICA CONTAINER TERMINAL EXTERNAL TRUCKERS</span>
-        <span class="sub">Trucker Induction Portal</span>
-    </div>
-    <div id="currentDate" style="font-size: 12px; font-weight: 600; color: #64748b; margin-top: 10px;"></div>
+    <a href="index.html" class="btn-home">← Back to Home</a>
 </header>
 
 <div class="container">
-    <div class="top-nav">
-        <a href="new_induction.html" class="btn btn-outline">New Induction</a>
-        <a href="renewal.html" class="btn btn-primary">Renewal</a>
-        <a href="manage.html" class="btn btn-outline">Manage Appt</a>
-        <a href="admin.html" class="btn btn-outline">Admin</a>
-    </div>
-
-    <!-- RENEWAL FORM -->
     <div id="pageRenewal" class="page active">
         <div class="card">
-            <h2 style="margin-top:0; color: var(--primary-blue);">Induction Card Renewal</h2>
+            <h2 style="margin-top:0; color: var(--primary-blue); font-weight:800;">Induction Card Renewal</h2>
             <p style="font-size: 13px; text-align: center; color: #64748b; margin-bottom: 20px;">Search for your existing record</p>
             
             <div style="display: flex; gap: 10px; margin-bottom: 20px;">
                 <input type="text" id="searchID" placeholder="Enter Induction Number or License No.">
                 <button type="button" class="btn btn-primary" style="width: auto;" onclick="searchTrucker()" id="searchBtn">Search</button>
             </div>
-            <div id="loading" style="display:none; text-align: center; color: var(--primary-blue); font-weight: 600;">Searching database...</div>
+            <div id="loading" style="display:none; text-align: center; color: var(--primary-blue); font-weight: 600;">Searching WACT database...</div>
             <div id="searchResults"></div>
 
             <form id="renewalForm" style="display:none; margin-top: 30px; border-top: 1px solid #eee; padding-top: 20px;">
-                <h3>Verified Information</h3>
+                <h3>Verified Core Profile</h3>
                 <div class="grid">
                     <div class="form-group"><label>Name</label><input type="text" id="ren_name" readonly style="background:#f1f5f9;"></div>
                     <div class="form-group"><label>Induction ID</label><input type="text" id="ren_id" readonly style="background:#f1f5f9;"></div>
                 </div>
-                <h3>Update Details</h3>
+                <h3>Update Variable Details</h3>
                 <div class="form-group"><label>Current Address</label><input type="text" name="address" id="ren_address" required></div>
                 <div class="grid">
                     <div class="form-group"><label>Mobile</label><input type="tel" name="mobile" id="ren_mobile" required></div>
@@ -116,32 +109,30 @@
         </div>
     </div>
 
-    <!-- CALENDAR (Hidden until form submit) -->
     <div id="pageAppointment" class="page">
         <div class="card">
-            <h2>Schedule Induction Session</h2>
+            <h2 style="margin-top:0; color:var(--primary-blue); font-weight:800;">Schedule Induction Session</h2>
             <div id="calHeader" style="display:flex; justify-content: space-between; margin-bottom: 15px;">
-                <button class="btn btn-outline" style="padding: 5px 15px;" onclick="changeMonth(-1)">Prev</button>
-                <h3 id="monthDisplay">Month Year</h3>
-                <button class="btn btn-outline" style="padding: 5px 15px;" onclick="changeMonth(1)">Next</button>
+                <button class="btn btn-home" onclick="changeMonth(-1)">Prev</button>
+                <h3 id="monthDisplay" style="border:none; margin:0; padding:0; font-size:16px;">Month Year</h3>
+                <button class="btn btn-home" onclick="changeMonth(1)">Next</button>
             </div>
             <div class="calendar-grid" id="calendarGrid"></div>
             
             <div id="bookingActions" style="margin-top:20px; display:none; text-align:center;">
-                <p>Selected Date: <strong id="selectedDateText"></strong></p>
-                <button class="btn btn-primary" onclick="confirmBooking()">Book Appointment</button>
+                <p>Selected Target Date: <strong id="selectedDateText"></strong></p>
+                <button class="btn btn-primary" onclick="confirmBooking()">Book Appointment Pass</button>
             </div>
         </div>
     </div>
 
-    <!-- SLIP (Hidden until booked) -->
     <div id="pageSlip" class="page">
         <div class="card" id="printArea">
-            <div style="border: 2px solid #000; padding: 20px; text-align: center;">
+            <div style="border: 2px solid #000; padding: 20px; text-align: center; border-radius:12px;">
                 <img src="https://cms-cd.apmterminals.com/onne/-/jssmedia/mainsite/africa-and-middle-east/Onne/Standard-Hero-images/wact-logo-square-400-ext.png" style="width: 60px; margin-bottom: 10px;">
-                <h1 style="font-size: 20px; margin-bottom: 5px;">WACT INDUCTION SLIP</h1>
-                <hr>
-                <div style="text-align: left; margin-top: 20px;">
+                <h1 style="font-size: 20px; margin-bottom: 5px; font-weight:800;">WACT INDUCTION SLIP</h1>
+                <hr style="border:1px solid #000;">
+                <div style="text-align: left; margin-top: 20px; font-size:14px; line-height:1.8;">
                     <p><strong>NAME:</strong> <span id="slip_name"></span></p>
                     <p><strong>INDUCTION ID:</strong> <span id="slip_id"></span></p>
                     <p><strong>APPT DATE:</strong> <span id="slip_date"></span></p>
@@ -150,39 +141,37 @@
                     <p><strong>TIME:</strong> 09:00 AM Prompt</p>
                     <p><strong>LOCATION:</strong> WACT Training Center, Onne Port.</p>
                 </div>
-                <hr>
-                <p style="font-size: 11px; margin-top: 20px;">Please bring a printed copy or screenshot of this slip to the security gate on your appointment day.</p>
+                <hr style="border:1px solid #000;">
+                <p style="font-size: 11px; margin-top: 20px; font-weight:600;">Please bring a printed copy or screenshot of this slip to the security gate on your appointment day.</p>
             </div>
             <div style="margin-top: 20px; display: flex; flex-direction: column; gap: 10px;">
-                <button class="btn btn-primary" onclick="window.print()">Print Slip</button>
+                <button class="btn btn-primary" onclick="window.print()">Print Slip Paper</button>
                 <div style="display: flex; gap: 5px;">
-                    <input type="email" id="emailInput" placeholder="Enter email">
-                    <button id="sendEmailBtn" class="btn btn-secondary" style="white-space: nowrap;" onclick="sendSlipViaEmail()">Email Slip</button>
-                    <p id="emailStatusMsg" style="font-size: 12px; margin-top: 5px; text-align: center;"></p>
+                    <input type="email" id="emailInput" placeholder="Enter email address">
+                    <button id="sendEmailBtn" class="btn btn-home" style="white-space: nowrap;" onclick="sendSlipViaEmail()">Email Slip</button>
                 </div>
-                <button class="btn btn-outline" onclick="location.reload()">Finish</button>
+                <p id="emailStatusMsg" style="font-size: 12px; margin:0; text-align: center; font-weight:700;"></p>
+                <button class="btn btn-outline" onclick="location.reload()">Complete & Exit</button>
             </div>
         </div>
     </div>
 </div>
 
-<!-- SUCCESS MODAL -->
 <div id="successModal">
     <div class="modal-content">
         <div style="font-size: 50px;">✅</div>
-        <h2 style="color: var(--primary-blue);">Renewal Submitted Successfully!</h2>
-        <p>Your Induction Renewal has been processed:</p>
+        <h2 style="color: var(--primary-blue); font-weight:800; margin:10px 0;">Renewal Request Submitted Successfully!</h2>
+        <p style="color:var(--text-muted); font-size:14px;">Your Induction Renewal has been processed:</p>
         <div class="id-display" id="displayID">---</div>
-        <p style="font-size: 12px; color: #64748b;">Please proceed to book your physical induction session.</p>
-        <button class="btn btn-primary" id="modalActionBtn">Continue to Appointment</button>
+        <p style="font-size: 12px; color: #64748b; margin-bottom:20px;">Please proceed to book your physical induction session.</p>
+        <button class="btn btn-primary" id="modalActionBtn">Continue to Appointment Calendar</button>
     </div>
 </div>
 
-<footer>&copy; 2026 West Africa Container Terminal | Confidential Induction Portal</footer>
+<footer>&copy; 2026 West Africa Container Terminal | Global APM Terminals Network</footer>
 
 <script>
     const scriptURL = 'https://script.google.com/macros/s/AKfycbyT9VU1LktpavOtbkIKlsvjWV5_7kx_xctn1dVZS6LtiDQnMAagX4Xk5xC0zH_MhouoBg/exec';
-    document.getElementById('currentDate').innerText = new Date().toLocaleDateString('en-GB', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
 
     let currentUserData = { name: '', id: '', type: '' };
     let calendarData = {};
@@ -219,12 +208,12 @@
             document.getElementById('loading').style.display = "none";
 
             if (data.length === 0) {
-                resultsDiv.innerHTML = "<p style='color:red; text-align:center;'>No records found.</p>";
+                resultsDiv.innerHTML = "<p style='color:red; text-align:center;'>No matching records found.</p>";
             } else {
                 data.forEach(item => {
                     const b = document.createElement('button');
-                    b.className = "btn btn-outline"; b.style.width = "100%"; b.style.marginBottom = "8px";
-                    b.innerText = `SELECT: ${item.fullName} (${item.inductionNumber})`;
+                    b.className = "btn btn-home"; b.style.width = "100%"; b.style.marginBottom = "8px"; b.style.textAlign = "left";
+                    b.innerText = `SELECT PROFILE: ${item.fullName} (${item.inductionNumber})`;
                     b.onclick = () => {
                         document.getElementById('renewalForm').style.display = "block";
                         document.getElementById('ren_name').value = item.fullName;
@@ -232,21 +221,18 @@
                         document.getElementById('ren_address').value = item.address || "";
                         document.getElementById('ren_mobile').value = item.mobile || "";
                         document.getElementById('ren_company').value = item.companyName || "";
-                        resultsDiv.innerHTML = `<p style='color:green; text-align:center;'>Selected: ${item.fullName}</p>`;
+                        resultsDiv.innerHTML = `<p style='color:green; text-align:center; font-weight:700;'>Selected Profile: ${item.fullName}</p>`;
                     };
                     resultsDiv.appendChild(b);
                 });
             }
-        } catch (e) {
-            alert("Search failed.");
-            document.getElementById('loading').style.display = "none";
-        }
+        } catch (e) { alert("Search failed."); document.getElementById('loading').style.display = "none"; }
     }
 
     document.getElementById('renewalForm').addEventListener('submit', async function(e) {
         e.preventDefault();
         const btn = document.getElementById('renSubmitBtn');
-        btn.innerText = "Saving..."; btn.disabled = true;
+        btn.innerText = "Saving Profile Matrix..."; btn.disabled = true;
 
         try {
             const payload = {
@@ -278,11 +264,10 @@
 
     async function startAppointmentFlow(id, type) {
         showPage('pageAppointment');
-        document.getElementById('calendarGrid').innerHTML = "<p style='grid-column: span 7; text-align:center;'>Loading Calendar...</p>";
+        document.getElementById('calendarGrid').innerHTML = "<p style='grid-column: span 7; text-align:center;'>Loading WACT Calendar Matrix...</p>";
         try {
             const res = await fetch(`${scriptURL}?action=getCalendarData&id=${id}&type=${type}`);
-            calendarData = await res.json();
-            renderCalendar();
+            calendarData = await res.json(); renderCalendar();
         } catch(e) { alert("Failed to load appointment data."); }
     }
 
@@ -338,7 +323,7 @@
 
     async function confirmBooking() {
         const btn = document.querySelector('#bookingActions button');
-        btn.innerText = "Booking..."; btn.disabled = true;
+        btn.innerText = "Booking Session..."; btn.disabled = true;
         try {
             const payload = { action: 'book', id: currentUserData.id, type: currentUserData.type, date: selectedDateStr };
             const response = await fetch(scriptURL, { method: 'POST', body: JSON.stringify(payload) });
@@ -352,7 +337,7 @@
                 document.getElementById('slip_status').innerText = result.status || "Booked";
                 showPage('pageSlip');
             } else { alert(result.message); }
-        } catch (e) { alert("Booking failed."); } finally { btn.innerText = "Book Appointment"; btn.disabled = false; }
+        } catch (e) { alert("Booking failed."); } finally { btn.innerText = "Book Appointment Pass"; btn.disabled = false; }
     }
 
     async function sendSlipViaEmail() {
@@ -368,7 +353,7 @@
         const date = document.getElementById('slip_date')?.textContent || "N/A";
 
         btn.innerText = "Sending..."; btn.disabled = true;
-        if (msg) { msg.innerText = "Talking to server..."; msg.style.color = "#1e40af"; }
+        if (msg) { msg.innerText = "Talking to WACT mail system..."; msg.style.color = "#004a99"; }
 
         const finalURL = `${scriptURL}?action=dispatchSlip&contact=${encodeURIComponent(email)}&name=${encodeURIComponent(name)}&id=${encodeURIComponent(id)}&date=${encodeURIComponent(date)}`;
 
@@ -376,7 +361,7 @@
             const response = await fetch(finalURL);
             const res = await response.json();
             if (res.success) {
-                if (msg) { msg.style.color = "green"; msg.innerText = "✅ Slip sent to " + email; }
+                if (msg) { msg.style.color = "green"; msg.innerText = "✅ Pass slip successfully emailed to " + email; }
                 emailField.value = "";
             } else { throw new Error(res.message || "Server rejected the request"); }
         } catch (error) {
