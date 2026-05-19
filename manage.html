@@ -225,11 +225,19 @@
                     let suspensionEndDate = new Date(failureDate);
                     let durationText = "";
 
-                    if (reasonStr.includes("drug") || reasonStr.includes("both")) {
-                        suspensionEndDate.setMonth(suspensionEndDate.getMonth() + 1); durationText = "1 Month";
+                    // Precise condition matching matching your requested bans
+                    if (reasonStr.includes("marijuana")) {
+                        suspensionEndDate.setMonth(suspensionEndDate.getMonth() + 2); // 2 Months
+                        durationText = "2 Months";
+                    } else if (reasonStr.includes("tramadol")) {
+                        suspensionEndDate.setMonth(suspensionEndDate.getMonth() + 1); // 1 Month
+                        durationText = "1 Month";
                     } else if (reasonStr.includes("alcohol")) {
-                        suspensionEndDate.setDate(suspensionEndDate.getDate() + 7); durationText = "1 Week";
-                    } else { durationText = "No Suspension"; }
+                        suspensionEndDate.setDate(suspensionEndDate.getDate() + 7);   // 1 Week
+                        durationText = "1 Week";
+                    } else { 
+                        durationText = "No Suspension"; 
+                    }
 
                     const today = new Date();
 
