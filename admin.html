@@ -39,7 +39,7 @@
         .gate-card p { margin: 0 0 24px 0; color: var(--text-muted); font-size: 13px; line-height:1.5; }
         .gate-input { width: 100%; padding: 14px; border: 2px solid #e2e8f0; border-radius: 14px; font-size: 16px; text-align: center; margin-bottom: 20px; box-sizing: border-box; }
         .gate-input:focus { outline: none; border-color: var(--primary-blue); }
-        footer { background: white; color: var(--text-muted); text-align: center; padding: 20px; font-size: 12px; border-top: 1px solid #e2e8f0; }
+        footer { background: white; color: var(--text-muted); text-align: center; padding: 20px; font-size: 12px; border-top: 1px solid #e2e8f0; margin-top: auto;}
     </style>
 </head>
 <body>
@@ -47,10 +47,10 @@
 <div id="authGateModal">
     <div class="gate-card">
         <div style="font-size: 40px; margin-bottom: 15px;">🔒</div>
-        <h2>Access Restricted</h2>
-        <p>This terminal panel requires high-clearance administration keys before interface access is granted.</p>
-        <input type="password" id="gatePasscodeField" class="gate-input" placeholder="Enter Admin Access Code">
-        <button type="button" class="btn-main" style="background: var(--primary-blue); color: white;" onclick="unlockAdminPanel()">Verify Identity Credentials</button>
+        <h2>Terminal Clearance</h2>
+        <p>Identify your department by entering your designated administrative passcode below.</p>
+        <input type="password" id="gatePasscodeField" class="gate-input" placeholder="Enter Passcode">
+        <button type="button" class="btn-main" style="background: var(--primary-blue); color: white;" onclick="unlockAdminPanel()">Verify Identity</button>
     </div>
 </div>
 
@@ -69,15 +69,15 @@
 
 <div id="protectedContent" class="container">
     <div class="card">
-        <h2 style="margin-top:0; color: var(--primary-blue); font-weight: 800; font-size: 24px;">Admin Dashboard</h2>
+        <h2 style="margin-top:0; color: var(--primary-blue); font-weight: 800; font-size: 24px;" id="dashboardTitle">Admin Dashboard</h2>
         
         <div style="background: #fff7ed; padding: 24px; border-radius: 18px; border: 1px solid #ffedd5; margin-top: 20px;">
-            <h3 style="margin-top:0; color: #9a3412; font-size: 16px; font-weight: 700;">Admin Bulk Verification Engine</h3>
-            <p style="font-size: 13px; color: #c2410c; margin-bottom: 16px;">Paste tracking numbers below (Supports line breaking or comma splits)</p>
+            <p style="font-size: 13px; color: #c2410c; margin-bottom: 16px; font-weight:600;">Paste Trucker Induction IDs below (Supports line breaking or comma splits)</p>
             
-            <textarea id="bulkIds" rows="5" style="margin-bottom: 20px;" placeholder="SI/EXT/2026/1001, SI/EXT/2026/1002..."></textarea>
+            <textarea id="bulkIds" rows="5" style="margin-bottom: 20px;" placeholder="SI/EXT/2026/1001&#10;SI/EXT/2026/1002"></textarea>
             
-            <div class="question-row">
+            <!-- HSE INDUCTION SECTION (Hidden for Medics) -->
+            <div class="question-row" id="sectionInduction">
                 <div class="question-text">Induction Session Attended?</div>
                 <div class="toggle-group">
                     <label><input type="radio" name="indRadio" id="indYes" value="yes"> Yes</label>
@@ -85,14 +85,16 @@
                 </div>
             </div>
             
-            <div class="question-row">
-                <div class="question-text">Passed Terminal Drug & Alcohol?</div>
+            <!-- MEDIC D/A SECTION (Hidden for HSE) -->
+            <div class="question-row" id="sectionMedic">
+                <div class="question-text">Passed Drug & Alcohol Screen?</div>
                 <div class="toggle-group">
                     <label><input type="radio" name="daRadio" id="daYes" value="yes" onchange="toggleReasonBox()"> Yes</label>
                     <label><input type="radio" name="daRadio" id="daNo" value="no" onchange="toggleReasonBox()"> No</label>
                 </div>
             </div>
 
+            <!-- MEDIC REASON DROPDOWN -->
             <div id="reasonDiv" style="display:none; margin-top: 16px;">
                 <label style="font-size:11px; color:#ef4444; font-weight:800; display: block; margin-bottom: 6px;">FAILURE REASON REQUIRED</label>
                 <select id="daReason" class="modern-input" style="border-color: #fca5a5;">
@@ -104,7 +106,7 @@
                 </select>
             </div>
             
-            <button type="button" id="verifySubmitBtn" class="btn-main" style="background:#f47c20; color:white; margin-top: 15px;" onclick="runBulkUpdate()">Execute Status Modifications</button>
+            <button type="button" id="verifySubmitBtn" class="btn-main" style="background:#f47c20; color:white; margin-top: 15px;" onclick="runBulkUpdate()">Execute Updates</button>
         </div>
     </div>
 </div>
@@ -114,14 +116,38 @@
 <script>
     const scriptURL = 'https://script.google.com/macros/s/AKfycbyT9VU1LktpavOtbkIKlsvjWV5_7kx_xctn1dVZS6LtiDQnMAagX4Xk5xC0zH_MhouoBg/exec';
     let activeSessionKey = "";
+    let activeRole = "";
 
     function unlockAdminPanel() {
-        const passInput = document.getElementById('gatePasscodeField').value;
-        if (passInput === "WACT2026") {
-            activeSessionKey = passInput;
-            document.getElementById('authGateModal').style.display = 'none';
-            document.getElementById('protectedContent').style.display = 'block';
-        } else { alert("Access Refused. Invalid Administrative Key."); }
+        const passInput = document.getElementById('gatePasscodeField').value.trim();
+        
+        // Define Roles based on Passcode
+        if (passInput === "MEDIC2026") {
+            activeRole = "Medic";
+            document.getElementById('dashboardTitle').innerText = "Medic Clinic Portal";
+            document.getElementById('sectionInduction').style.display = 'none'; // Hide HSE stuff
+            grantAccess(passInput);
+        } 
+        else if (passInput === "HSE2026") {
+            activeRole = "HSE";
+            document.getElementById('dashboardTitle').innerText = "HSE Induction Portal";
+            document.getElementById('sectionMedic').style.display = 'none'; // Hide Medic stuff
+            grantAccess(passInput);
+        }
+        else if (passInput === "MASTER2026") {
+            activeRole = "Master";
+            document.getElementById('dashboardTitle').innerText = "Master Control Portal";
+            grantAccess(passInput);
+        }
+        else {
+            alert("Access Refused. Invalid Department Passcode.");
+        }
+    }
+
+    function grantAccess(pass) {
+        activeSessionKey = pass;
+        document.getElementById('authGateModal').style.display = 'none';
+        document.getElementById('protectedContent').style.display = 'block';
     }
 
     document.getElementById('gatePasscodeField').addEventListener('keyup', function(e) {
@@ -135,24 +161,31 @@
 
     async function runBulkUpdate() {
         const ids = document.getElementById('bulkIds').value.trim();
-        const indYes = document.getElementById('indYes').checked;
-        const indNo = document.getElementById('indNo').checked;
-        const daYes = document.getElementById('daYes').checked;
-        const daNo = document.getElementById('daNo').checked;
-        const reason = document.getElementById('daReason').value;
-
         if (!ids) return alert("Please enter at least one Induction Number.");
-        if (!indYes && !indNo) return alert("Please select Yes or No for Induction Attendance.");
-        if (!daYes && !daNo) return alert("Please select Yes or No for the Drug & Alcohol test.");
-        if (indNo) return alert("Applicants must attend induction to be verified. Status cannot be updated.");
-        if (daNo && !reason) return alert("Please select a failure reason from the dropdown.");
+
+        // Grab values based on what is visible to the user
+        let indYes = false, indNo = false, daYes = false, daNo = false, reason = "";
+
+        if (activeRole === "HSE" || activeRole === "Master") {
+            indYes = document.getElementById('indYes').checked;
+            indNo = document.getElementById('indNo').checked;
+            if (!indYes && !indNo) return alert("Please select Yes or No for Induction Attendance.");
+        }
+
+        if (activeRole === "Medic" || activeRole === "Master") {
+            daYes = document.getElementById('daYes').checked;
+            daNo = document.getElementById('daNo').checked;
+            reason = document.getElementById('daReason').value;
+            if (!daYes && !daNo) return alert("Please select Yes or No for the Drug & Alcohol screen.");
+            if (daNo && !reason) return alert("Please select a failure reason from the dropdown.");
+        }
 
         const btn = document.getElementById('verifySubmitBtn');
         btn.innerText = "Processing Sheets Write Database..."; btn.disabled = true;
         
         try {
             const payload = {
-                action: 'adminBulkVerify', ids: ids, passcode: activeSessionKey,
+                action: 'adminBulkVerify', ids: ids, passcode: activeSessionKey, role: activeRole,
                 attended: indYes, daPassed: daYes, reason: reason
             };
 
@@ -160,9 +193,14 @@
             const res = await response.json();
 
             alert(res.message);
-            if (res.result === 'success') { document.getElementById('bulkIds').value = ""; }
+            if (res.result === 'success') { 
+                document.getElementById('bulkIds').value = ""; 
+                // Uncheck radios
+                document.querySelectorAll('input[type=radio]').forEach(r => r.checked = false);
+                document.getElementById('reasonDiv').style.display = 'none';
+            }
         } catch (err) { alert("System Communication Failure: " + err.message); } 
-        finally { btn.innerText = "Execute Status Modifications"; btn.disabled = false; }
+        finally { btn.innerText = "Execute Updates"; btn.disabled = false; }
     }
 </script>
 </body>
