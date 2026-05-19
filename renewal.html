@@ -368,6 +368,15 @@
             if (msg) { msg.style.color = "red"; msg.innerText = "❌ Failed: " + error.message; }
         } finally { btn.innerText = "Email Slip"; btn.disabled = false; }
     }
+    // Listens for an incoming driver ID argument upon page loading
+    window.addEventListener('DOMContentLoaded', () => {
+        const urlParams = new URLSearchParams(window.location.search);
+        const idParam = urlParams.get('id');
+        if (idParam) {
+            document.getElementById('searchID').value = idParam;
+            searchTrucker(); // Fires the query automatically!
+        }
+    });
 </script>
 </body>
 </html>
