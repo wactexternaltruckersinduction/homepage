@@ -135,8 +135,8 @@
                 <div style="text-align: left; margin-top: 20px; font-size:14px; line-height:1.8;">
                     <p><strong>NAME:</strong> <span id="slip_name"></span></p>
                     <p><strong>INDUCTION ID:</strong> <span id="slip_id"></span></p>
-                    <p><strong>APPT DATE:</strong> <span id="slip_date"></span></p>
-                    <p><strong>APPT ID:</strong> <span id="slip_apt_id"></span></p>
+                    <p><strong>Appointment DATE:</strong> <span id="slip_date"></span></p>
+                    <p><strong>Appointment ID:</strong> <span id="slip_apt_id"></span></p>
                     <p><strong>STATUS:</strong> <span id="slip_status"></span></p>
                     <p><strong>TIME:</strong> 09:00 AM Prompt</p>
                     <p><strong>LOCATION:</strong> WACT Training Center, Onne Port.</p>
@@ -353,7 +353,7 @@
         const date = document.getElementById('slip_date')?.textContent || "N/A";
 
         btn.innerText = "Sending..."; btn.disabled = true;
-        if (msg) { msg.innerText = "Talking to WACT mail system..."; msg.style.color = "#004a99"; }
+        if (msg) { msg.innerText = "Sending Appointment Slip..."; msg.style.color = "#004a99"; }
 
         const finalURL = `${scriptURL}?action=dispatchSlip&contact=${encodeURIComponent(email)}&name=${encodeURIComponent(name)}&id=${encodeURIComponent(id)}&date=${encodeURIComponent(date)}`;
 
@@ -361,7 +361,7 @@
             const response = await fetch(finalURL);
             const res = await response.json();
             if (res.success) {
-                if (msg) { msg.style.color = "green"; msg.innerText = "✅ Pass slip successfully emailed to " + email; }
+                if (msg) { msg.style.color = "green"; msg.innerText = "✅ Gate Pass slip successfully emailed to " + email; }
                 emailField.value = "";
             } else { throw new Error(res.message || "Server rejected the request"); }
         } catch (error) {
@@ -409,8 +409,8 @@
                 }
                 
                 attempts++;
-                if (attempts > 20) clearInterval(searchInterval); // Timeout failsafe
-            }, 500);
+                if (attempts > 40) clearInterval(searchInterval); // Timeout failsafe
+            }, 700);
         }
     });
 </script>
