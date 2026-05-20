@@ -7,40 +7,34 @@
     <style>
         :root { 
             --primary-blue: #004a99; --bg-light: #f1f5f9; --text-dark: #0f172a; --text-muted: #475569;
-            --squarcle-radius: 24px; --shadow-soft: 0 20px 25px -5px rgba(0, 0, 0, 0.05), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+            --squarcle-radius: 24px; --shadow-soft: 0 20px 25px -5px rgba(0, 0, 0, 0.05);
         }
-        body { font-family: 'Segoe UI', system-ui, sans-serif; background-color: var(--bg-light); color: var(--text-dark); margin: 0; padding: 0; min-height: 100vh; display: flex; flex-direction: column; }
+        body { font-family: 'Segoe UI', system-ui, sans-serif; background-color: var(--bg-light); color: var(--text-dark); margin: 0; min-height: 100vh; display: flex; flex-direction: column; }
         header { background: white; padding: 20px 40px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid #e2e8f0; }
         .header-brand { display: flex; align-items: center; gap: 16px; }
-        .logo-circle { width: 55px; height: 55px; border-radius: 16px; display: flex; justify-content: center; align-items: center; overflow: hidden; background: #fafafa; border: 1px solid #e2e8f0; }
+        .logo-circle { width: 55px; height: 55px; border-radius: 16px; display: flex; justify-content: center; align-items: center; border: 1px solid #e2e8f0; }
         .logo-circle img { max-width: 80%; height: auto; }
-        .brand-text .name { font-weight: 800; color: var(--primary-blue); font-size: 16px; display: block; line-height: 1.2; }
-        .brand-text .sub { font-size: 11px; color: var(--text-muted); font-weight: 600; text-transform: uppercase; letter-spacing: 1px; margin-top: 2px; display: block;}
-        .btn-home { padding: 10px 18px; border-radius: 12px; font-weight: 700; font-size: 12px; text-transform: uppercase; text-decoration: none; color: var(--text-muted); border: 2px solid #e2e8f0; transition: 0.2s; }
-        .btn-home:hover { background: #f1f5f9; color: var(--text-dark); }
-
+        .brand-text .name { font-weight: 800; color: var(--primary-blue); font-size: 16px; display: block; }
+        .brand-text .sub { font-size: 11px; color: var(--text-muted); font-weight: 600; text-transform: uppercase; }
+        .btn-home { padding: 10px 18px; border-radius: 12px; font-weight: 700; font-size: 12px; text-decoration: none; color: var(--text-muted); border: 2px solid #e2e8f0; }
+        
         .container { flex: 1; max-width: 850px; margin: 30px auto; padding: 0 20px; width: 100%; box-sizing: border-box; }
         #protectedContent { display: none; }
-        .card { background: white; border-radius: var(--squarcle-radius); padding: 35px; box-shadow: var(--shadow-soft); border: 1px solid #e2e8f0; margin-bottom: 25px; }
-        textarea { width: 100%; padding: 14px; border: 2px solid #e2e8f0; border-radius: 14px; font-family: inherit; box-sizing: border-box; font-size: 14px; }
+        .card { background: white; border-radius: var(--squarcle-radius); padding: 35px; box-shadow: var(--shadow-soft); margin-bottom: 25px; }
+        textarea, .modern-input { width: 100%; padding: 14px; border: 2px solid #e2e8f0; border-radius: 14px; box-sizing: border-box; font-size: 14px; }
         
-        .question-row { display: flex; justify-content: space-between; align-items: center; padding: 14px 16px; background: #f8fafc; border-radius: 14px; margin-bottom: 12px; border: 1px solid #e2e8f0; }
+        .question-row { display: flex; justify-content: space-between; align-items: center; padding: 14px 16px; background: #f8fafc; border-radius: 14px; margin-bottom: 12px; }
         .question-text { font-size: 14px; font-weight: 700; color: #334155; }
         .toggle-group { display: flex; gap: 16px; }
-        .toggle-group label { display: flex; align-items: center; gap: 6px; cursor: pointer; font-size: 14px; font-weight: 600; color: #475569; }
-        .toggle-group input[type="radio"] { width: 18px; height: 18px; cursor: pointer; accent-color: #f47c20; margin: 0; }
-        .modern-input { width: 100%; padding: 12px; border: 2px solid #e2e8f0; border-radius: 12px; margin-bottom: 16px; font-family: inherit; box-sizing: border-box; font-size: 14px; }
-        .btn-main { width: 100%; padding: 16px; border: none; border-radius: 14px; font-weight: 700; cursor: pointer; font-size: 14px; text-transform: uppercase; letter-spacing: 0.5px; transition: 0.2s; }
-        .btn-main:hover { opacity: 0.9; }
-
-        #authGateModal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(15, 23, 42, 0.75); backdrop-filter: blur(12px); display: flex; align-items: center; justify-content: center; z-index: 99999; }
-        .gate-card { background: white; width: 90%; max-width: 400px; padding: 40px; border-radius: var(--squarcle-radius); text-align: center; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.4); }
-        .gate-input { width: 100%; padding: 14px; border: 2px solid #e2e8f0; border-radius: 14px; font-size: 16px; text-align: center; margin-bottom: 20px; box-sizing: border-box; }
+        .btn-main { width: 100%; padding: 16px; border: none; border-radius: 14px; font-weight: 700; cursor: pointer; color: white; }
         
-        /* Driver List Styling */
+        #authGateModal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(15, 23, 42, 0.75); display: flex; align-items: center; justify-content: center; z-index: 99999; }
+        .gate-card { background: white; width: 90%; max-width: 400px; padding: 40px; border-radius: var(--squarcle-radius); text-align: center; }
+        
         .driver-table { width: 100%; border-collapse: collapse; margin-top: 15px; }
         .driver-table th, .driver-table td { padding: 12px; border-bottom: 1px solid #e2e8f0; text-align: left; font-size: 14px; }
         .driver-table th { background: #f8fafc; font-weight: 700; color: var(--text-muted); }
+        .cb-action { width: 18px; height: 18px; cursor: pointer; accent-color: #16a34a; }
         
         footer { background: white; color: var(--text-muted); text-align: center; padding: 20px; font-size: 12px; border-top: 1px solid #e2e8f0; }
     </style>
@@ -51,77 +45,53 @@
     <div class="gate-card">
         <div style="font-size: 40px; margin-bottom: 15px;">🔒</div>
         <h2>Access Clearance</h2>
-        <p>Identify your department workspace by entering your security access code credentials below.</p>
-        <input type="password" id="gatePasscodeField" class="gate-input" placeholder="Enter Administrative Passcode">
-        <button type="button" class="btn-main" style="background: var(--primary-blue); color: white;" onclick="unlockAdminPanel()">Verify Identity</button>
+        <input type="password" id="gatePasscodeField" class="modern-input" placeholder="Enter Administrative Passcode" style="text-align: center; margin-bottom: 20px;">
+        <button type="button" class="btn-main" style="background: var(--primary-blue);" onclick="unlockAdminPanel()">Verify Identity</button>
     </div>
 </div>
 
 <header>
     <div class="header-brand">
-        <div class="logo-circle">
-            <img src="https://cms-cd.apmterminals.com/onne/-/jssmedia/mainsite/africa-and-middle-east/Onne/Standard-Hero-images/wact-logo-square-400-ext.png" alt="WACT Logo">
-        </div>
-        <div class="brand-text">
-            <span class="name">WEST AFRICA CONTAINER TERMINAL</span>
-            <span class="sub">Trucker Induction Portal</span>
-        </div>
+        <div class="logo-circle"><img src="https://cms-cd.apmterminals.com/onne/-/jssmedia/mainsite/africa-and-middle-east/Onne/Standard-Hero-images/wact-logo-square-400-ext.png" alt="WACT Logo"></div>
+        <div class="brand-text"><span class="name">WEST AFRICA CONTAINER TERMINAL</span><span class="sub">Trucker Induction Portal</span></div>
     </div>
     <a href="index.html" class="btn-home">← Back to Home</a>
 </header>
 
 <div id="protectedContent" class="container">
-    
     <div class="card" id="inputWorkspaceCard">
         <h2 id="portalTitle" style="margin-top:0; color: var(--primary-blue); font-weight: 800;">Department Workspace</h2>
-        <div style="background: #fff7ed; padding: 24px; border-radius: 18px; border: 1px solid #ffedd5; margin-top: 20px;">
-            <p style="font-size: 14px; color: #c2410c; margin-bottom: 16px; font-weight:600;">Paste Trucker Induction IDs below (Supports line breaking or comma splits)</p>
-            <textarea id="bulkIds" rows="5" style="margin-bottom: 20px;" placeholder="SI/EXT/2026/1001&#10;SI/EXT/2026/1002"></textarea>
+        <div style="background: #fff7ed; padding: 24px; border-radius: 18px; margin-top: 20px;">
+            <p style="font-size: 14px; color: #c2410c; margin-bottom: 16px; font-weight:600;">Paste Trucker Induction IDs below:</p>
+            <textarea id="bulkIds" rows="5" style="margin-bottom: 20px;"></textarea>
             
             <div class="question-row" id="hseSection" style="display: none;">
                 <div class="question-text">Induction Session Attended & Approved?</div>
-                <div class="toggle-group">
-                    <label><input type="radio" name="indRadio" id="indYes" value="yes"> Yes</label>
-                    <label><input type="radio" name="indRadio" id="indNo" value="no"> No</label>
-                </div>
+                <div class="toggle-group"><label><input type="radio" name="indRadio" id="indYes"> Yes</label><label><input type="radio" name="indRadio" id="indNo"> No</label></div>
             </div>
             
             <div id="medicSection" style="display: none;">
                 <div class="question-row">
                     <div class="question-text">Passed Drug & Alcohol Screen?</div>
-                    <div class="toggle-group">
-                        <label><input type="radio" name="daRadio" id="daYes" value="yes" onchange="toggleReasonBox()"> Yes</label>
-                        <label><input type="radio" name="daRadio" id="daNo" value="no" onchange="toggleReasonBox()"> No</label>
-                    </div>
+                    <div class="toggle-group"><label><input type="radio" name="daRadio" id="daYes" onchange="toggleReasonBox()"> Yes</label><label><input type="radio" name="daRadio" id="daNo" onchange="toggleReasonBox()"> No</label></div>
                 </div>
-
                 <div id="reasonDiv" style="display:none; margin-top: 16px;">
-                    <label style="font-size:11px; color:#ef4444; font-weight:800; display: block; margin-bottom: 6px;">SELECT MANDATORY BREACH PENALTY REASON</label>
-                    <select id="daReason" class="modern-input" style="border-color: #fca5a5;">
-                        <option value="">Select diagnostic reason...</option>
-                        <option value="Positive for Alcohol (1 Week Ban)">Positive for Alcohol (1 Week Ban)</option>
-                        <option value="Positive for Tramadol (1 Month Ban)">Positive for Tramadol (1 Month Ban)</option>
-                        <option value="Positive for Marijuana (2 Months Ban)">Positive for Marijuana (2 Months Ban)</option>
-                        <option value="Refusal to Test (No Suspension)">Refused Test (No Suspension)</option>
-                    </select>
+                    <select id="daReason" class="modern-input"><option value="">Select reason...</option><option value="Positive for Alcohol (1 Week Ban)">Positive for Alcohol</option><option value="Positive for Tramadol (1 Month Ban)">Positive for Tramadol</option><option value="Positive for Marijuana (2 Months Ban)">Positive for Marijuana</option><option value="Refusal to Test (No Suspension)">Refused Test</option></select>
                 </div>
             </div>
-            
-            <button type="button" id="verifySubmitBtn" class="btn-main" style="background:#f47c20; color:white; margin-top: 15px;" onclick="runBulkUpdate()">Execute Updates</button>
+            <button type="button" id="verifySubmitBtn" class="btn-main" style="background:#f47c20; margin-top: 15px;" onclick="runBulkUpdate()">Execute Updates</button>
         </div>
     </div>
 
     <div class="card" id="masterWorkspaceCard" style="display: none;">
         <h2 style="margin-top:0; color: var(--primary-blue); font-weight: 800;">Induction Pass Printing Terminal</h2>
-        <p style="font-size:14px; color:var(--text-muted); margin-bottom:20px;">Filter driver clearances across terminal registries by Date and Status.</p>
-        
-        <div style="background: #f8fafc; padding: 15px; border-radius: 12px; border: 1px solid #e2e8f0; margin-bottom: 20px; display: flex; gap: 15px; align-items: flex-end; flex-wrap: wrap;">
+        <div style="background: #f8fafc; padding: 15px; border-radius: 12px; margin-bottom: 20px; display: flex; gap: 15px; align-items: flex-end; flex-wrap: wrap;">
             <div style="flex: 1; min-width: 150px;">
-                <label style="font-size: 11px; font-weight: 700; color: #475569; display: block; margin-bottom: 4px;">Target Date</label>
+                <label style="font-size: 11px; font-weight: 700; color: #475569;">Target Date (Leave blank for all)</label>
                 <input type="date" id="filterDate" class="modern-input" style="margin-bottom: 0;">
             </div>
             <div style="flex: 1; min-width: 150px;">
-                <label style="font-size: 11px; font-weight: 700; color: #475569; display: block; margin-bottom: 4px;">Driver Status</label>
+                <label style="font-size: 11px; font-weight: 700; color: #475569;">Driver Status</label>
                 <select id="filterStatus" class="modern-input" style="margin-bottom: 0;">
                     <option value="Verified">Verified</option>
                     <option value="Booked">Booked</option>
@@ -129,166 +99,151 @@
                     <option value="Card Generated">Card Generated</option>
                 </select>
             </div>
-            <button onclick="fetchFilteredDrivers()" class="btn-main" style="background: var(--primary-blue); color: white; width: auto; padding: 12px 24px; margin-bottom: 0;">Search DB</button>
+            <button onclick="fetchFilteredDrivers()" class="btn-main" style="background: var(--primary-blue); width: auto; padding: 12px 24px; margin-bottom: 0;">Search DB</button>
         </div>
 
-        <button type="button" id="masterPrintBtn" class="btn-main" style="background:#16a34a; color:white; margin-bottom: 25px; font-size:15px; display: none;" onclick="openPrintBatch()">
-            🖨️ Generate PDF Print Batch
-        </button>
-        <h3 style="font-size:15px; text-transform:uppercase; color:var(--text-dark); margin-bottom:10px; font-weight:700;">Filtered Drivers Register</h3>
+        <div style="display: flex; gap: 15px; margin-bottom: 25px;">
+            <button type="button" id="masterPrintBtn" class="btn-main" style="background:#16a34a; flex: 2; display: none;" onclick="openPrintBatch()"></button>
+            <button type="button" id="manualOverrideBtn" class="btn-main" style="background:#0f172a; flex: 1; display: none; padding: 12px;" onclick="markSelectedCheckboxes()">✅ Mark Selected</button>
+        </div>
+        
         <div style="overflow-x: auto;">
             <table class="driver-table">
                 <thead>
                     <tr>
+                        <th style="width: 40px; text-align: center;"><input type="checkbox" id="selectAllCb" class="cb-action" onclick="toggleAllCbs(this)" style="display:none;"></th>
                         <th>Induction ID</th>
                         <th>Driver Name</th>
                         <th>Registered Company</th>
-                        <th>Application Type</th>
+                        <th>Type</th>
                     </tr>
                 </thead>
-                <tbody id="verifiedRowsContainer">
-                    <tr><td colspan="4" style="text-align:center; color:var(--text-muted);">Use the filter above to load drivers.</td></tr>
-                </tbody>
+                <tbody id="verifiedRowsContainer"><tr><td colspan="5" style="text-align:center;">Use the filter above to load drivers.</td></tr></tbody>
             </table>
         </div>
     </div>
-
 </div>
-
-<footer>&copy; 2026 West Africa Container Terminal | Global APM Terminals Network</footer>
 
 <script>
     const scriptURL = 'https://script.google.com/macros/s/AKfycbyT9VU1LktpavOtbkIKlsvjWV5_7kx_xctn1dVZS6LtiDQnMAagX4Xk5xC0zH_MhouoBg/exec';
     let activeSessionKey = "";
-    let currentFilteredIds = []; // Global array to hold the currently filtered drivers
+    let currentFilteredIds = []; 
 
     function unlockAdminPanel() {
         const passInput = document.getElementById('gatePasscodeField').value.trim();
         activeSessionKey = passInput;
-        
-        if (passInput === "MEDIC2026") {
-            document.getElementById('portalTitle').innerText = "Medic Diagnostic Center";
-            document.getElementById('medicSection').style.display = 'block';
-            showWorkspace();
-        } 
-        else if (passInput === "HSE2026") {
-            document.getElementById('portalTitle').innerText = "HSE Induction Register Desk";
-            document.getElementById('hseSection').style.display = 'block';
-            showWorkspace();
-        }
-        else if (passInput === "MASTER2026" || passInput === "WACT2026") {
-            document.getElementById('inputWorkspaceCard').style.display = 'none';
-            document.getElementById('masterWorkspaceCard').style.display = 'block';
-            showWorkspace();
-            fetchFilteredDrivers(); // Initializes the table right when they log in
-        }
-        else { alert("Access Refused. Invalid Department Passcode Key."); }
+        if (passInput === "MEDIC2026") { document.getElementById('portalTitle').innerText = "Medic Center"; document.getElementById('medicSection').style.display = 'block'; showWorkspace(); } 
+        else if (passInput === "HSE2026") { document.getElementById('portalTitle').innerText = "HSE Desk"; document.getElementById('hseSection').style.display = 'block'; showWorkspace(); }
+        else if (passInput === "MASTER2026" || passInput === "WACT2026") { document.getElementById('inputWorkspaceCard').style.display = 'none'; document.getElementById('masterWorkspaceCard').style.display = 'block'; showWorkspace(); fetchFilteredDrivers(); }
+        else { alert("Invalid Passcode."); }
     }
 
-    function showWorkspace() {
-        document.getElementById('authGateModal').style.display = 'none';
-        document.getElementById('protectedContent').style.display = 'block';
-    }
+    function showWorkspace() { document.getElementById('authGateModal').style.display = 'none'; document.getElementById('protectedContent').style.display = 'block'; }
+    function toggleReasonBox() { document.getElementById('reasonDiv').style.display = document.getElementById('daNo').checked ? 'block' : 'none'; }
 
-    function toggleReasonBox() {
-        const failedDA = document.getElementById('daNo').checked;
-        document.getElementById('reasonDiv').style.display = failedDA ? 'block' : 'none';
-    }
-
-    // ==============================================
-    // REPLACED: fetchVerifiedToday -> fetchFilteredDrivers
-    // ==============================================
     async function fetchFilteredDrivers() {
         const container = document.getElementById('verifiedRowsContainer');
         const printBtn = document.getElementById('masterPrintBtn');
+        const overrideBtn = document.getElementById('manualOverrideBtn');
+        const selectAllCb = document.getElementById('selectAllCb');
+        
         const fDate = document.getElementById('filterDate').value;
         const fStatus = document.getElementById('filterStatus').value;
 
-        container.innerHTML = "<tr><td colspan='4' style='text-align:center; color:var(--text-muted);'>Querying live database... please wait.</td></tr>";
+        container.innerHTML = "<tr><td colspan='5' style='text-align:center;'>Querying live database...</td></tr>";
         printBtn.style.display = 'none';
+        overrideBtn.style.display = 'none';
+        selectAllCb.style.display = 'none';
+        selectAllCb.checked = false;
         currentFilteredIds = [];
 
         try {
-            const queryUrl = `${scriptURL}?action=getFilteredList&date=${fDate}&status=${fStatus}`;
-            const res = await fetch(queryUrl);
+            const res = await fetch(`${scriptURL}?action=getFilteredList&date=${fDate}&status=${fStatus}`);
             const list = await res.json();
-            
             container.innerHTML = "";
-            if(list.length === 0) {
-                container.innerHTML = `<tr><td colspan='4' style='text-align:center; color:var(--text-muted);'>No drivers found for ${fDate || 'All Dates'} with status '${fStatus}'.</td></tr>`;
-                return;
-            }
+            if(list.length === 0) { container.innerHTML = `<tr><td colspan='5' style='text-align:center;'>No drivers found.</td></tr>`; return; }
 
-            list.forEach(driver => {
-                currentFilteredIds.push(driver.id);
+            list.forEach(d => {
+                currentFilteredIds.push(d.id);
                 container.innerHTML += `<tr>
-                    <td style="font-family:monospace; font-weight:700;">${driver.id}</td>
-                    <td>${driver.name}</td>
-                    <td>${driver.company}</td>
-                    <td><span style="padding:4px 8px; border-radius:6px; font-size:11px; font-weight:700; background:#f1f5f9;">${driver.type}</span></td>
+                    <td style="text-align: center;"><input type="checkbox" class="cb-action row-cb" value="${d.id}"></td>
+                    <td style="font-family:monospace; font-weight:700;">${d.id}</td>
+                    <td>${d.name}</td>
+                    <td>${d.company}</td>
+                    <td><span style="padding:4px 8px; background:#f1f5f9; border-radius:6px; font-size:11px;">${d.type}</span></td>
                 </tr>`;
             });
 
-            // Only show the Print Batch button if we are looking at 'Verified' drivers
-            if (fStatus === "Verified" && currentFilteredIds.length > 0) {
-                printBtn.style.display = 'block';
-                printBtn.innerText = `🖨️ Generate PDF for ${currentFilteredIds.length} Verified Drivers`;
+            // Show batch controls if data loaded
+            if (currentFilteredIds.length > 0) {
+                selectAllCb.style.display = 'inline-block';
+                if (fStatus === "Verified") {
+                    printBtn.style.display = 'block';
+                    overrideBtn.style.display = 'block';
+                    printBtn.innerText = `🖨️ Generate PDF for ${currentFilteredIds.length} Verified Drivers`;
+                }
             }
+        } catch(e) { container.innerHTML = "<tr><td colspan='5' style='text-align:center; color:red;'>Failed to load records.</td></tr>"; }
+    }
 
-        } catch(e) { container.innerHTML = "<tr><td colspan='4' style='text-align:center; color:red;'>Failed to load register records.</td></tr>"; }
+    // Toggle all checkboxes at once
+    function toggleAllCbs(masterCb) {
+        document.querySelectorAll('.row-cb').forEach(cb => cb.checked = masterCb.checked);
+    }
+
+    // Manual Action: Update specifically ticked rows
+    async function markSelectedCheckboxes() {
+        const checkedBoxes = document.querySelectorAll('.row-cb:checked');
+        if (checkedBoxes.length === 0) return alert("Please tick at least one driver using the checkboxes on the left.");
+        
+        const selectedIds = Array.from(checkedBoxes).map(cb => cb.value);
+        
+        if (!confirm(`Are you sure you want to mark these ${selectedIds.length} drivers as 'Card Generated'?`)) return;
+
+        const btn = document.getElementById('manualOverrideBtn');
+        const originalText = btn.innerText;
+        btn.innerText = "Updating..."; 
+        btn.disabled = true;
+
+        try {
+            const response = await fetch(scriptURL, { 
+                method: 'POST', 
+                body: JSON.stringify({ action: 'markCardsGenerated', ids: selectedIds }) 
+            });
+            const res = await response.json();
+            alert(`Success! ${res.count} drivers were updated in the database.`);
+            fetchFilteredDrivers(); // Refresh the list
+        } catch (err) { 
+            alert("Error communicating with the database."); 
+        } finally { 
+            btn.innerText = originalText; 
+            btn.disabled = false; 
+        }
     }
 
     async function runBulkUpdate() {
         const ids = document.getElementById('bulkIds').value.trim();
-        if (!ids) return alert("Please enter at least one Induction Number.");
-
+        if (!ids) return alert("Enter Induction Numbers.");
         let indYes = false, daYes = false, reason = "";
-        if (activeSessionKey === "HSE2026") {
-            indYes = document.getElementById('indYes').checked;
-            if (!indYes && !document.getElementById('indNo').checked) return alert("Select Attendance status.");
-        }
-        if (activeSessionKey === "MEDIC2026") {
-            daYes = document.getElementById('daYes').checked;
-            reason = document.getElementById('daReason').value;
-            if (!daYes && !document.getElementById('daNo').checked) return alert("Select Drug screen status.");
-            if (document.getElementById('daNo').checked && !reason) return alert("Please select a diagnostic breach reason.");
-        }
+        if (activeSessionKey === "HSE2026") { indYes = document.getElementById('indYes').checked; if (!indYes && !document.getElementById('indNo').checked) return alert("Select Attendance."); }
+        if (activeSessionKey === "MEDIC2026") { daYes = document.getElementById('daYes').checked; reason = document.getElementById('daReason').value; if (!daYes && !document.getElementById('daNo').checked) return alert("Select Drug status."); if (document.getElementById('daNo').checked && !reason) return alert("Select reason."); }
 
-        const btn = document.getElementById('verifySubmitBtn');
-        btn.innerText = "Writing Parameters to sheet database..."; btn.disabled = true;
-        
+        const btn = document.getElementById('verifySubmitBtn'); btn.innerText = "Writing Parameters..."; btn.disabled = true;
         try {
-            const payload = {
-                action: 'adminBulkVerify', ids: ids, passcode: activeSessionKey,
-                attended: indYes, daPassed: daYes, reason: reason
-            };
-
-            const response = await fetch(scriptURL, { method: 'POST', body: JSON.stringify(payload) });
-            const res = await response.json();
-
+            const res = await (await fetch(scriptURL, { method: 'POST', body: JSON.stringify({ action: 'adminBulkVerify', ids: ids, passcode: activeSessionKey, attended: indYes, daPassed: daYes, reason: reason }) })).json();
             alert(res.message);
-            if (res.result === 'success') { 
-                document.getElementById('bulkIds').value = ""; 
-                document.querySelectorAll('input[type=radio]').forEach(r => r.checked = false);
-                document.getElementById('reasonDiv').style.display = 'none';
-            }
-        } catch (err) { alert("Communication Failure: " + err.message); } 
-        finally { btn.innerText = "Execute Updates"; btn.disabled = false; }
+            if (res.result === 'success') { document.getElementById('bulkIds').value = ""; document.querySelectorAll('input[type=radio]').forEach(r => r.checked = false); document.getElementById('reasonDiv').style.display = 'none'; }
+        } catch (err) { alert("Communication Failure: " + err.message); } finally { btn.innerText = "Execute Updates"; btn.disabled = false; }
     }
 
-    // Pass the specifically filtered IDs to the print engine
     function openPrintBatch() { 
         if (currentFilteredIds.length === 0) return alert("No drivers to print.");
-        const idString = currentFilteredIds.join(",");
-        window.open(scriptURL + "?action=printBatch&ids=" + encodeURIComponent(idString), "_blank"); 
+        window.open(scriptURL + "?action=printBatch&ids=" + encodeURIComponent(currentFilteredIds.join(",")), "_blank"); 
     }
 
-    // Set today's date automatically in the filter when the page loads
     window.addEventListener('DOMContentLoaded', () => {
-        const localDate = new Date();
-        const offset = localDate.getTimezoneOffset() * 60000;
-        const todayStr = new Date(localDate - offset).toISOString().split('T')[0];
-        document.getElementById('filterDate').value = todayStr;
+        const offset = new Date().getTimezoneOffset() * 60000;
+        document.getElementById('filterDate').value = new Date(new Date() - offset).toISOString().split('T')[0];
     });
 </script>
 </body>
