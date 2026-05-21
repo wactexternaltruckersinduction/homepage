@@ -216,6 +216,12 @@
         const fDate = document.getElementById('filterDate').value;
         const fStatus = document.getElementById('filterStatus').value;
 
+        // Change button text while querying
+        if (searchBtn) {
+             searchBtn.innerText = "Querying Database...";
+             searchBtn.disabled = true;
+        }
+
         container.innerHTML = "<tr><td colspan='5' style='text-align:center; color:var(--text-muted);'>Querying live database... please wait.</td></tr>";
         batchControls.style.display = 'none';
         selectAllCb.style.display = 'none';
