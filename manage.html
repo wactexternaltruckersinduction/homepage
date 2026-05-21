@@ -271,7 +271,9 @@
         finally { findBtn.innerText = "Find Record"; findBtn.disabled = false; }
     }
 
-    function startRevalidation(truckerId) { window.location.href = `renewal.html?id=${encodeURIComponent(truckerId)}`;
+    function startRevalidation(truckerId) { 
+    window.location.href = 'renewal.html?id=' + encodeURIComponent(truckerId); 
+}
     function startReschedule() { startAppointmentFlow(currentUserData.id, currentUserData.type); }
     
 
