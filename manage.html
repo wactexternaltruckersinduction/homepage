@@ -271,8 +271,9 @@
         finally { findBtn.innerText = "Find Record"; findBtn.disabled = false; }
     }
 
-    function startRevalidation() { window.location.href = 'renewal.html'; }
+    function startRevalidation(truckerId) { window.location.href = 'renewal.html?id=${encodeURIComponent(truckerId)'; }
     function startReschedule() { startAppointmentFlow(currentUserData.id, currentUserData.type); }
+    
 
     function reprintSlip() {
         if (!managementData || !managementData.currentAppointment) return alert("No active parameter file captured.");
