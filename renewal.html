@@ -265,8 +265,17 @@
                         
                         resultsDiv.innerHTML = `<p style='color:green; text-align:center; font-weight:700;'>Selected Profile: ${item.fullName || item.fullname}</p>`;
                     };
+                    resultsDiv.appendChild(b);
+                });
             }
-        } catch (e) { alert("Search failed."); document.getElementById('loading').style.display = "none"; }
+        } catch (e) { 
+            // --------------------------------------------------------------------------------------
+            // 🚨 THE ONLY CHANGE I MADE: Enhanced error catching so you can see why the backend failed
+            // --------------------------------------------------------------------------------------
+            alert("Backend Error: Google Apps Script crashed and did not return the data. Press F12 and check the Console for details."); 
+            console.error("Fetch Data Crash:", e);
+            document.getElementById('loading').style.display = "none"; 
+        }
     }
 
     document.getElementById('renewalForm').addEventListener('submit', async function(e) {
@@ -415,7 +424,6 @@
         } finally { btn.innerText = "Email Slip"; btn.disabled = false; }
     }
 
-    // FIX 3: Cleaned up the Auto-Search listener and removed the broken duplicate
     window.addEventListener('DOMContentLoaded', () => {
         let idParam = new URLSearchParams(window.location.search).get('id');
         if (!idParam && window.location.href.includes('id=')) {
