@@ -89,21 +89,35 @@
                 <h3>Card Status</h3>
                 <div class="referee-box">
                     <label>Is your Induction Card lost or seized?</label>
-                    <select name="cardStatus" id="cardStatus">
+                    <select name="cardStatus" id="cardStatus" onchange="handleCardStatusChange()">
                         <option value="No">No (In Possession)</option>
                         <option value="Lost">Yes - Lost</option>
                         <option value="Seized">Yes - Seized</option>
                     </select>
                 </div>
+                
+                <div class="form-group" id="wrap_seizedReason" style="display: none; margin-top: 15px;">
+                    <label>Reason for Seizure (Required)</label>
+                    <input type="text" id="ren_seizedReason" class="modern-input" placeholder="Why was the card seized?">
+                </div>
+
                 <h3>Document Uploads</h3>
                 <div class="grid">
-                    <div class="form-group"><label>Old Induction Card</label><input type="file" id="file_oldCard"></div>
-                    <div class="form-group"><label>Police Report (If Lost)</label><input type="file" id="file_police"></div>
+                    <div class="form-group" id="wrap_oldCard">
+                        <label>Old Induction Card (Optional)</label>
+                        <input type="file" id="file_oldCard">
+                    </div>
+                    <div class="form-group" id="wrap_policeReport" style="display: none;">
+                        <label>Police Report (Required if Lost)</label>
+                        <input type="file" id="file_police">
+                    </div>
                 </div>
                 <div class="grid">
-                    <div class="form-group"><label>Driver's License Update</label><input type="file" id="file_license" required></div>
-                    <div class="form-group"><label>Recent Passport Photo</label><input type="file" id="file_passport" required></div>
+                    <div class="form-group"><label>Driver's License Update (Required)</label><input type="file" id="file_license" required></div>
+                    <div class="form-group"><label>Recent Passport Photo (Required)</label><input type="file" id="file_passport" required></div>
                 </div>
+                <div class="form-group"><label>Other Supporting Documents (Optional)</label><input type="file" id="file_otherDoc"></div>
+                
                 <button type="submit" class="btn btn-primary" id="renSubmitBtn" style="margin-top:20px;">Submit Renewal Request</button>
             </form>
         </div>
@@ -413,6 +427,49 @@
             }, 700);
         }
     });
+    <script>
+    function handleCardStatusChange() {
+        const status = document.getElementById('cardStatus').value;
+        
+        // Target the wrappers
+        const wrapOldCard = document.getElementById('wrap_oldCard');
+        const wrapPolice = document.getElementById('wrap_policeReport');
+        const wrapSeized = document.getElementById('wrap_seizedReason');
+        
+        // Target the inputs to toggle requirement checks
+        const inputPolice = document.getElementById('file_police');
+        const inputSeized = document.getElementById('ren_seizedReason');
+
+        // 1. Reset everything to hidden and NOT required
+        wrapOldCard.style.display = 'none';
+        wrapPolice.style.display = 'none';
+        wrapSeized.style.display = 'none';
+        inputPolice.required = false;
+        inputSeized.required = false;
+
+        // 2. Apply logic based on the dropdown
+        if (status === "No") {
+            // In possession: Only show old card option
+            wrapOldCard.style.display = 'block'; 
+        } 
+        else if (status === "Lost") {
+            // Lost: Show police report and force it to be required
+            wrapPolice.style.display = 'block';
+            inputPolice.required = true;
+        } 
+        else if (status === "Seized") {
+            // Seized: Show seized reason (required) and old card (optional)
+            wrapSeized.style.display = 'block';
+            wrapOldCard.style.display = 'block';
+            inputSeized.required = true;
+        }
+    }
+
+    // Run this once when the page loads so the default "No" state is formatted properly
+    window.addEventListener('DOMContentLoaded', () => {
+        handleCardStatusChange();
+    });
+
 </script>
 </body>
 </html>
