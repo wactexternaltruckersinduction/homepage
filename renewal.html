@@ -244,7 +244,8 @@
                         for (let key in item) {
                             let lowerKey = key.toLowerCase();
                             if (lowerKey.includes("license")) licVal = String(item[key]);
-                            if (lowerKey.includes("expir")) expVal = String(item[key]);
+                            // FIXED: Changed "expir" to "exp" to perfectly match inductionExpDate
+                            if (lowerKey.includes("exp")) expVal = String(item[key]);
                             if (lowerKey.includes("issue")) issueVal = String(item[key]);
                         }
 
