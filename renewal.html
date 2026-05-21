@@ -313,10 +313,10 @@
                     document.getElementById('successModal').style.display = "none";
                     startAppointmentFlow(currentUserData.id, currentUserData.type);
                 };
+            } else {
+                // This line will instantly capture and alert any rule rejections (like the 2-week license rule)
+                alert("Application Rejected: " + (result.message || "Unknown server error."));
             }
-        } catch (err) { alert("Error submitting renewal."); } 
-        finally { btn.innerText = "Submit Renewal Request"; btn.disabled = false; }
-    });
 
     async function startAppointmentFlow(id, type) {
         showPage('pageAppointment');
