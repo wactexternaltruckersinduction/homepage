@@ -208,18 +208,21 @@
         document.getElementById('reasonDiv').style.display = failedDA ? 'block' : 'none';
     }
 
-    async function fetchFilteredDrivers() {
+   async function fetchFilteredDrivers() {
         const container = document.getElementById('verifiedRowsContainer');
         const batchControls = document.getElementById('batchActionControls');
         const selectAllCb = document.getElementById('selectAllCb');
+        
+        // CRITICAL FIX: The button must be defined before we try to change its text!
+        const searchBtn = document.querySelector('button[onclick="fetchFilteredDrivers()"]');
         
         const fDate = document.getElementById('filterDate').value;
         const fStatus = document.getElementById('filterStatus').value;
 
         // Change button text while querying
         if (searchBtn) {
-             searchBtn.innerText = "Querying Database...";
-             searchBtn.disabled = true;
+            searchBtn.innerText = "Querying Database...";
+            searchBtn.disabled = true;
         }
 
         container.innerHTML = "<tr><td colspan='5' style='text-align:center; color:var(--text-muted);'>Querying live database... please wait.</td></tr>";
@@ -256,9 +259,16 @@
                 selectAllCb.style.display = 'inline-block';
             }
 
-        } catch(e) { container.innerHTML = "<tr><td colspan='5' style='text-align:center; color:red;'>Failed to load register records.</td></tr>"; }
+        } catch(e) { 
+            container.innerHTML = "<tr><td colspan='5' style='text-align:center; color:red;'>Failed to load register records.</td></tr>"; 
+        } finally {
+            // CRITICAL FIX: Ensures the button always resets to normal after loading
+            if (searchBtn) {
+                searchBtn.innerText = "Search Database";
+                searchBtn.disabled = false;
+            }
+        }
     }
-
     function toggleAllCbs(masterCb) {
         document.querySelectorAll('.row-cb').forEach(cb => cb.checked = masterCb.checked);
     }
