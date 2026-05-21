@@ -228,6 +228,7 @@
                     const b = document.createElement('button');
                     b.className = "btn btn-home"; b.style.width = "100%"; b.style.marginBottom = "8px"; b.style.textAlign = "left";
                     b.innerText = `SELECT PROFILE: ${item.fullName || item.fullname} (${item.inductionNumber || item.inductionnumber})`;
+                    
                     b.onclick = () => {
                         document.getElementById('renewalForm').style.display = "block";
                         
@@ -244,13 +245,12 @@
                         for (let key in item) {
                             let lowerKey = key.toLowerCase();
                             if (lowerKey.includes("license")) licVal = String(item[key]);
-                            // FIXED: Changed "expir" to "exp" to perfectly match inductionExpDate
                             if (lowerKey.includes("exp")) expVal = String(item[key]);
                             if (lowerKey.includes("issue")) issueVal = String(item[key]);
                         }
 
                         // MASKING THE LICENSE NUMBER (First 5 + *** + Last 3)
-                        let licStr = licVal.trim();
+                        let licStr = String(licVal).trim();
                         if (licStr !== "Not Found" && licStr.length > 7) {
                             licVal = licStr.substring(0, 5) + "***" + licStr.substring(licStr.length - 3);
                         }
@@ -270,9 +270,6 @@
                 });
             }
         } catch (e) { 
-            // --------------------------------------------------------------------------------------
-            // 🚨 THE ONLY CHANGE I MADE: Enhanced error catching so you can see why the backend failed
-            // --------------------------------------------------------------------------------------
             alert("Backend Error: Google Apps Script crashed and did not return the data. Press F12 and check the Console for details."); 
             console.error("Fetch Data Crash:", e);
             document.getElementById('loading').style.display = "none"; 
@@ -314,9 +311,14 @@
                     startAppointmentFlow(currentUserData.id, currentUserData.type);
                 };
             } else {
-                // This line will instantly capture and alert any rule rejections (like the 2-week license rule)
                 alert("Application Rejected: " + (result.message || "Unknown server error."));
             }
+        } catch (err) { 
+            alert("Error submitting renewal."); 
+        } finally { 
+            btn.innerText = "Submit Renewal Request"; btn.disabled = false; 
+        }
+    });
 
     async function startAppointmentFlow(id, type) {
         showPage('pageAppointment');
