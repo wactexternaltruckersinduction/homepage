@@ -72,45 +72,7 @@
     <a href="index.html" class="btn-home">← Back to Home</a>
 </header>
 <div id="protectedContent" class="container">
-    
-    <div class="card" id="inputWorkspaceCard">
-        <h2 id="portalTitle" style="margin-top:0; color: var(--primary-blue); font-weight: 800;">Department Workspace</h2>
-        <div style="background: #fff7ed; padding: 24px; border-radius: 18px; border: 1px solid #ffedd5; margin-top: 20px;">
-            <p style="font-size: 14px; color: #c2410c; margin-bottom: 16px; font-weight:600;">Paste Trucker Induction IDs below (Supports line breaking or comma splits)</p>
-            <textarea id="bulkIds" rows="5" style="margin-bottom: 20px;" placeholder="SI/EXT/2026/1001&#10;SI/EXT/2026/1002"></textarea>
-            
-            <div class="question-row" id="hseSection" style="display: none;">
-                <div class="question-text">Induction Session Attended & Approved?</div>
-                <div class="toggle-group">
-                    <label><input type="radio" name="indRadio" id="indYes" value="yes"> Yes</label>
-                    <label><input type="radio" name="indRadio" id="indNo" value="no"> No</label>
-                </div>
-            </div>
-            
-            <div id="medicSection" style="display: none;">
-                <div class="question-row">
-                    <div class="question-text">Passed Drug & Alcohol Screen?</div>
-                    <div class="toggle-group">
-                        <label><input type="radio" name="daRadio" id="daYes" value="yes" onchange="toggleReasonBox()"> Yes</label>
-                        <label><input type="radio" name="daRadio" id="daNo" value="no" onchange="toggleReasonBox()"> No</label>
-                    </div>
-                </div>
-
-                <div id="reasonDiv" style="display:none; margin-top: 16px;">
-                    <label style="font-size:11px; color:#ef4444; font-weight:800; display: block; margin-bottom: 6px;">SELECT MANDATORY BREACH PENALTY REASON</label>
-                    <select id="daReason" class="modern-input" style="border-color: #fca5a5;">
-                        <option value="">Select diagnostic reason...</option>
-                        <option value="Positive for Alcohol (1 Week Ban)">Positive for Alcohol (1 Week Ban)</option>
-                        <option value="Positive for Tramadol (1 Month Ban)">Positive for Tramadol (1 Month Ban)</option>
-                        <option value="Positive for Marijuana (2 Months Ban)">Positive for Marijuana (2 Months Ban)</option>
-                        <option value="Refusal to Test (No Suspension)">Refused Test (No Suspension)</option>
-                    </select>
-                </div>
-            </div>
-            
-            <button type="button" id="verifySubmitBtn" class="btn-main" style="background:#f47c20; color:white; margin-top: 15px;" onclick="runBulkUpdate()">Execute Updates</button>
-        </div>
-        <div class="card" style="margin-bottom: 30px; padding: 25px; background: white; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.05);">
+    <div class="card" style="margin-bottom: 30px; padding: 25px; background: white; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.05);">
     <h2 style="color: #004a99; margin-top: 0; margin-bottom: 15px; font-weight: 800;">📊 Induction Analytics Overview</h2>
     
     <div style="display: flex; gap: 15px; align-items: flex-end; margin-bottom: 25px; flex-wrap: wrap;">
@@ -155,6 +117,43 @@
         </div>
     </div>
 </div>
+    <div class="card" id="inputWorkspaceCard">
+        <h2 id="portalTitle" style="margin-top:0; color: var(--primary-blue); font-weight: 800;">Department Workspace</h2>
+        <div style="background: #fff7ed; padding: 24px; border-radius: 18px; border: 1px solid #ffedd5; margin-top: 20px;">
+            <p style="font-size: 14px; color: #c2410c; margin-bottom: 16px; font-weight:600;">Paste Trucker Induction IDs below (Supports line breaking or comma splits)</p>
+            <textarea id="bulkIds" rows="5" style="margin-bottom: 20px;" placeholder="SI/EXT/2026/1001&#10;SI/EXT/2026/1002"></textarea>
+            
+            <div class="question-row" id="hseSection" style="display: none;">
+                <div class="question-text">Induction Session Attended & Approved?</div>
+                <div class="toggle-group">
+                    <label><input type="radio" name="indRadio" id="indYes" value="yes"> Yes</label>
+                    <label><input type="radio" name="indRadio" id="indNo" value="no"> No</label>
+                </div>
+            </div>
+            
+            <div id="medicSection" style="display: none;">
+                <div class="question-row">
+                    <div class="question-text">Passed Drug & Alcohol Screen?</div>
+                    <div class="toggle-group">
+                        <label><input type="radio" name="daRadio" id="daYes" value="yes" onchange="toggleReasonBox()"> Yes</label>
+                        <label><input type="radio" name="daRadio" id="daNo" value="no" onchange="toggleReasonBox()"> No</label>
+                    </div>
+                </div>
+
+                <div id="reasonDiv" style="display:none; margin-top: 16px;">
+                    <label style="font-size:11px; color:#ef4444; font-weight:800; display: block; margin-bottom: 6px;">SELECT MANDATORY BREACH PENALTY REASON</label>
+                    <select id="daReason" class="modern-input" style="border-color: #fca5a5;">
+                        <option value="">Select diagnostic reason...</option>
+                        <option value="Positive for Alcohol (1 Week Ban)">Positive for Alcohol (1 Week Ban)</option>
+                        <option value="Positive for Tramadol (1 Month Ban)">Positive for Tramadol (1 Month Ban)</option>
+                        <option value="Positive for Marijuana (2 Months Ban)">Positive for Marijuana (2 Months Ban)</option>
+                        <option value="Refusal to Test (No Suspension)">Refused Test (No Suspension)</option>
+                    </select>
+                </div>
+            </div>
+            
+            <button type="button" id="verifySubmitBtn" class="btn-main" style="background:#f47c20; color:white; margin-top: 15px;" onclick="runBulkUpdate()">Execute Updates</button>
+        </div>
     </div>
 
     <div class="card" id="masterWorkspaceCard" style="display: none;">
