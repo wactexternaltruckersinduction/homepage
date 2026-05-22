@@ -98,6 +98,16 @@
         </div>
 
         <div style="flex-grow: 1; display: flex; flex-direction: column; gap: 15px;">
+            <div style="display: flex; gap: 15px;">
+                <div style="flex: 1; background: #faf5ff; padding: 15px; border-radius: 8px; border-left: 5px solid #a855f7;">
+                    <h3 style="margin: 0; color: #9333ea; font-size: 11px;">NEW APPLICATION</h3>
+                    <p style="margin: 5px 0 0 0; font-size: 20px; font-weight: 900;" id="stat_new">0</p>
+                </div>
+                <div style="flex: 1; background: #fdf2f8; padding: 15px; border-radius: 8px; border-left: 5px solid #db2777;">
+                    <h3 style="margin: 0; color: #be185d; font-size: 11px;">RENEWALS</h3>
+                    <p style="margin: 5px 0 0 0; font-size: 20px; font-weight: 900;" id="stat_renew">0</p>
+                </div>
+            </div>
             <div style="background: #f8fafc; padding: 20px; border-radius: 8px; border-left: 5px solid #64748b;">
                 <h3 style="margin: 0; color: #64748b; font-size: 14px;">TOTAL EXPECTED</h3>
                 <p style="margin: 5px 0 0 0; font-size: 28px; font-weight: 900;" id="stat_total">0</p>
@@ -433,6 +443,9 @@
                 document.getElementById('stat_booked').innerText = data.booked;
                 document.getElementById('stat_verified').innerText = data.verified;
                 document.getElementById('stat_generated').innerText = data.generated;
+                // Add these two lines directly under document.getElementById('stat_total').innerText = data.total;
+                document.getElementById('stat_new').innerText = data.newCount;
+                document.getElementById('stat_renew').innerText = data.renewalCount;
 
                 // 2. Draw the Chart
                 const ctx = document.getElementById('inductionPieChart').getContext('2d');
