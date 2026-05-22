@@ -45,6 +45,7 @@
         
         footer { background: white; color: var(--text-muted); text-align: center; padding: 20px; font-size: 12px; border-top: 1px solid #e2e8f0; }
     </style>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
 
@@ -70,7 +71,51 @@
     </div>
     <a href="index.html" class="btn-home">← Back to Home</a>
 </header>
+<div class="card" style="margin-bottom: 30px; padding: 25px; background: white; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.05);">
+    <h2 style="color: #004a99; margin-top: 0; margin-bottom: 15px; font-weight: 800;">📊 Induction Analytics Overview</h2>
+    
+    <div style="display: flex; gap: 15px; align-items: flex-end; margin-bottom: 25px; flex-wrap: wrap;">
+        <div>
+            <label style="font-size: 12px; font-weight: 700; color: #64748b;">START DATE</label>
+            <input type="date" id="chartStartDate" style="padding: 10px; border-radius: 8px; border: 1px solid #ccc; width: 150px;">
+        </div>
+        <div>
+            <label style="font-size: 12px; font-weight: 700; color: #64748b;">END DATE</label>
+            <input type="date" id="chartEndDate" style="padding: 10px; border-radius: 8px; border: 1px solid #ccc; width: 150px;">
+        </div>
+        <button onclick="fetchAndDrawAnalytics()" style="padding: 11px 20px; background: #004a99; color: white; border: none; border-radius: 8px; font-weight: bold; cursor: pointer;">
+            Generate Report
+        </button>
+    </div>
 
+    <div id="analyticsLoading" style="display:none; color:#004a99; font-weight:bold; margin-bottom: 15px;">Crunching data...</div>
+
+    <div style="display: flex; gap: 30px; align-items: center; flex-wrap: wrap;" id="analyticsResults">
+        
+        <div style="width: 300px; height: 300px;">
+            <canvas id="inductionPieChart"></canvas>
+        </div>
+
+        <div style="flex-grow: 1; display: flex; flex-direction: column; gap: 15px;">
+            <div style="background: #f8fafc; padding: 20px; border-radius: 8px; border-left: 5px solid #64748b;">
+                <h3 style="margin: 0; color: #64748b; font-size: 14px;">TOTAL EXPECTED</h3>
+                <p style="margin: 5px 0 0 0; font-size: 28px; font-weight: 900;" id="stat_total">0</p>
+            </div>
+            <div style="background: #fefce8; padding: 20px; border-radius: 8px; border-left: 5px solid #eab308;">
+                <h3 style="margin: 0; color: #ca8a04; font-size: 14px;">PENDING (Booked)</h3>
+                <p style="margin: 5px 0 0 0; font-size: 28px; font-weight: 900;" id="stat_booked">0</p>
+            </div>
+            <div style="background: #f0fdf4; padding: 20px; border-radius: 8px; border-left: 5px solid #22c55e;">
+                <h3 style="margin: 0; color: #16a34a; font-size: 14px;">VERIFIED & PASSED</h3>
+                <p style="margin: 5px 0 0 0; font-size: 28px; font-weight: 900;" id="stat_verified">0</p>
+            </div>
+            <div style="background: #eff6ff; padding: 20px; border-radius: 8px; border-left: 5px solid #3b82f6;">
+                <h3 style="margin: 0; color: #2563eb; font-size: 14px;">CARDS GENERATED</h3>
+                <p style="margin: 5px 0 0 0; font-size: 28px; font-weight: 900;" id="stat_generated">0</p>
+            </div>
+        </div>
+    </div>
+</div>
 <div id="protectedContent" class="container">
     
     <div class="card" id="inputWorkspaceCard">
@@ -349,6 +394,86 @@
         const todayStr = new Date(localDate - offset).toISOString().split('T')[0];
         document.getElementById('filterDate').value = todayStr;
     });
+    // --- ANALYTICS DASHBOARD LOGIC ---
+    let myPieChart = null; // Store the chart instance so we can destroy it when updating
+
+    // Default dates to current month on load
+    window.addEventListener('DOMContentLoaded', () => {
+        const today = new Date();
+        const firstDay = new Date(today.getFullYear(), today.getMonth(), 1);
+        
+        // Format YYYY-MM-DD
+        document.getElementById('chartStartDate').value = firstDay.toISOString().split('T')[0];
+        document.getElementById('chartEndDate').value = today.toISOString().split('T')[0];
+        
+        // Optional: Auto-load chart on boot
+        // fetchAndDrawAnalytics(); 
+    });
+
+    async function fetchAndDrawAnalytics() {
+        const start = document.getElementById('chartStartDate').value;
+        const end = document.getElementById('chartEndDate').value;
+        const loader = document.getElementById('analyticsLoading');
+        
+        if(!start || !end) return alert("Please select both a start and end date.");
+
+        loader.style.display = "block";
+
+        try {
+            const payload = { action: 'getAnalytics', startDate: start, endDate: end };
+            const response = await fetch(scriptURL, { method: 'POST', body: JSON.stringify(payload) });
+            const res = await response.json();
+
+            loader.style.display = "none";
+
+            if (res.result === 'success') {
+                const data = res.data;
+
+                // 1. Update text numbers
+                document.getElementById('stat_total').innerText = data.total;
+                document.getElementById('stat_booked').innerText = data.booked;
+                document.getElementById('stat_verified').innerText = data.verified;
+                document.getElementById('stat_generated').innerText = data.generated;
+
+                // 2. Draw the Chart
+                const ctx = document.getElementById('inductionPieChart').getContext('2d');
+                
+                // If a chart already exists, destroy it so they don't overlap
+                if (myPieChart !== null) {
+                    myPieChart.destroy();
+                }
+
+                myPieChart = new Chart(ctx, {
+                    type: 'doughnut', // 'pie' or 'doughnut'
+                    data: {
+                        labels: ['Pending (Booked)', 'Verified', 'Cards Generated'],
+                        datasets: [{
+                            data: [data.booked, data.verified, data.generated],
+                            backgroundColor: [
+                                '#facc15', // Yellow for Pending
+                                '#22c55e', // Green for Verified
+                                '#3b82f6'  // Blue for Generated
+                            ],
+                            borderWidth: 2,
+                            borderColor: '#ffffff'
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: { position: 'bottom' }
+                        }
+                    }
+                });
+            } else {
+                alert("Analytics failed: " + res.message);
+            }
+        } catch (error) {
+            loader.style.display = "none";
+            alert("Connection error while fetching report.");
+        }
+    }
 </script>
 </body>
 </html>
