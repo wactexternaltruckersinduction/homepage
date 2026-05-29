@@ -334,23 +334,35 @@
 
     // --- DASHBOARD BUILDER, D/A SUSPENSION & PENDING STATE LOGIC ---
     function buildDashboard(p) {
-        // Safe key sniffer
-        const findVal = (searchStr) => {
-            const exact = Object.keys(p).find(k => k.toLowerCase().trim() === searchStr.toLowerCase().replace(/\s/g, ""));
-            if (exact) return p[exact];
-            const partial = Object.keys(p).find(k => k.toLowerCase().includes(searchStr.toLowerCase().replace(/\s/g, "")));
-            return partial ? p[partial] : "";
-        };
+        // STRICT MAPPING: We check specific keys provided by your backend
+        let nameVal = p['fullName'] || p['Full Name'] || p['FullName'];
+        let idVal = p['inductionNumber'] || p['Induction Number'];
+        let licVal = p['licenseDetails'] || p['License Number'] || p['licenseNumber'];
+        let dobVal = p['dob'] || p['Date of Birth'];
+        let issueVal = p['Date of Issue'] || p['dateOfIssue'] || p['issueDate'];
+        
+        let photoUrl = p['passportPhoto'] || p['Passport Photo'];
+        let phoneVal = p['mobile'] || p['Mobile Number'];
+        let compVal = p['companyName'] || p['Company Name'];
+        let addrVal = p['address'] || p['Address'];
+        
+        // Exact Appointment & Dates keys based on your spreadsheet setup
+        let aptDate = p['Appointment Date'] || p['appointmentDate'];
+        let aptTime = p['Appointment Time'] || p['appointmentTime'];
+        let aptStatus = p['Appointment Status'] || p['appointmentStatus'] || "";
+        
+        let indExpStr = p['inductionExpDate'] || p['Induction Expiration'];
+        let licExpStr = p['licenseExpDate'] || p['License Expiration'];
+        let reasonVal = p['daReason'] || p['Reason'] || p['reason'];
 
         // 1. Immutable Sidebar Mapping
-        document.getElementById('sideName').innerText = findVal('name') || "Unknown Driver";
-        document.getElementById('sideId').value = findVal('inductionnumber') || "N/A";
-        document.getElementById('sideLicense').value = findVal('license');
-        document.getElementById('sideDob').value = findVal('birth') || findVal('dob') || "N/A";
-        document.getElementById('sideIssue').value = findVal('issue') || "N/A";
+        document.getElementById('sideName').innerText = nameVal || "Unknown Driver";
+        document.getElementById('sideId').value = idVal || "N/A";
+        document.getElementById('sideLicense').value = licVal || "N/A";
+        document.getElementById('sideDob').value = dobVal || "N/A";
+        document.getElementById('sideIssue').value = issueVal || "N/A";
         
-        // Google Drive Photo Renderer Fix
-        let photoUrl = findVal('passport');
+        // Google Drive Photo Renderer
         let finalImgSrc = "https://via.placeholder.com/140?text=No+Photo";
         if (photoUrl && photoUrl.includes('http')) {
             const match = photoUrl.match(/[-\w]{25,}/);
@@ -359,14 +371,8 @@
         }
         document.getElementById('sidePhoto').src = finalImgSrc;
 
-        // Appointment Status Sniffer
-        const aptDate = findVal('appointment date');
-        const aptTime = findVal('appointment time');
-        const aptStatus = findVal('appointment status') || "Booked";
-
         // 2. D/A and Suspension Logic
         let isSuspended = false;
-        let reasonVal = findVal('reason'); 
         let daInput = document.getElementById('sideDA');
         let suspText = document.getElementById('suspensionText');
 
@@ -394,6 +400,7 @@
             } else {
                 daInput.value = `Ban Served: Eligible for Renewal`;
                 daInput.style.color = "var(--warning)";
+                suspText.style.display = "none";
             }
         } else {
             daInput.value = "Passed / Clear";
@@ -402,34 +409,27 @@
         }
 
         // 3. Variable Data Mapping
-        const phone = findVal('mobile') || findVal('phone');
-        const comp = findVal('company');
-        const addr = findVal('address');
-        document.getElementById('currPhone').value = phone || "N/A";
-        document.getElementById('currCompany').value = comp || "N/A";
-        document.getElementById('currAddress').value = addr || "N/A";
+        document.getElementById('currPhone').value = phoneVal || "N/A";
+        document.getElementById('currCompany').value = compVal || "N/A";
+        document.getElementById('currAddress').value = addrVal || "N/A";
 
-        document.getElementById('ren_mobile').value = phone;
-        document.getElementById('ren_company').value = comp;
-        document.getElementById('ren_address').value = addr;
+        document.getElementById('ren_mobile').value = phoneVal || "";
+        document.getElementById('ren_company').value = compVal || "";
+        document.getElementById('ren_address').value = addrVal || "";
 
         // 4. Squarcle Appointment Card Mapping
-        if (aptDate) {
+        if (aptDate && aptStatus !== "Verified" && aptStatus !== "Card Generated") {
             document.getElementById('apptBox').style.display = "block";
             document.getElementById('apptDetails').innerText = `${aptDate} ${aptTime ? ' | ' + aptTime : ''}`;
             document.getElementById('apptBadge').innerText = aptStatus.toUpperCase();
             
-            // Toggle Manage Button Based on Suspension
             document.getElementById('manageSessionBtn').disabled = isSuspended;
             document.getElementById('manageSessionBtn').innerText = isSuspended ? "Session Locked" : "Manage Session";
         } else {
             document.getElementById('apptBox').style.display = "none";
         }
 
-        // 5. Dual Date Evaluation & "Renewal Submitted" State
-        const indExpStr = findVal('induction exp') || findVal('inductionexp') || findVal('expir');
-        const licExpStr = findVal('license exp') || findVal('licenseexp') || findVal('license');
-
+        // 5. Dual Date Evaluation
         const indDaysLeft = evaluateDateStatus(indExpStr, 'boxInduction', 'expInductionDate', 'badgeInduction');
         evaluateDateStatus(licExpStr, 'boxLicense', 'expLicenseDate', 'badgeLicense');
 
@@ -447,7 +447,7 @@
             document.getElementById('renewLockedText').innerText = "Renewal disabled due to active security or medical suspension.";
             document.getElementById('renewLockedText').style.color = "var(--danger)";
         } 
-        else if (isPendingRenewal) {
+        else if (isPendingRenewal && aptDate !== "") {
             // RENEWAL SUBMITTED STATE
             const indBox = document.getElementById('boxInduction');
             const indBadge = document.getElementById('badgeInduction');
@@ -561,7 +561,6 @@
 
             if (result.result === 'success') {
                 alert("Renewal Details Updated Successfully! Proceeding to Appointment Scheduling.");
-                // Immediately refresh user state to trigger the "Renewal Processing" lock
                 document.getElementById('loginBtn').click(); 
                 switchView('viewAppointment');
             } else {
