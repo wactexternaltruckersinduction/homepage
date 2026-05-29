@@ -198,7 +198,7 @@
                 <div id="renewActionBox" class="card" style="display: none; border: 2px solid var(--orange); background: #fff7ed; text-align: center; padding: 35px;">
                     <h3 style="margin: 0 0 10px 0; color: var(--orange); font-size: 20px; font-weight: 800;">Renewal Window Open</h3>
                     <p style="font-size: 14px; color: #9a3412; margin-bottom: 25px; font-weight: 600;">Your induction expires in less than 4 weeks. You may now update your documents.</p>
-                    <button class="btn-main" style="background: var(--orange); width: auto;" onclick="switchView('viewRenewal')">Initiate Document Renewal</button>
+                    <button class="btn-main" style="background: var(--orange); width: auto;" onclick="switchView('viewRenewal')">Initiate Induction Renewal</button>
                 </div>
                 
                 <div id="renewLockedBox" class="card" style="display: none; border: 2px solid var(--success); background: #f0fdf4; text-align: center; padding: 25px;">
@@ -623,14 +623,19 @@
                 oldCard: await getFileData(document.getElementById('file_oldCard')), 
                 policeReport: await getFileData(document.getElementById('file_police')),
                 driversLicense: await getFileData(document.getElementById('file_license')), 
-                passportPhoto: await getFileData(document.getElementById('file_passport'))
+                passportPhoto: await getFileData(document.getElementById('file_passport')),
+                otherDoc: await getFileData(document.getElementById('file_otherDoc'))
             };
             const response = await fetch(scriptURL, { method: 'POST', body: JSON.stringify(payload) });
             const result = await response.json();
+            
             if (result.result === 'success') {
                 alert("Renewal Details Updated Successfully! Proceeding to Appointment Scheduling.");
-                document.getElementById('loginBtn').click(); // Refresh user data
+                
+                // BUG FIX: Removed the automatic login refresh that was kicking you out!
+                // Now it just safely moves you directly to the calendar.
                 switchView('pageAppointment');
+                
             } else { alert("Application Rejected: " + (result.message || "Unknown error.")); }
         } catch (err) { alert("Error submitting renewal."); } 
         finally { btn.innerText = "Submit Renewal Request"; btn.disabled = false; }
@@ -701,9 +706,18 @@
             const payload = { action: 'book', id: document.getElementById('sideId').value, type: 'renewal', date: selectedDateStr };
             const response = await fetch(scriptURL, { method: 'POST', body: JSON.stringify(payload) });
             const result = await response.json();
+
             if (result.result === 'success') {
-                alert("Booking successful!");
-                document.getElementById('loginBtn').click(); // Refresh user data to load new appointment
+                
+                // BUG FIX: Populate the Slip and show it directly instead of refreshing the whole page!
+                document.getElementById('slip_name').innerText = document.getElementById('sideName').innerText;
+                document.getElementById('slip_id').innerText = document.getElementById('sideId').value;
+                document.getElementById('slip_date').innerText = selectedDateStr;
+                document.getElementById('slip_apt_id').innerText = result.aptId || "APT-" + Math.floor(Math.random()*100000);
+                document.getElementById('slip_status').innerText = result.status || "Booked";
+                
+                switchView('pageSlip');
+                
             } else { alert(result.message); }
         } catch (e) { alert("Booking engine failure."); } 
         finally { btn.innerText = "Commit Appointment Pass"; btn.disabled = false; }
