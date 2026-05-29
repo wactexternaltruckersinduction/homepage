@@ -6,7 +6,7 @@
     <title>Driver Self-Service Portal - WACT</title>
     <style>
         :root { 
-            --primary-blue: #004a99; --orange: #f47c20; --bg-light: #f1f5f9; 
+            --primary-blue: #004a99; --orange: #f47c20; --bg-light: #f8fafc; 
             --text-dark: #0f172a; --text-muted: #64748b; --success: #16a34a; --warning: #ca8a04; --danger: #dc2626;
             --shadow-soft: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.05);
             --squarcle-radius: 20px;
@@ -23,50 +23,57 @@
         
         /* SHARED COMPONENTS */
         .card { background: white; border-radius: var(--squarcle-radius); padding: 30px; box-shadow: var(--shadow-soft); border: 1px solid #e2e8f0; margin-bottom: 20px;}
-        .btn-main { width: 100%; padding: 14px; border: none; border-radius: 12px; font-weight: 700; cursor: pointer; font-size: 14px; text-transform: uppercase; transition: 0.2s; background: var(--primary-blue); color: white; }
-        .btn-main:hover { opacity: 0.9; }
-        .btn-main:disabled { background: #cbd5e1; cursor: not-allowed; }
-        .input-group { margin-bottom: 15px; text-align: left; }
-        .input-group label { display: block; font-size: 10px; font-weight: 800; color: var(--text-muted); margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.5px;}
-        .modern-input { width: 100%; padding: 12px 16px; border: 2px solid #e2e8f0; border-radius: 10px; font-size: 14px; box-sizing: border-box; transition: 0.2s; background: white; }
-        .modern-input:focus { outline: none; border-color: var(--primary-blue); }
-        .locked-input { background: #f8fafc; color: #64748b; font-weight: 600; cursor: not-allowed; border-color: #f1f5f9; }
+        .btn-main { width: 100%; padding: 14px; border: none; border-radius: 14px; font-weight: 700; cursor: pointer; font-size: 14px; text-transform: uppercase; transition: 0.2s; background: var(--primary-blue); color: white; letter-spacing: 0.5px;}
+        .btn-main:hover { opacity: 0.9; transform: translateY(-1px); box-shadow: 0 4px 10px rgba(0,74,153,0.2);}
+        .btn-main:disabled { background: #cbd5e1; cursor: not-allowed; box-shadow: none; transform: none;}
+        
+        .input-group { margin-bottom: 18px; text-align: left; }
+        .input-group label { display: block; font-size: 11px; font-weight: 800; color: var(--text-muted); margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.5px;}
+        .modern-input { width: 100%; padding: 14px 16px; border: 2px solid #e2e8f0; border-radius: 12px; font-size: 14px; box-sizing: border-box; transition: 0.2s; background: white; font-family: inherit; font-weight: 600; color: var(--text-dark);}
+        .modern-input:focus { outline: none; border-color: var(--primary-blue); box-shadow: 0 0 0 3px rgba(0,74,153,0.1);}
+        
+        /* THE PREFERRED CLASSY LOCKED INPUT */
+        .locked-input { background: #f1f5f9; color: #64748b; cursor: not-allowed; border-color: #e2e8f0; opacity: 0.8;}
+        
         .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
 
         /* VIEWS */
         #loginView { display: flex; justify-content: center; align-items: center; flex: 1; padding: 20px; }
-        #dashboardView { display: none; padding: 30px; max-width: 1100px; margin: 0 auto; width: 100%; box-sizing: border-box; }
+        #dashboardView { display: none; padding: 30px; max-width: 1150px; margin: 0 auto; width: 100%; box-sizing: border-box; }
         .section-view { display: none; }
         .section-view.active { display: block; }
         
         /* DASHBOARD GRID */
-        .dash-grid { display: grid; grid-template-columns: 320px 1fr; gap: 30px; align-items: start; }
+        .dash-grid { display: grid; grid-template-columns: 340px 1fr; gap: 30px; align-items: start; }
         @media (max-width: 850px) { .dash-grid { grid-template-columns: 1fr; } }
         
         /* PROFILE SIDEBAR */
-        .profile-sidebar { text-align: center; padding: 30px 20px;}
-        .profile-photo { width: 130px; height: 130px; border-radius: 50%; border: 4px solid white; box-shadow: 0 4px 10px rgba(0,0,0,0.1); margin: 0 auto 15px auto; background: #e2e8f0; object-fit: cover; display: block; }
-        .profile-name { font-size: 18px; font-weight: 800; color: var(--primary-blue); margin: 0 0 5px 0; }
-        .profile-role { font-size: 11px; font-weight: 700; color: var(--orange); text-transform: uppercase; margin: 0 0 20px 0; }
-        .sidebar-locked-list { text-align: left; background: #f8fafc; border-radius: 12px; padding: 15px; border: 1px solid #e2e8f0; }
-        .sidebar-item { margin-bottom: 12px; padding-bottom: 12px; border-bottom: 1px dashed #cbd5e1; }
-        .sidebar-item:last-child { margin-bottom: 0; padding-bottom: 0; border-bottom: none; }
-        .sidebar-item label { display: block; font-size: 10px; font-weight: 800; color: #94a3b8; text-transform: uppercase; }
-        .sidebar-item span { display: block; font-size: 13px; font-weight: 700; color: #334155; margin-top: 2px; word-break: break-all;}
+        .profile-sidebar { text-align: center; padding: 35px 25px;}
+        .profile-photo { width: 130px; height: 130px; border-radius: 50%; border: 4px solid white; box-shadow: 0 4px 15px rgba(0,0,0,0.1); margin: 0 auto 15px auto; background: #e2e8f0; object-fit: cover; display: block; }
+        .profile-name { font-size: 20px; font-weight: 900; color: var(--primary-blue); margin: 0 0 5px 0; }
+        .profile-role { font-size: 11px; font-weight: 800; color: var(--orange); text-transform: uppercase; margin: 0 0 25px 0; letter-spacing: 0.5px;}
 
         /* STATUS BADGES & CARDS */
-        .status-box { padding: 15px 20px; border-radius: 12px; display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; border: 1px solid #e2e8f0; background: white;}
-        .badge { padding: 6px 12px; border-radius: 6px; font-size: 10px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px;}
-        .appt-card { background: #f0f7ff; border: 2px dashed #bae6fd; border-radius: 12px; padding: 20px; text-align: center; margin-bottom: 20px;}
+        .status-box { padding: 18px 20px; border-radius: 14px; display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; border: 2px solid #e2e8f0; background: white;}
+        .status-valid { background: #f0fdf4; border-color: #bbf7d0; }
+        .status-warn { background: #fefce8; border-color: #fef08a; }
+        .status-danger { background: #fef2f2; border-color: #fecaca; }
+        
+        .badge { padding: 6px 12px; border-radius: 8px; font-size: 11px; font-weight: 900; text-transform: uppercase; letter-spacing: 0.5px;}
+        .badge-valid { background: var(--success); color: white;}
+        .badge-warn { background: var(--warning); color: white;}
+        .badge-danger { background: var(--danger); color: white;}
+        
+        .appt-card { background: #f0f7ff; border: 2px dashed #bae6fd; border-radius: 14px; padding: 25px; text-align: center; margin-bottom: 25px;}
         
         /* CALENDAR */
-        .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 8px; margin-top: 15px;}
-        .day-box { border: 1px solid #ddd; padding: 10px; border-radius: 10px; text-align: center; cursor: pointer; transition: 0.2s; font-size: 14px;}
-        .day-box.disabled { background: #f1f5f9; color: #cbd5e1; cursor: not-allowed; border: none; }
-        .day-box.available { border: 2px solid var(--primary-blue); color: var(--primary-blue); font-weight: 700; }
-        .day-box.selected { background: var(--primary-blue) !important; color: white !important; }
-        .day-box.full { background: #fee2e2; color: #ef4444; border: 1px solid #fecaca; cursor: not-allowed; }
-        .slots-left { font-size: 9px; display: block; margin-top: 4px; font-weight: 600;}
+        .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 10px; margin-top: 15px;}
+        .day-box { border: 2px solid #e2e8f0; padding: 12px; border-radius: 12px; text-align: center; cursor: pointer; transition: 0.2s; font-size: 15px; font-weight: 600;}
+        .day-box.disabled { background: #f8fafc; color: #cbd5e1; cursor: not-allowed; border-color: #f1f5f9; }
+        .day-box.available { border-color: var(--primary-blue); color: var(--primary-blue); }
+        .day-box.selected { background: var(--primary-blue) !important; color: white !important; box-shadow: 0 4px 10px rgba(0,74,153,0.3);}
+        .day-box.full { background: #fef2f2; color: #ef4444; border-color: #fecaca; cursor: not-allowed; }
+        .slots-left { font-size: 10px; display: block; margin-top: 4px; font-weight: 800;}
     </style>
 </head>
 <body>
@@ -81,15 +88,14 @@
             <span class="sub">Self-Service Compliance Portal</span>
         </div>
     </div>
-    <button id="logoutBtn" style="display:none; padding: 8px 16px; border-radius: 8px; background: #fef2f2; border: 1px solid #fecaca; cursor: pointer; font-weight: 700; color: var(--danger); font-size: 12px;" onclick="logout()">Log Out</button>
+    <button id="logoutBtn" style="display:none; padding: 10px 20px; border-radius: 10px; background: #fef2f2; border: 2px solid #fecaca; cursor: pointer; font-weight: 800; color: var(--danger); font-size: 12px; text-transform: uppercase;" onclick="logout()">Log Out</button>
 </header>
 
-<!-- LOGIN VIEW -->
 <div id="loginView">
-    <div class="card" style="width: 100%; max-width: 380px; text-align: center;">
-        <div style="font-size: 40px; margin-bottom: 10px;">🔒</div>
-        <h2 style="color: var(--primary-blue); margin-top: 0; font-weight: 800;">Portal Login</h2>
-        <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 25px;">Access your induction records, upload documents, and manage appointments.</p>
+    <div class="card" style="width: 100%; max-width: 400px; text-align: center; padding: 40px 30px;">
+        <div style="font-size: 45px; margin-bottom: 15px;">🔒</div>
+        <h2 style="color: var(--primary-blue); margin-top: 0; font-weight: 900; font-size: 24px;">Portal Login</h2>
+        <p style="font-size: 14px; color: var(--text-muted); margin-bottom: 30px;">Access your induction records, upload documents, and manage appointments.</p>
         
         <form id="loginForm">
             <div class="input-group">
@@ -100,87 +106,92 @@
                 <label>Password (Last 5 Digits of License)</label>
                 <input type="password" id="loginPass" class="modern-input" placeholder="•••••" required maxlength="5">
             </div>
-            <p id="loginError" style="color: var(--danger); font-size: 12px; font-weight: 700; display: none; padding: 10px; background: #fef2f2; border-radius: 8px;"></p>
-            <button type="submit" id="loginBtn" class="btn-main">Secure Login</button>
+            <p id="loginError" style="color: var(--danger); font-size: 13px; font-weight: 700; display: none; padding: 12px; background: #fef2f2; border-radius: 10px; border: 1px solid #fecaca;"></p>
+            <button type="submit" id="loginBtn" class="btn-main" style="margin-top: 10px;">Secure Login</button>
         </form>
     </div>
 </div>
 
-<!-- DASHBOARD VIEW -->
 <div id="dashboardView">
     <div class="dash-grid">
         
-        <!-- SIDEBAR: Immutable Identity Data -->
         <div class="card profile-sidebar" style="margin-bottom: 0;">
             <img id="sidePhoto" class="profile-photo" src="" alt="Driver Photo">
             <h2 id="sideName" class="profile-name">---</h2>
             <p class="profile-role">External Truck Driver</p>
             
-            <div class="sidebar-locked-list">
-                <div class="sidebar-item"><label>🔒 Induction ID</label><span id="sideId">---</span></div>
-                <div class="sidebar-item"><label>🔒 License Number</label><span id="sideLicense">---</span></div>
-                <div class="sidebar-item"><label>🔒 Date of Birth</label><span id="sideDob">---</span></div>
-                <div class="sidebar-item"><label>🔒 Registration Date</label><span id="sideIssue">---</span></div>
-                <div class="sidebar-item"><label>🛑 Security Bans</label><span id="sideBans" style="color:var(--text-dark);">---</span></div>
-                <div class="sidebar-item"><label>⚕️ Medical D/A Result</label><span id="sideDA">---</span></div>
+            <div style="margin-top: 25px;">
+                <div class="input-group"><label>🔒 Induction ID</label><input type="text" id="sideId" class="modern-input locked-input" readonly></div>
+                <div class="input-group"><label>🔒 License Number</label><input type="text" id="sideLicense" class="modern-input locked-input" readonly></div>
+                <div class="input-group"><label>🔒 Date of Birth</label><input type="text" id="sideDob" class="modern-input locked-input" readonly></div>
+                <div class="input-group"><label>🔒 Registration Date</label><input type="text" id="sideIssue" class="modern-input locked-input" readonly></div>
+                
+                <hr style="border: 0; border-top: 2px dashed #e2e8f0; margin: 25px 0;">
+                
+                <div class="input-group"><label>🛑 Security Bans</label><input type="text" id="sideBans" class="modern-input locked-input" readonly></div>
+                <div class="input-group"><label>⚕️ Medical D/A Result</label><input type="text" id="sideDA" class="modern-input locked-input" readonly></div>
             </div>
         </div>
 
-        <!-- MAIN CONTENT AREA -->
         <div>
             
-            <!-- VIEW 1: SNAPSHOT (Default) -->
             <div id="viewSnapshot" class="section-view active">
-                <h2 style="color: var(--primary-blue); margin-top: 0; font-weight: 800;">Compliance Snapshot</h2>
+                <h2 style="color: var(--primary-blue); margin-top: 0; font-weight: 900; font-size: 22px; margin-bottom: 20px;">Compliance Snapshot</h2>
                 
-                <div id="statusInduction" class="status-box">
-                    <div>
-                        <div style="font-size: 11px; color: var(--text-muted); font-weight: 800; text-transform: uppercase;">Induction Validity</div>
-                        <div id="expInductionDate" style="font-size: 16px; font-weight: 800; color: var(--text-dark); margin-top: 2px;">---</div>
+                <div class="grid-2" style="margin-bottom: 25px;">
+                    <div id="boxInduction" class="status-box">
+                        <div>
+                            <div style="font-size: 11px; color: var(--text-muted); font-weight: 800; text-transform: uppercase;">Induction Validity</div>
+                            <div id="expInductionDate" style="font-size: 17px; font-weight: 900; color: var(--text-dark); margin-top: 2px;">---</div>
+                        </div>
+                        <span id="badgeInduction" class="badge">---</span>
                     </div>
-                    <span id="badgeInduction" class="badge">---</span>
+
+                    <div id="boxLicense" class="status-box">
+                        <div>
+                            <div style="font-size: 11px; color: var(--text-muted); font-weight: 800; text-transform: uppercase;">License Validity</div>
+                            <div id="expLicenseDate" style="font-size: 17px; font-weight: 900; color: var(--text-dark); margin-top: 2px;">---</div>
+                        </div>
+                        <span id="badgeLicense" class="badge">---</span>
+                    </div>
                 </div>
 
-                <!-- Active Appointment Block -->
                 <div id="apptBox" class="appt-card" style="display: none;">
-                    <h3 style="margin: 0 0 10px 0; color: #0369a1; font-size: 14px; text-transform: uppercase;">📅 Active Appointment</h3>
-                    <p style="margin: 0; font-size: 18px; font-weight: 800; color: #0f172a;" id="apptDetails">---</p>
-                    <p style="margin: 5px 0 15px 0; font-size: 12px; font-weight: 700; color: #0284c7;" id="apptStatus">Status: ---</p>
-                    <button class="btn-main" style="width: auto; padding: 10px 20px; background: white; color: #0369a1; border: 2px solid #0369a1;" onclick="switchView('viewAppointment')">Reschedule Session</button>
+                    <h3 style="margin: 0 0 10px 0; color: #0369a1; font-size: 14px; text-transform: uppercase; font-weight: 800;">📅 Active Appointment</h3>
+                    <p style="margin: 0; font-size: 20px; font-weight: 900; color: #0f172a;" id="apptDetails">---</p>
+                    <p style="margin: 5px 0 20px 0; font-size: 13px; font-weight: 700; color: #0284c7;" id="apptStatus">Status: ---</p>
+                    <button class="btn-main" style="width: auto; padding: 12px 24px; background: white; color: #0369a1; border: 2px solid #0369a1;" onclick="switchView('viewAppointment')">Reschedule Session</button>
                 </div>
 
-                <!-- Current Editable Variables Summary -->
-                <div class="card" style="background: #f8fafc; box-shadow: none;">
-                    <h3 style="margin: 0 0 15px 0; font-size: 13px; color: var(--text-muted); text-transform: uppercase;">Current Variable Records</h3>
+                <div class="card" style="background: #f8fafc; border: 2px solid #e2e8f0; padding: 25px;">
+                    <h3 style="margin: 0 0 20px 0; font-size: 14px; color: var(--primary-blue); text-transform: uppercase; font-weight: 800;">Current Variable Records</h3>
                     <div class="grid-2">
-                        <div class="input-group"><label>Registered Phone</label><div class="modern-input locked-input" id="currPhone">---</div></div>
-                        <div class="input-group"><label>Operating Company</label><div class="modern-input locked-input" id="currCompany">---</div></div>
-                        <div class="input-group" style="grid-column: span 2;"><label>Current Address</label><div class="modern-input locked-input" id="currAddress">---</div></div>
+                        <div class="input-group"><label>Registered Phone</label><input type="text" class="modern-input locked-input" id="currPhone" readonly></div>
+                        <div class="input-group"><label>Operating Company</label><input type="text" class="modern-input locked-input" id="currCompany" readonly></div>
+                        <div class="input-group" style="grid-column: span 2;"><label>Current Address</label><input type="text" class="modern-input locked-input" id="currAddress" readonly></div>
                     </div>
                 </div>
 
-                <!-- 4-Week Logic Renewal Box -->
-                <div id="renewActionBox" class="card" style="display: none; border-left: 5px solid var(--orange); text-align: center;">
-                    <h3 style="margin: 0 0 10px 0; color: var(--text-dark);">Renewal Window Open</h3>
-                    <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 20px;">Your induction expires in less than 4 weeks. You may now update your documents and initiate renewal.</p>
-                    <button class="btn-main" style="background: var(--orange);" onclick="switchView('viewRenewal')">Update Details & Renew Docs</button>
+                <div id="renewActionBox" class="card" style="display: none; border: 2px solid var(--orange); background: #fff7ed; text-align: center; padding: 30px;">
+                    <h3 style="margin: 0 0 10px 0; color: var(--orange); font-size: 20px; font-weight: 900;">Renewal Window Open</h3>
+                    <p style="font-size: 14px; color: #9a3412; margin-bottom: 25px; font-weight: 600;">Your induction expires in less than 4 weeks. You may now update your documents and initiate renewal.</p>
+                    <button class="btn-main" style="background: var(--orange); font-size: 16px; padding: 16px;" onclick="switchView('viewRenewal')">Update Details & Renew Docs</button>
                 </div>
                 
-                <div id="renewLockedBox" class="card" style="display: none; background: #f0fdf4; border-left: 5px solid var(--success); text-align: center;">
-                    <h3 style="margin: 0 0 5px 0; color: var(--success);">Compliance Active</h3>
-                    <p id="renewLockedText" style="font-size: 13px; color: var(--text-muted); margin: 0;">Your card is valid. Renewal opens 4 weeks before expiration.</p>
+                <div id="renewLockedBox" class="card" style="display: none; border: 2px solid var(--success); background: #f0fdf4; text-align: center; padding: 25px;">
+                    <h3 style="margin: 0 0 8px 0; color: var(--success); font-size: 18px; font-weight: 900;">Compliance Active</h3>
+                    <p id="renewLockedText" style="font-size: 14px; color: #166534; margin: 0; font-weight: 600;">Your card is valid. Renewal opens 4 weeks before expiration.</p>
                 </div>
             </div>
 
-            <!-- VIEW 2: RENEWAL FORM -->
             <div id="viewRenewal" class="section-view card">
-                <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #e2e8f0; padding-bottom: 15px; margin-bottom: 25px;">
-                    <h2 style="margin: 0; color: var(--primary-blue); font-weight: 800;">Update & Renew</h2>
-                    <button class="btn-main" style="width: auto; padding: 8px 15px; background: #e2e8f0; color: var(--text-dark);" onclick="switchView('viewSnapshot')">Cancel</button>
+                <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #e2e8f0; padding-bottom: 20px; margin-bottom: 25px;">
+                    <h2 style="margin: 0; color: var(--primary-blue); font-weight: 900; font-size: 22px;">Update & Renew</h2>
+                    <button class="btn-main" style="width: auto; padding: 10px 20px; background: #e2e8f0; color: var(--text-dark);" onclick="switchView('viewSnapshot')">Cancel</button>
                 </div>
 
                 <form id="renewalForm">
-                    <h3 style="font-size: 12px; color: var(--text-muted); text-transform: uppercase;">Step 1: Variable Details</h3>
+                    <h3 style="font-size: 13px; color: var(--text-muted); text-transform: uppercase; font-weight: 800; margin-bottom: 15px;">Step 1: Variable Details</h3>
                     <div class="input-group"><label>Current Address</label><input type="text" id="ren_address" class="modern-input" required></div>
                     <div class="grid-2">
                         <div class="input-group"><label>Operating Company</label><input type="text" id="ren_company" class="modern-input" required></div>
@@ -202,7 +213,7 @@
                         <input type="text" id="ren_seizedReason" class="modern-input" placeholder="Required if seized">
                     </div>
 
-                    <h3 style="font-size: 12px; color: var(--text-muted); text-transform: uppercase; margin-top: 30px; border-top: 1px solid #e2e8f0; padding-top: 20px;">Step 2: Document Uploads</h3>
+                    <h3 style="font-size: 13px; color: var(--text-muted); text-transform: uppercase; font-weight: 800; margin-top: 35px; border-top: 2px dashed #e2e8f0; padding-top: 25px;">Step 2: Document Uploads</h3>
                     <div class="grid-2">
                         <div class="input-group"><label>Driver's License (Required)</label><input type="file" id="file_license" class="modern-input" required></div>
                         <div class="input-group"><label>Passport Photograph (Required)</label><input type="file" id="file_passport" class="modern-input" required></div>
@@ -213,28 +224,27 @@
                         <div class="input-group"><label>Other Supporting Docs</label><input type="file" id="file_otherDoc" class="modern-input"></div>
                     </div>
 
-                    <button type="submit" id="renSubmitBtn" class="btn-main" style="margin-top: 20px; font-size: 16px; padding: 18px; background: var(--orange);">Submit Application & Continue</button>
+                    <button type="submit" id="renSubmitBtn" class="btn-main" style="margin-top: 25px; font-size: 16px; padding: 18px; background: var(--orange);">Submit Application & Continue</button>
                 </form>
             </div>
 
-            <!-- VIEW 3: APPOINTMENT SCHEDULER -->
             <div id="viewAppointment" class="section-view card">
-                <h2 style="margin-top:0; color:var(--primary-blue); font-weight:800;">Schedule Session</h2>
-                <p style="font-size:13px; color:var(--text-muted); margin-bottom: 20px;">Select an available date below. Time slots (9AM/2PM) are auto-assigned.</p>
+                <h2 style="margin-top:0; color:var(--primary-blue); font-weight:900; font-size:22px;">Schedule Session</h2>
+                <p style="font-size:14px; color:var(--text-muted); margin-bottom: 25px; font-weight: 600;">Select an available date below. Time slots (9AM/2PM) are auto-assigned.</p>
                 
-                <div style="display:flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
-                    <button class="btn-main" style="width: auto; padding: 8px 15px; background: #e2e8f0; color: var(--text-dark);" onclick="changeMonth(-1)">Prev</button>
-                    <h3 id="monthDisplay" style="margin:0; font-size:16px;">Month Year</h3>
-                    <button class="btn-main" style="width: auto; padding: 8px 15px; background: #e2e8f0; color: var(--text-dark);" onclick="changeMonth(1)">Next</button>
+                <div style="display:flex; justify-content: space-between; align-items: center; margin-bottom: 20px; background: #f8fafc; padding: 10px; border-radius: 12px;">
+                    <button class="btn-main" style="width: auto; padding: 10px 20px; background: white; color: var(--text-dark); border: 2px solid #e2e8f0;" onclick="changeMonth(-1)">Prev</button>
+                    <h3 id="monthDisplay" style="margin:0; font-size:18px; font-weight: 900; color: var(--primary-blue);">Month Year</h3>
+                    <button class="btn-main" style="width: auto; padding: 10px 20px; background: white; color: var(--text-dark); border: 2px solid #e2e8f0;" onclick="changeMonth(1)">Next</button>
                 </div>
                 
                 <div class="calendar-grid" id="calendarGrid"></div>
                 
-                <div id="bookingActions" style="margin-top:25px; display:none; text-align:center; padding: 20px; background: #f8fafc; border-radius: 12px;">
-                    <p style="margin: 0 0 15px 0; font-size: 14px;">Selected Date: <strong id="selectedDateText" style="color: var(--primary-blue); font-size: 16px;"></strong></p>
-                    <div style="display: flex; gap: 10px; justify-content: center;">
-                        <button class="btn-main" style="width: auto;" onclick="switchView('viewSnapshot')">Cancel</button>
-                        <button class="btn-main" id="confirmBookBtn" style="width: auto; background: var(--success);" onclick="confirmBooking()">Confirm Appointment</button>
+                <div id="bookingActions" style="margin-top:30px; display:none; text-align:center; padding: 25px; background: #f0fdf4; border-radius: 14px; border: 2px solid #bbf7d0;">
+                    <p style="margin: 0 0 15px 0; font-size: 15px; font-weight: 600;">Selected Date: <strong id="selectedDateText" style="color: var(--success); font-size: 18px; font-weight: 900;"></strong></p>
+                    <div style="display: flex; gap: 15px; justify-content: center;">
+                        <button class="btn-main" style="width: auto; background: white; color: var(--text-dark); border: 2px solid #e2e8f0;" onclick="switchView('viewSnapshot')">Cancel</button>
+                        <button class="btn-main" id="confirmBookBtn" style="width: auto; background: var(--success); font-size: 15px;" onclick="confirmBooking()">Confirm Appointment</button>
                     </div>
                 </div>
             </div>
@@ -318,32 +328,44 @@
             return partial ? p[partial] : "";
         };
 
-        // 1. Immutable Sidebar Mapping
+        // 1. Immutable Sidebar Mapping (Using inputs to get the squarcle look)
         document.getElementById('sideName').innerText = findVal('name') || "Unknown";
-        document.getElementById('sideId').innerText = findVal('induction number') || findVal('inductionnumber');
-        document.getElementById('sideLicense').innerText = findVal('license');
-        document.getElementById('sideDob').innerText = findVal('birth') || findVal('dob') || "N/A";
-        document.getElementById('sideIssue').innerText = findVal('issue') || "N/A";
+        document.getElementById('sideId').value = findVal('induction number') || findVal('inductionnumber');
+        document.getElementById('sideLicense').value = findVal('license');
+        document.getElementById('sideDob').value = findVal('birth') || findVal('dob') || "N/A";
+        document.getElementById('sideIssue').value = findVal('issue') || "N/A";
         
         let photoUrl = findVal('passport');
         document.getElementById('sidePhoto').src = (photoUrl && photoUrl.includes('http')) ? photoUrl : "https://via.placeholder.com/130?text=No+Photo";
 
         // D/A and Bans Logic
         let banVal = findVal('ban');
-        document.getElementById('sideBans').innerText = banVal ? banVal : "None";
-        if (banVal) document.getElementById('sideBans').style.color = "var(--danger)";
+        let banInput = document.getElementById('sideBans');
+        banInput.value = banVal ? banVal : "None";
+        if (banVal) {
+            banInput.style.color = "var(--danger)";
+            banInput.style.borderColor = "var(--danger)";
+            banInput.style.background = "#fef2f2";
+        }
 
-        let reasonVal = findVal('reason'); // Backend uses reason for D/A failures
-        document.getElementById('sideDA').innerText = reasonVal ? `Failed: ${reasonVal}` : "Passed / Clear";
-        document.getElementById('sideDA').style.color = reasonVal ? "var(--danger)" : "var(--success)";
+        let reasonVal = findVal('reason'); 
+        let daInput = document.getElementById('sideDA');
+        daInput.value = reasonVal ? `Failed: ${reasonVal}` : "Passed / Clear";
+        if (reasonVal) {
+            daInput.style.color = "var(--danger)";
+            daInput.style.borderColor = "var(--danger)";
+            daInput.style.background = "#fef2f2";
+        } else {
+            daInput.style.color = "var(--success)";
+        }
 
         // 2. Variable Data Snapshot Mapping
         const phone = findVal('mobile') || findVal('phone');
         const comp = findVal('company');
         const addr = findVal('address');
-        document.getElementById('currPhone').innerText = phone || "N/A";
-        document.getElementById('currCompany').innerText = comp || "N/A";
-        document.getElementById('currAddress').innerText = addr || "N/A";
+        document.getElementById('currPhone').value = phone || "N/A";
+        document.getElementById('currCompany').value = comp || "N/A";
+        document.getElementById('currAddress').value = addr || "N/A";
 
         // Pre-fill hidden/editable Renewal Form
         document.getElementById('ren_mobile').value = phone;
@@ -362,55 +384,62 @@
             document.getElementById('apptBox').style.display = "none";
         }
 
-        // 4. Traffic Light & 4-Week Logic
-        const expStr = findVal('exp');
-        const box = document.getElementById('statusInduction');
-        const badge = document.getElementById('badgeInduction');
-        const dateText = document.getElementById('expInductionDate');
-        
+        // 4. FIX: Split the Date Extractors for Induction vs License
+        const indExpStr = findVal('inductionexp') || findVal('induction exp');
+        const licExpStr = findVal('licenseexp') || findVal('license exp');
+
+        // Evaluate Induction
+        const indDaysLeft = evaluateDateStatus(indExpStr, 'boxInduction', 'expInductionDate', 'badgeInduction');
+        // Evaluate License
+        evaluateDateStatus(licExpStr, 'boxLicense', 'expLicenseDate', 'badgeLicense');
+
+        // 28-Day Lockout Logic (Bound strictly to Induction Expiry)
         const actionBox = document.getElementById('renewActionBox');
         const lockedBox = document.getElementById('renewLockedBox');
 
-        if (!expStr) {
-            dateText.innerText = "Data Missing";
-            box.style.borderColor = "var(--danger)";
-            badge.style.background = "var(--danger)";
-            badge.innerText = "ACTION REQUIRED";
+        if (indDaysLeft <= 28 || isNaN(indDaysLeft)) {
             actionBox.style.display = "block";
             lockedBox.style.display = "none";
         } else {
-            dateText.innerText = expStr;
-            const expDate = new Date(expStr);
-            const today = new Date();
-            const daysLeft = Math.ceil((expDate - today) / (1000 * 60 * 60 * 24));
-
-            if (daysLeft < 0) {
-                box.style.borderColor = "var(--danger)";
-                box.style.background = "#fef2f2";
-                badge.style.background = "var(--danger)";
-                badge.innerText = "EXPIRED";
-            } else if (daysLeft <= 28) {
-                box.style.borderColor = "var(--warning)";
-                box.style.background = "#fefce8";
-                badge.style.background = "var(--warning)";
-                badge.innerText = "EXPIRING SOON";
-            } else {
-                box.style.borderColor = "var(--success)";
-                box.style.background = "#f0fdf4";
-                badge.style.background = "var(--success)";
-                badge.innerText = "VALID";
-            }
-
-            // 28-Day Lockout Logic
-            if (daysLeft <= 28 || isNaN(daysLeft)) {
-                actionBox.style.display = "block";
-                lockedBox.style.display = "none";
-            } else {
-                actionBox.style.display = "none";
-                lockedBox.style.display = "block";
-                document.getElementById('renewLockedText').innerText = `Your card is valid. Renewal opens 4 weeks before expiration (in ${daysLeft - 28} days).`;
-            }
+            actionBox.style.display = "none";
+            lockedBox.style.display = "block";
+            document.getElementById('renewLockedText').innerText = `Your card is valid. Renewal opens 4 weeks before expiration (in ${indDaysLeft - 28} days).`;
         }
+    }
+
+    // Helper: Evaluates date, styles the specific box, and returns the days left
+    function evaluateDateStatus(dateString, boxId, textId, badgeId) {
+        const box = document.getElementById(boxId);
+        const text = document.getElementById(textId);
+        const badge = document.getElementById(badgeId);
+
+        if (!dateString || dateString === "Not Found" || dateString === "") {
+            text.innerText = "Data Missing";
+            box.className = "status-box status-danger";
+            badge.className = "badge badge-danger";
+            badge.innerText = "ACTION REQ";
+            return NaN;
+        }
+
+        text.innerText = dateString;
+        const expiryDate = new Date(dateString);
+        const today = new Date();
+        const daysLeft = Math.ceil((expiryDate - today) / (1000 * 60 * 60 * 24));
+
+        if (daysLeft < 0) {
+            box.className = "status-box status-danger";
+            badge.className = "badge badge-danger";
+            badge.innerText = "EXPIRED";
+        } else if (daysLeft <= 28) {
+            box.className = "status-box status-warn";
+            badge.className = "badge badge-warn";
+            badge.innerText = "EXPIRING SOON";
+        } else {
+            box.className = "status-box status-valid";
+            badge.className = "badge badge-valid";
+            badge.innerText = "VALID";
+        }
+        return daysLeft;
     }
 
     // --- RENEWAL FORM LOGIC ---
@@ -444,7 +473,7 @@
             const payload = {
                 action: 'submitRenewal',
                 fullName: document.getElementById('sideName').innerText,
-                inductionNumber: document.getElementById('sideId').innerText,
+                inductionNumber: document.getElementById('sideId').value,
                 address: document.getElementById('ren_address').value,
                 mobile: document.getElementById('ren_mobile').value,
                 companyName: document.getElementById('ren_company').value,
@@ -478,9 +507,9 @@
     // --- CALENDAR & APPOINTMENT LOGIC ---
     async function loadCalendar() {
         const grid = document.getElementById('calendarGrid');
-        grid.innerHTML = "<p style='grid-column: span 7; text-align:center;'>Loading Database...</p>";
+        grid.innerHTML = "<p style='grid-column: span 7; text-align:center; font-weight:800; color:var(--primary-blue);'>Loading Database...</p>";
         try {
-            const id = document.getElementById('sideId').innerText;
+            const id = document.getElementById('sideId').value;
             const res = await fetch(`${scriptURL}?action=getCalendarData&id=${id}&type=renewal`);
             calendarData = await res.json(); 
             
@@ -490,7 +519,7 @@
             }
             renderCalendar();
         } catch(e) { 
-            grid.innerHTML = "<p style='grid-column: span 7; text-align:center; color: var(--danger);'>Failed to load calendar data.</p>";
+            grid.innerHTML = "<p style='grid-column: span 7; text-align:center; color: var(--danger); font-weight: 800;'>Failed to load calendar data.</p>";
         }
     }
 
@@ -548,7 +577,7 @@
         const btn = document.getElementById('confirmBookBtn');
         btn.innerText = "Booking Session..."; btn.disabled = true;
         try {
-            const payload = { action: 'book', id: document.getElementById('sideId').innerText, type: 'renewal', date: selectedDateStr };
+            const payload = { action: 'book', id: document.getElementById('sideId').value, type: 'renewal', date: selectedDateStr };
             const response = await fetch(scriptURL, { method: 'POST', body: JSON.stringify(payload) });
             const result = await response.json();
 
