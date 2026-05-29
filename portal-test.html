@@ -3,192 +3,267 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>WACT Trucker Portal - Test Sandbox</title>
+    <title>Driver Compliance Portal - WACT</title>
     <style>
-        :root {
-            --primary: #1e40af;
-            --success: #16a34a;
-            --danger: #ef4444;
-            --warning: #f59e0b;
-            --bg: #f8fafc;
-            --card: #ffffff;
+        :root { 
+            --primary-blue: #004a99; --orange: #f47c20; --bg-light: #f1f5f9; 
+            --text-dark: #0f172a; --text-muted: #64748b; --success: #16a34a; --warning: #ca8a04; --danger: #dc2626;
+            --shadow-soft: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.05);
+            --squarcle-radius: 20px;
         }
-
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: var(--bg); margin: 0; display: flex; justify-content: center; align-items: center; min-height: 100vh; }
-        .portal-container { background: var(--card); padding: 2rem; border-radius: 12px; box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1); width: 100%; max-width: 800px; margin: 20px; }
+        body { font-family: 'Segoe UI', system-ui, sans-serif; background-color: var(--bg-light); color: var(--text-dark); margin: 0; padding: 0; min-height: 100vh; display: flex; flex-direction: column; }
         
-        /* Login Styles */
-        .login-box { max-width: 400px; text-align: center; }
-        input { width: 100%; padding: 12px; margin: 10px 0; border: 1px solid #cbd5e1; border-radius: 6px; box-sizing: border-box; }
-        button { width: 100%; padding: 12px; border: none; border-radius: 6px; cursor: pointer; font-weight: 600; transition: 0.3s; }
-        .btn-primary { background: var(--primary); color: white; }
-        .btn-primary:disabled { background: #94a3b8; }
-
-        /* Dashboard Styles */
-        .dash-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #f1f5f9; padding-bottom: 1rem; margin-bottom: 1.5rem; }
-        .profile-img { width: 80px; height: 80px; border-radius: 50%; object-fit: cover; border: 3px solid var(--primary); }
-        .badge { padding: 4px 12px; border-radius: 20px; font-size: 0.8rem; font-weight: bold; }
-        .badge-active { background: #dcfce7; color: #166534; }
-        .badge-suspended { background: #fee2e2; color: #991b1b; }
-
-        .dash-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
-        .card { border: 1px solid #e2e8f0; padding: 1.5rem; border-radius: 8px; }
-        .full-width { grid-column: span 2; }
-        label { display: block; font-size: 0.8rem; color: #64748b; margin-top: 10px; }
-        .data-field { font-weight: 600; color: #1e293b; margin: 4px 0; }
+        /* HEADER */
+        header { background: white; padding: 15px 40px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid #e2e8f0; }
+        .header-brand { display: flex; align-items: center; gap: 16px; }
+        .logo-circle { width: 50px; height: 50px; border-radius: 12px; display: flex; justify-content: center; align-items: center; background: #fafafa; border: 1px solid #e2e8f0; overflow: hidden; }
+        .logo-circle img { max-width: 80%; height: auto; }
+        .brand-text .name { font-weight: 800; color: var(--primary-blue); font-size: 15px; display: block; }
+        .brand-text .sub { font-size: 11px; color: var(--text-muted); font-weight: 600; text-transform: uppercase; letter-spacing: 1px; }
         
-        .alert-box { padding: 1rem; border-radius: 6px; margin-top: 10px; font-size: 0.9rem; }
-        .alert-warning { background: #fffbeb; border-left: 4px solid var(--warning); color: #92400e; }
+        /* SHARED COMPONENTS */
+        .card { background: white; border-radius: var(--squarcle-radius); padding: 35px; box-shadow: var(--shadow-soft); border: 1px solid #e2e8f0; }
+        .btn-main { width: 100%; padding: 14px; border: none; border-radius: 12px; font-weight: 700; cursor: pointer; font-size: 14px; text-transform: uppercase; transition: 0.2s; background: var(--primary-blue); color: white; }
+        .btn-main:hover { opacity: 0.9; }
+        .btn-main:disabled { background: #cbd5e1; cursor: not-allowed; }
+        .input-group { margin-bottom: 20px; text-align: left; }
+        .input-group label { display: block; font-size: 11px; font-weight: 700; color: var(--text-muted); margin-bottom: 8px; text-transform: uppercase; }
+        .modern-input { width: 100%; padding: 12px 16px; border: 2px solid #e2e8f0; border-radius: 12px; font-size: 14px; box-sizing: border-box; transition: 0.2s; background: white; }
+        .modern-input:focus { outline: none; border-color: var(--primary-blue); }
+        .locked-input { background: #f8fafc; color: #94a3b8; cursor: not-allowed; border-color: #f1f5f9; }
 
-        .hidden { display: none !important; }
+        /* VIEW STATES */
+        #loginView { display: flex; justify-content: center; align-items: center; flex: 1; padding: 20px; }
+        #dashboardView { display: none; padding: 30px; max-width: 1000px; margin: 0 auto; width: 100%; box-sizing: border-box; }
+        
+        /* DASHBOARD GRID */
+        .dash-grid { display: grid; grid-template-columns: 300px 1fr; gap: 30px; align-items: start; }
+        @media (max-width: 800px) { .dash-grid { grid-template-columns: 1fr; } }
+        
+        /* PROFILE SIDEBAR */
+        .profile-sidebar { text-align: center; }
+        .profile-photo { width: 120px; height: 120px; border-radius: 50%; border: 4px solid white; box-shadow: 0 4px 10px rgba(0,0,0,0.1); margin: 0 auto 15px auto; background: #e2e8f0; object-fit: cover; display: block; }
+        .profile-name { font-size: 20px; font-weight: 800; color: var(--primary-blue); margin: 0 0 5px 0; }
+        .profile-role { font-size: 12px; font-weight: 700; color: var(--orange); text-transform: uppercase; margin: 0 0 20px 0; }
+        
+        /* STATUS BADGES */
+        .status-box { padding: 15px; border-radius: 12px; display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; font-weight: 700; font-size: 13px; }
+        .status-valid { background: #f0fdf4; border: 1px solid #bbf7d0; color: var(--success); }
+        .status-warn { background: #fefce8; border: 1px solid #fef08a; color: var(--warning); }
+        .status-danger { background: #fef2f2; border: 1px solid #fecaca; color: var(--danger); }
+        .badge { padding: 4px 10px; border-radius: 6px; font-size: 11px; font-weight: 800; text-transform: uppercase; }
+
+        /* TABS */
+        .tab-header { display: flex; gap: 10px; border-bottom: 2px solid #e2e8f0; margin-bottom: 25px; padding-bottom: 10px; }
+        .tab-btn { background: none; border: none; font-size: 14px; font-weight: 700; color: var(--text-muted); cursor: pointer; padding: 10px 15px; border-radius: 8px; transition: 0.2s; }
+        .tab-btn.active { background: var(--primary-blue); color: white; }
     </style>
 </head>
 <body>
 
-    <div id="loginSection" class="portal-container login-box">
-        <img src="https://via.placeholder.com/150x50?text=WACT+LOGO" alt="WACT Logo" style="margin-bottom: 1rem;">
-        <h2>Trucker Portal</h2>
-        <p>Log in to manage your induction and appointments</p>
+<header>
+    <div class="header-brand">
+        <div class="logo-circle">
+            <img src="https://cms-cd.apmterminals.com/onne/-/jssmedia/mainsite/africa-and-middle-east/Onne/Standard-Hero-images/wact-logo-square-400-ext.png" alt="WACT Logo">
+        </div>
+        <div class="brand-text">
+            <span class="name">WEST AFRICA CONTAINER TERMINAL</span>
+            <span class="sub">Self-Service Compliance Portal</span>
+        </div>
+    </div>
+    <button id="logoutBtn" style="display:none; padding: 8px 16px; border-radius: 8px; background: #f8fafc; border: 1px solid #e2e8f0; cursor: pointer; font-weight: 700; color: var(--danger);" onclick="logout()">Log Out</button>
+</header>
+
+<!-- LOGIN VIEW -->
+<div id="loginView">
+    <div class="card" style="width: 100%; max-width: 400px; text-align: center;">
+        <div style="font-size: 40px; margin-bottom: 10px;">🔒</div>
+        <h2 style="color: var(--primary-blue); margin-top: 0; font-weight: 800;">Portal Login</h2>
+        <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 25px;">Enter your credentials to access your compliance and induction dashboard.</p>
         
-        <input type="text" id="loginInduction" placeholder="Induction Number (SI/EXT/...)">
-        <input type="password" id="loginPass" placeholder="Password (License or Phone)">
-        <button class="btn-primary" id="loginBtn" onclick="handleLogin()">Sign In</button>
-        <p id="loginMsg" style="color:var(--danger); font-size: 0.8rem; margin-top: 10px;"></p>
-    </div>
-
-    <div id="dashboardSection" class="portal-container hidden">
-        <div class="dash-header">
-            <div style="display: flex; align-items: center; gap: 15px;">
-                <img id="userImg" src="https://via.placeholder.com/80" class="profile-img">
-                <div>
-                    <h2 id="userName" style="margin:0;">Loading...</h2>
-                    <span id="userStatus" class="badge">Checking...</span>
-                </div>
+        <form id="loginForm">
+            <div class="input-group">
+                <label>Induction Number</label>
+                <input type="text" id="loginId" class="modern-input" placeholder="e.g. SI/EXT/2026/1001" required>
             </div>
-            <button onclick="location.reload()" style="width: auto; background: #f1f5f9; color: #475569;">Logout</button>
+            <div class="input-group">
+                <label>Password (Last 5 Digits of License)</label>
+                <input type="password" id="loginPass" class="modern-input" placeholder="•••••" required maxlength="5">
+            </div>
+            <p id="loginError" style="color: var(--danger); font-size: 12px; font-weight: 700; display: none;"></p>
+            <button type="submit" id="loginBtn" class="btn-main">Secure Login</button>
+        </form>
+    </div>
+</div>
+
+<!-- DASHBOARD VIEW -->
+<div id="dashboardView">
+    <div class="dash-grid">
+        
+        <!-- SIDEBAR: Immutable Identity Data -->
+        <div class="card profile-sidebar">
+            <img id="dashPhoto" class="profile-photo" src="" alt="Driver Photo">
+            <h2 id="dashName" class="profile-name">Loading...</h2>
+            <p class="profile-role">External Truck Driver</p>
+            
+            <hr style="border: 0; border-top: 1px solid #e2e8f0; margin: 20px 0;">
+            
+            <div class="input-group">
+                <label>🔒 INDUCTION NUMBER</label>
+                <input type="text" id="dashId" class="modern-input locked-input" readonly>
+            </div>
+            <div class="input-group">
+                <label>🔒 DRIVER'S LICENSE NUMBER</label>
+                <input type="text" id="dashLicense" class="modern-input locked-input" readonly>
+            </div>
         </div>
 
-        <div class="dash-grid">
-            <div class="card">
-                <h4><center>Profile Details</center></h4>
-                <label>Induction ID</label><p class="data-field" id="valId">-</p>
-                <label>License Details</label><p class="data-field" id="valLicense">-</p>
-                <label>Phone Number</label><p class="data-field" id="valPhone">-</p>
-                <label>Company</label><p class="data-field" id="valCompany">-</p>
-            </div>
-
-            <div class="card">
-                <h4><center>Status & Alerts</center></h4>
-                <div id="expiryAlert" class="alert-box alert-warning hidden">
-                    ⚠️ <b>Renewal Required:</b> Your induction expires in <span id="daysLeft">0</span> days.
+        <!-- MAIN CONTENT: Editable Data & Status -->
+        <div class="card" style="padding: 0; overflow: hidden;">
+            <div style="padding: 35px;">
+                <div class="tab-header">
+                    <button class="tab-btn active">Compliance Status</button>
+                    <button class="tab-btn">Update Profile</button>
                 </div>
-                <label>First Issued</label><p class="data-field" id="valIssued">-</p>
-                <label>Expiry Date</label><p class="data-field" id="valExpiry">-</p>
-                <label>Violations</label><p class="data-field" id="valViolations">0</p>
-            </div>
+                
+                <!-- COMPLIANCE TAB -->
+                <div id="tabCompliance">
+                    <h3 style="margin-top: 0; color: var(--primary-blue);">Induction Validity</h3>
+                    <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 20px;">Your automated compliance status based on WACT database records.</p>
+                    
+                    <div id="statusInduction" class="status-box status-valid">
+                        <div>
+                            <div style="font-size: 11px; color: inherit; opacity: 0.8;">Induction Pass Expiry</div>
+                            <div id="expInductionDate" style="font-size: 15px;">Loading...</div>
+                        </div>
+                        <span id="badgeInduction" class="badge" style="background: var(--success); color: white;">VALID</span>
+                    </div>
 
-            <div class="card full-width">
-                <h4>Portal Actions</h4>
-                <div style="display: flex; gap: 10px;">
-                    <button id="renewalBtn" class="btn-primary" onclick="alert('Opening Renewal Form...')">Apply for Renewal</button>
-                    <button style="background:#64748b; color:white;" onclick="alert('Viewing History...')">Appointment History</button>
+                    <div id="statusLicense" class="status-box status-warn">
+                        <div>
+                            <div style="font-size: 11px; color: inherit; opacity: 0.8;">Driver's License Expiry</div>
+                            <div id="expLicenseDate" style="font-size: 15px;">Loading...</div>
+                        </div>
+                        <span id="badgeLicense" class="badge" style="background: var(--warning); color: white;">EXPIRING SOON</span>
+                    </div>
+                    
+                    <div style="margin-top: 30px; padding: 20px; background: #f8fafc; border-radius: 12px; text-align: center;">
+                        <p style="font-size: 13px; font-weight: 600; color: var(--text-dark); margin-top: 0;">Need to renew your induction or upload a new license?</p>
+                        <button class="btn-main" style="width: auto; padding: 10px 20px; background: var(--orange);" onclick="startRenewal()">Initiate Renewal Application</button>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
+</div>
 
-    <script>
-        // REPLACE THIS WITH YOUR GOOGLE APPS SCRIPT WEB APP URL
-        const scriptURL = "https://script.google.com/macros/s/AKfycbyT9VU1LktpavOtbkIKlsvjWV5_7kx_xctn1dVZS6LtiDQnMAagX4Xk5xC0zH_MhouoBg/exec";
+<script>
+    const scriptURL = 'https://script.google.com/macros/s/AKfycbyT9VU1LktpavOtbkIKlsvjWV5_7kx_xctn1dVZS6LtiDQnMAagX4Xk5xC0zH_MhouoBg/exec';
 
-    async function handleLogin() {
-    const id = document.getElementById('loginInduction').value.trim();
-    const pass = document.getElementById('loginPass').value.trim();
-    const btn = document.getElementById('loginBtn');
-    const msg = document.getElementById('loginMsg');
+    // --- LOGIN LOGIC ---
+    document.getElementById('loginForm').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const id = document.getElementById('loginId').value;
+        const pass = document.getElementById('loginPass').value;
+        const btn = document.getElementById('loginBtn');
+        const err = document.getElementById('loginError');
 
-    if(!id || !pass) return alert("Please fill all fields.");
+        btn.innerText = "Authenticating...";
+        btn.disabled = true;
+        err.style.display = "none";
 
-    btn.innerText = "Authenticating...";
-    btn.disabled = true;
-    msg.innerText = "";
+        try {
+            const response = await fetch(scriptURL, {
+                method: 'POST',
+                body: JSON.stringify({ action: 'driverLogin', inductionNumber: id, password: pass })
+            });
+            const res = await response.json();
 
-    // The "Long Distance Call" to Google
-    const finalURL = `${scriptURL}?action=login&id=${encodeURIComponent(id)}&pass=${encodeURIComponent(pass)}`;
-
-    try {
-        const response = await fetch(finalURL);
-        const res = await response.json();
-
-        if(res.success) {
-            showDashboard(res.profile);
-        } else {
-            msg.innerText = res.message;
-            btn.innerText = "Sign In";
+            if (res.result === 'success') {
+                populateDashboard(res.profile);
+                document.getElementById('loginView').style.display = 'none';
+                document.getElementById('dashboardView').style.display = 'block';
+                document.getElementById('logoutBtn').style.display = 'block';
+            } else {
+                err.innerText = "❌ " + res.message;
+                err.style.display = "block";
+            }
+        } catch (error) {
+            err.innerText = "❌ Server communication failed. Try again.";
+            err.style.display = "block";
+        } finally {
+            btn.innerText = "Secure Login";
             btn.disabled = false;
         }
-    } catch (e) {
-        console.error(e);
-        msg.innerText = "Connection Error: Check if your Script URL is correct and deployed to 'Anyone'.";
-        btn.innerText = "Sign In";
-        btn.disabled = false;
+    });
+
+    function logout() {
+        document.getElementById('loginView').style.display = 'flex';
+        document.getElementById('dashboardView').style.display = 'none';
+        document.getElementById('logoutBtn').style.display = 'none';
+        document.getElementById('loginForm').reset();
     }
-}
 
-        function showDashboard(user) {
-            document.getElementById('loginSection').classList.add('hidden');
-            document.getElementById('dashboardSection').classList.remove('hidden');
+    // --- DASHBOARD POPULATION ---
+    function populateDashboard(data) {
+        // Find keys flexibly
+        let nameKey = Object.keys(data).find(k => k.toLowerCase().includes('name'));
+        let idKey = Object.keys(data).find(k => k.toLowerCase().includes('induction number') || k.toLowerCase() === 'inductionnumber');
+        let licKey = Object.keys(data).find(k => k.toLowerCase().includes('license'));
+        let indExpKey = Object.keys(data).find(k => k.toLowerCase().includes('inductionexp'));
+        
+        // Identity mapping
+        document.getElementById('dashName').innerText = data[nameKey] || "Unknown Driver";
+        document.getElementById('dashId').value = data[idKey] || "N/A";
+        document.getElementById('dashLicense').value = data[licKey] || "N/A";
 
-            // Set Data
-            document.getElementById('userName').innerText = user.fullName || "User";
-            document.getElementById('userImg').src = user.passportUrl || "https://via.placeholder.com/80";
-            document.getElementById('valId').innerText = user.inductionNumber;
-            document.getElementById('valLicense').innerText = user.licenseDetails;
-            document.getElementById('valPhone').innerText = user.phoneNumber;
-            document.getElementById('valCompany').innerText = user.companyName || "N/A";
-            document.getElementById('valExpiry').innerText = formatDate(user.inductionExpDate);
-            document.getElementById('valIssued').innerText = formatDate(user.dateFirstIssue);
-            document.getElementById('valViolations').innerText = user.violations || "0";
+        // Logic for Traffic Light System
+        evaluateDateStatus(data[indExpKey], 'statusInduction', 'expInductionDate', 'badgeInduction');
+        // Assuming a license expiry column exists. If not, it defaults to Not Found.
+        evaluateDateStatus("2026-06-15", 'statusLicense', 'expLicenseDate', 'badgeLicense'); 
+    }
 
-            // Status Badge
-            const status = document.getElementById('userStatus');
-            status.innerText = user.status || "Active";
-            status.className = `badge badge-${(user.status || 'Active').toLowerCase()}`;
+    // Evaluates a date string and changes CSS classes for the Traffic Light system
+    function evaluateDateStatus(dateString, boxId, textId, badgeId) {
+        const box = document.getElementById(boxId);
+        const text = document.getElementById(textId);
+        const badge = document.getElementById(badgeId);
 
-            // Task 6: 10-Week Renewal Logic
-            checkRenewalEligibility(user.inductionExpDate);
+        if (!dateString || dateString === "Not Found" || dateString === "") {
+            text.innerText = "Data Missing";
+            box.className = "status-box status-danger";
+            badge.innerText = "ACTION REQ";
+            badge.style.background = "var(--danger)";
+            return;
         }
 
-        function checkRenewalEligibility(expiryStr) {
-            const expiry = new Date(expiryStr);
-            const today = new Date();
-            const tenWeeks = 10 * 7 * 24 * 60 * 60 * 1000;
-            const diff = expiry - today;
-            const btn = document.getElementById('renewalBtn');
-            const alertBox = document.getElementById('expiryAlert');
+        text.innerText = dateString;
+        const expiryDate = new Date(dateString);
+        const today = new Date();
+        const daysLeft = (expiryDate - today) / (1000 * 60 * 60 * 24);
 
-            if (diff <= tenWeeks) {
-                btn.disabled = false;
-                btn.innerText = "Apply for Renewal Now";
-                
-                // Show warning if expiring soon
-                const days = Math.ceil(diff / (1000 * 60 * 60 * 24));
-                if(days > 0) {
-                    alertBox.classList.remove('hidden');
-                    document.getElementById('daysLeft').innerText = days;
-                }
-            } else {
-                btn.disabled = true;
-                const openDate = new Date(expiry.getTime() - tenWeeks);
-                btn.innerText = `Renewal opens on ${openDate.toLocaleDateString('en-GB', {day:'numeric', month:'short'})}`;
-            }
+        if (daysLeft < 0) {
+            // EXPIRED
+            box.className = "status-box status-danger";
+            badge.innerText = "EXPIRED";
+            badge.style.background = "var(--danger)";
+        } else if (daysLeft <= 30) {
+            // EXPIRING SOON (Yellow)
+            box.className = "status-box status-warn";
+            badge.innerText = "EXPIRING SOON";
+            badge.style.background = "var(--warning)";
+        } else {
+            // VALID (Green)
+            box.className = "status-box status-valid";
+            badge.innerText = "VALID";
+            badge.style.background = "var(--success)";
         }
+    }
 
-        function formatDate(dateStr) {
-            if(!dateStr) return "N/A";
-            const d = new Date(dateStr);
-            return d.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
-        }
-    </script>
+    function startRenewal() {
+        alert("This will open the Renewal Form pre-filled with your locked identity data, allowing you to upload new documents securely.");
+        // Redirect to your renewal form logic here: window.location.href = "renewal-form.html";
+    }
+</script>
 </body>
 </html>
