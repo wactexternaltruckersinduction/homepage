@@ -67,8 +67,22 @@
         .badge-info { background: var(--info); color: white;}
         
         /* SQUARCLE APPOINTMENT CARD */
-        .appt-card { background: white; border: 2px solid #e2e8f0; border-radius: var(--squarcle-radius); padding: 30px; margin-bottom: 30px; box-shadow: var(--shadow-soft);}
-        .appt-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #e2e8f0; padding-bottom: 15px; margin-bottom: 20px;}
+        <div id="apptBox" class="appt-card" style="display: none;">
+                    <div class="appt-header">
+                        <h3 style="margin: 0; color: var(--primary-blue); font-size: 16px; text-transform: uppercase; font-weight: 900;">📅 Session Manager</h3>
+                        <span id="apptBadge" class="badge" style="background: #e0f2fe; color: var(--info);">Booked</span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 20px;">
+                        <div style="text-align: left;">
+                            <p style="margin: 0; font-size: 12px; font-weight: 800; color: var(--text-muted); text-transform: uppercase;">Scheduled Date & Time</p>
+                            <p style="margin: 5px 0 0 0; font-size: 22px; font-weight: 900; color: var(--text-dark);" id="apptDetails">---</p>
+                        </div>
+                        <div style="display: flex; gap: 10px;">
+                            <button id="dispatchSlipBtn" class="btn-main" style="width: auto; padding: 12px 20px; background: white; color: var(--text-dark); border: 2px solid #e2e8f0; font-size: 12px;" onclick="dispatchSlip()">📧 Email Gate Pass</button>
+                            <button id="manageSessionBtn" class="btn-main" style="width: auto; padding: 12px 20px; background: var(--info); font-size: 12px;" onclick="switchView('viewAppointment')">Manage Session</button>
+                        </div>
+                    </div>
+                </div>
         
         /* CALENDAR */
         .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 10px; margin-top: 20px;}
