@@ -422,11 +422,10 @@
         document.getElementById('ren_address').value = addrVal || "";
 
         // Photo Extraction Tool
+        // Photo Extraction Tool (Now receives pure Base64 data from the backend)
         let finalImgSrc = "https://via.placeholder.com/140?text=No+Photo";
-        if (photoUrl && photoUrl.includes('http')) {
-            const match = photoUrl.match(/[-\w]{25,}/);
-            if (match) { finalImgSrc = "https://drive.google.com/thumbnail?id=" + match[0] + "&sz=w400"; }
-            else { finalImgSrc = photoUrl; }
+        if (photoUrl) {
+            finalImgSrc = photoUrl.startsWith('data:') ? photoUrl : photoUrl;
         }
         document.getElementById('sidePhoto').src = finalImgSrc;
 
