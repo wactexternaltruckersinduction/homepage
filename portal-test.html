@@ -519,7 +519,7 @@
             downloadBox.style.display = "block";
             // Fires the exact same generator your Admin portal uses!
             document.getElementById('downloadCardBtn').onclick = () => {
-                window.open(scriptURL + "?action=printBatch&ids=" + encodeURIComponent(idVal), "_blank");
+                window.open(scriptURL + "?action=printBatch&ids=" + encodeURIComponent(idVal) + "&role=driver", "_blank");
             };
         } else {
             downloadBox.style.display = "none";
