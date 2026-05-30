@@ -145,7 +145,11 @@
             <!-- VIEW 1: SNAPSHOT -->
             <div id="viewSnapshot" class="section-view active">
                 <h2 style="color: var(--primary-blue); margin-top: 0; font-weight: 800; font-size: 24px; margin-bottom: 25px; letter-spacing: -0.5px;">Compliance Dashboard</h2>
-                
+                <div id="downloadCardBox" class="card" style="display: none; border: 2px solid var(--success); background: #f0fdf4; text-align: center; padding: 30px; margin-bottom: 25px;">
+                    <h3 style="margin: 0 0 10px 0; color: var(--success); font-size: 20px; font-weight: 900;">🎉 Induction Approved</h3>
+                    <p style="font-size: 14px; color: #166534; margin-bottom: 20px; font-weight: 600;">Your renewal has been verified. You can now generate your digital ID card.</p>
+                    <button id="downloadCardBtn" class="btn-main" style="background: var(--success); width: auto; font-size: 14px; padding: 16px 32px; box-shadow: 0 4px 10px rgba(22,163,74,0.3);">🖨️ Generate My ID Card</button>
+                </div>
                 <div class="grid-2" style="margin-bottom: 25px;">
                     <!-- BOX 1: Induction Validity -->
                     <div id="boxInduction" class="status-box">
@@ -509,6 +513,17 @@
             
             manageBtn.disabled = isSuspended;
             manageBtn.innerText = isSuspended ? "Session Locked" : "Book New Session";
+        }
+        // --- DRIVER HTML CARD GENERATOR ---
+        const downloadBox = document.getElementById('downloadCardBox');
+        if (currentStatus === "Verified" || currentStatus === "Card Generated") {
+            downloadBox.style.display = "block";
+            // Fires the exact same generator your Admin portal uses!
+            document.getElementById('downloadCardBtn').onclick = () => {
+                window.open(scriptURL + "?action=printBatch&ids=" + encodeURIComponent(idVal), "_blank");
+            };
+        } else {
+            downloadBox.style.display = "none";
         }
 
         // 4. COMPLIANCE & 4-WEEK LOGIC
