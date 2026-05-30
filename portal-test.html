@@ -422,10 +422,17 @@
         document.getElementById('ren_address').value = addrVal || "";
 
         // Photo Extraction Tool
-        // Photo Extraction Tool (Now receives pure Base64 data from the backend)
+        // Photo Extraction Tool (Uses reliable Google Image Endpoint)
         let finalImgSrc = "https://via.placeholder.com/140?text=No+Photo";
         if (photoUrl) {
-            finalImgSrc = photoUrl.startsWith('data:') ? photoUrl : photoUrl;
+            // First, grab the unique File ID from the Google Drive link
+            let match = String(photoUrl).match(/[-\w]{25,}/);
+            if (match) {
+                // Use the lh3 endpoint which bypasses Google's strict security blocks for HTML images
+                finalImgSrc = "https://lh3.googleusercontent.com/d/" + match[0];
+            } else {
+                finalImgSrc = photoUrl;
+            }
         }
         document.getElementById('sidePhoto').src = finalImgSrc;
 
