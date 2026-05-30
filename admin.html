@@ -72,7 +72,7 @@
     <a href="index.html" class="btn-home">← Back to Home</a>
 </header>
 <div id="protectedContent" class="container">
-    <div class="card" style="margin-bottom: 30px; padding: 25px; background: white; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.05);">
+    <div id="analyticsSection" class="card" style="margin-bottom: 30px; padding: 25px; background: white; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.05);">
     <h2 style="color: #004a99; margin-top: 0; margin-bottom: 15px; font-weight: 800;">📊 Induction Analytics Overview</h2>
     
     <div style="display: flex; gap: 15px; align-items: flex-end; margin-bottom: 25px; flex-wrap: wrap;">
@@ -236,16 +236,19 @@
         if (passInput === "MEDIC2026") {
             document.getElementById('portalTitle').innerText = "Medic Diagnostic Center";
             document.getElementById('medicSection').style.display = 'block';
+            document.getElementById('analyticsSection').style.display = 'none';
             showWorkspace();
         } 
         else if (passInput === "HSE2026") {
             document.getElementById('portalTitle').innerText = "HSE Induction Register Desk";
             document.getElementById('hseSection').style.display = 'block';
+            document.getElementById('analyticsSection').style.display = 'none';
             showWorkspace();
         }
         else if (passInput === "MASTER2026" || passInput === "WACT2026") {
             document.getElementById('inputWorkspaceCard').style.display = 'none';
             document.getElementById('masterWorkspaceCard').style.display = 'block';
+            document.getElementById('analyticsSection').style.display = 'block';
             showWorkspace();
             fetchFilteredDrivers(); 
         }
