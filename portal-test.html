@@ -92,7 +92,10 @@
             <span class="sub">Self-Service Compliance Portal</span>
         </div>
     </div>
+    <div style="display: flex; gap: 10px;">
+        <a href="index.html" class="btn-main" style="background: white; color: var(--text-dark); border: 2px solid #e2e8f0; padding: 10px 20px; text-decoration: none; text-transform: uppercase; font-size: 12px; border-radius: 12px; display: inline-block; font-weight: 800;">← Back to Home</a>
     <button id="logoutBtn" style="display:none; padding: 10px 20px; border-radius: 12px; background: white; border: 2px solid #e2e8f0; cursor: pointer; font-weight: 700; color: var(--text-muted); font-size: 12px; text-transform: uppercase;" onclick="logout()">Log Out</button>
+        </div>
 </header>
 
 <!-- LOGIN VIEW -->
@@ -423,13 +426,13 @@
 
         // Photo Extraction Tool
         // Photo Extraction Tool (Uses reliable Google Image Endpoint)
+        // Photo Extraction Tool (Bypassing Corporate SSL Filters)
         let finalImgSrc = "https://via.placeholder.com/140?text=No+Photo";
         if (photoUrl) {
-            // First, grab the unique File ID from the Google Drive link
             let match = String(photoUrl).match(/[-\w]{25,}/);
             if (match) {
-                // Use the lh3 endpoint which bypasses Google's strict security blocks for HTML images
-                finalImgSrc = "https://lh3.googleusercontent.com/d/" + match[0];
+                // Uses the primary Drive domain, which is typically whitelisted by corporate firewalls
+                finalImgSrc = "https://drive.google.com/thumbnail?id=" + match[0] + "&sz=w400";
             } else {
                 finalImgSrc = photoUrl;
             }
