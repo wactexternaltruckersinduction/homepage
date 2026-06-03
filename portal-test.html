@@ -440,19 +440,28 @@
         document.getElementById('ren_address').value = addrVal || "";
 
         // Photo Extraction Tool
-        // Photo Extraction Tool (Uses reliable Google Image Endpoint)
         // Photo Extraction Tool (Bypassing Corporate SSL Filters)
-        let finalImgSrc = "https://via.placeholder.com/140?text=No+Photo";
-        if (photoUrl) {
-            let match = String(photoUrl).match(/[-\w]{25,}/);
-            if (match) {
-                // Uses the primary Drive domain, which is typically whitelisted by corporate firewalls
-                finalImgSrc = "https://drive.google.com/thumbnail?id=" + match[0] + "&sz=w400";
-            } else {
-                finalImgSrc = photoUrl;
-            }
-        }
-        document.getElementById('sidePhoto').src = finalImgSrc;
+  let finalImgSrc = "https://via.placeholder.com/140?text=No+Photo";
+  
+  if (photoUrl) {
+      let photoStr = String(photoUrl);
+      
+      // FIX: If the backend already converted it to Base64, use it directly!
+      if (photoStr.startsWith("data:image")) {
+          finalImgSrc = photoStr;
+      } 
+      // Fallback: If it's still a raw URL, try to extract the Drive ID
+      else {
+          let match = photoStr.match(/[-\w]{25,}/);
+          if (match) {
+              finalImgSrc = "https://drive.google.com/thumbnail?id=" + match[0] + "&sz=w400";
+          } else {
+              finalImgSrc = photoStr;
+          }
+      }
+  }
+  
+  document.getElementById('sidePhoto').src = finalImgSrc;
 
         // 2. THE EXACT D/A SUSPENSION LOGIC (From Manage.html)
         isSuspended = false;
