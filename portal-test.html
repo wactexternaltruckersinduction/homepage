@@ -389,13 +389,28 @@
     function buildDashboard(profile, apptData) {
         
         // 1. Date Sniffer loop (Exact copy from Renewal.html)
-        let licVal = "N/A", expVal = "Not Found", issueVal = "N/A";
-        for (let key in profile) {
-            let lowerKey = key.toLowerCase();
-            if (lowerKey.includes("license")) licVal = String(profile[key]);
-            if (lowerKey.includes("exp")) expVal = String(profile[key]);
-            if (lowerKey.includes("issue")) issueVal = String(profile[key]);
-            if (lowerKey === "license number") licVal = String(profile[key]);
+        // 1. Date Sniffer loop 
+  let licVal ="N/A", expVal = "Not Found", issueVal = "N/A";
+  
+  for (let key in profile) {
+      let lowerKey = key.toLowerCase();
+      
+      // Look for Expiration first
+      if (lowerKey.includes("exp")) {
+          expVal = String(profile[key]);
+      } 
+      // Look for Issue Date
+      else if (lowerKey.includes("issue")) {
+          issueVal = String(profile[key]);
+      } 
+      // Safely look for License (ensuring it ignores the expiration key)
+      else if (lowerKey.includes("license") && !lowerKey.includes("exp")) {
+          licVal = String(profile[key]);
+      } 
+      else if (lowerKey === "license number") {
+          licVal = String(profile[key]);
+      }
+  }
         }
         if (expVal.includes("T")) expVal = expVal.split("T")[0];
         if (issueVal.includes("T")) issueVal = issueVal.split("T")[0];
