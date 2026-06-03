@@ -395,6 +395,7 @@
             if (lowerKey.includes("license")) licVal = String(profile[key]);
             if (lowerKey.includes("exp")) expVal = String(profile[key]);
             if (lowerKey.includes("issue")) issueVal = String(profile[key]);
+            if (lowerKey === "license number") licVal = String(profile[key]);
         }
         if (expVal.includes("T")) expVal = expVal.split("T")[0];
         if (issueVal.includes("T")) issueVal = issueVal.split("T")[0];
