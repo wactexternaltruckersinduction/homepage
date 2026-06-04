@@ -570,7 +570,7 @@
 
         // 4. COMPLIANCE & 4-WEEK LOGIC
         const indDaysLeft = evaluateDateStatus(indExpVal, 'boxInduction', 'expInductionDate', 'badgeInduction');
-        evaluateDateStatus("2028-01-01", 'boxLicense', 'expLicenseDate', 'badgeLicense'); // Mock License date for display
+        evaluateDateStatus(licExpVal, 'boxLicense', 'expLicenseDate', 'badgeLicense');
 
         const actionBox = document.getElementById('renewActionBox');
         const lockedBox = document.getElementById('renewLockedBox');
