@@ -420,7 +420,8 @@
           licVal = String(profile[key]);
       }
   }
-        if (expVal.includes("T")) expVal = expVal.split("T")[0];
+        if (indExpVal.includes("T")) indExpVal = indExpVal.split("T")[0];
+        if (licExpVal.includes("T")) licExpVal = licExpVal.split("T")[0];
         if (issueVal.includes("T")) issueVal = issueVal.split("T")[0];
 
         // Safely extract names/phones
