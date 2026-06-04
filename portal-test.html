@@ -450,16 +450,15 @@
 
         // Photo Extraction Tool
         // Photo Extraction Tool (Bypassing Corporate SSL Filters)
+  // Photo Extraction Tool (Bypassing Corporate SSL Filters)
   let finalImgSrc = "https://via.placeholder.com/140?text=No+Photo";
   
   if (photoUrl) {
       let photoStr = String(photoUrl);
       
-      // FIX: If the backend already converted it to Base64, use it directly!
       if (photoStr.startsWith("data:image")) {
           finalImgSrc = photoStr;
       } 
-      // Fallback: If it's still a raw URL, try to extract the Drive ID
       else {
           let match = photoStr.match(/[-\w]{25,}/);
           if (match) {
@@ -569,7 +568,7 @@
         }
 
         // 4. COMPLIANCE & 4-WEEK LOGIC
-        const indDaysLeft = evaluateDateStatus(expVal, 'boxInduction', 'expInductionDate', 'badgeInduction');
+        const indDaysLeft = evaluateDateStatus(indExpVal, 'boxInduction', 'expInductionDate', 'badgeInduction');
         evaluateDateStatus("2028-01-01", 'boxLicense', 'expLicenseDate', 'badgeLicense'); // Mock License date for display
 
         const actionBox = document.getElementById('renewActionBox');
