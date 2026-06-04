@@ -387,67 +387,40 @@
 
     // --- DASHBOARD BUILDER & EXACT SUSPENSION LOGIC ---
     function buildDashboard(profile, apptData) {
-        
-        // 1. Date Sniffer loop (Exact copy from Renewal.html)
-        // 1. Date Sniffer loop 
-  // 1. Date Sniffer loop 
-  let licVal ="N/A", indExpVal = "Not Found", licExpVal = "Not Found", issueVal = "N/A";
-  
-  for (let key in profile) {
-      let lowerKey = key.toLowerCase();
-      
-      // Grab Issue Date
-      if (lowerKey.includes("issue")) {
-          issueVal = String(profile[key]);
-      } 
-      // Grab Induction Expiry
-      else if (lowerKey.includes("induction") && lowerKey.includes("exp")) {
-          indExpVal = String(profile[key]);
-      }
-      // Grab License Expiry
-      else if (lowerKey.includes("license") && lowerKey.includes("exp")) {
-          licExpVal = String(profile[key]);
-      }
-      // Fallback for License Expiry if header is just "license expiration"
-      else if (lowerKey.includes("expiration") && !lowerKey.includes("induction")) {
-          licExpVal = String(profile[key]);
-      }
-      // Grab License Number (ensuring we ignore exp strings)
-      else if (lowerKey.includes("license") && !lowerKey.includes("exp") && !lowerKey.includes("expiration")) {
-          licVal = String(profile[key]);
-      } 
-      else if (lowerKey === "license number") {
-          licVal = String(profile[key]);
-      }
-  }
-        if (indExpVal.includes("T")) indExpVal = indExpVal.split("T")[0];
-        if (licExpVal.includes("T")) licExpVal = licExpVal.split("T")[0];
-        if (issueVal.includes("T")) issueVal = issueVal.split("T")[0];
+    // 1. CLEAN DATA EXTRACTION (No more messy loops!)
+    // Because your backend now normalizes everything, we can call the exact keys directly.
+    let indExpVal = profile.inductionExpiration || "Not Found";
+    let licExpVal = profile.licenseExpiration || "Not Found";
+    let issueVal = profile.dateOfIssue || "N/A";
+    let licVal = profile.licenseNumber || "N/A";
 
-        // Safely extract names/phones
-        let nameVal = profile['fullName'] || profile['Full Name'] || profile['fullname'];
-        let idVal = profile['inductionNumber'] || profile['Induction Number'] || profile['inductionnumber'];
-        let dobVal = profile['dob'] || profile['Date of Birth'];
-        let photoUrl = profile['passportPhoto'] || profile['Passport Photo'];
-        let phoneVal = profile['mobile'] || profile['Mobile Number'];
-        let compVal = profile['companyName'] || profile['Company Name'];
-        let addrVal = profile['address'] || profile['Address'];
+    if (indExpVal.includes("T")) indExpVal = indExpVal.split("T")[0];
+    if (licExpVal.includes("T")) licExpVal = licExpVal.split("T")[0];
+    if (issueVal.includes("T")) issueVal = issueVal.split("T")[0];
 
-        // Assign to UI
-        document.getElementById('sideName').innerText = nameVal || "Unknown Driver";
-        document.getElementById('sideId').value = idVal || "N/A";
-        document.getElementById('sideLicense').value = licVal;
-        document.getElementById('sideDob').value = dobVal || "N/A";
-        document.getElementById('sideIssue').value = issueVal;
-        
-        document.getElementById('currPhone').value = phoneVal || "N/A";
-        document.getElementById('currCompany').value = compVal || "N/A";
-        document.getElementById('currAddress').value = addrVal || "N/A";
+    let nameVal = profile.fullName || "Unknown Driver";
+    let idVal = profile.inductionNumber || "N/A";
+    let dobVal = profile.dob || "N/A";
+    let photoUrl = profile.passportPhoto;
+    let phoneVal = profile.mobileNumber || "N/A";
+    let compVal = profile.companyName || "N/A";
+    let addrVal = profile.address || "N/A";
 
-        // Pre-fill hidden/editable Renewal Form
-        document.getElementById('ren_mobile').value = phoneVal || "";
-        document.getElementById('ren_company').value = compVal || "";
-        document.getElementById('ren_address').value = addrVal || "";
+    // Assign to UI
+    document.getElementById('sideName').innerText = nameVal;
+    document.getElementById('sideId').value = idVal;
+    document.getElementById('sideLicense').value = licVal;
+    document.getElementById('sideDob').value = dobVal;
+    document.getElementById('sideIssue').value = issueVal;
+
+    document.getElementById('currPhone').value = phoneVal;
+    document.getElementById('currCompany').value = compVal;
+    document.getElementById('currAddress').value = addrVal;
+
+    // Pre-fill hidden/editable Renewal Form
+    document.getElementById('ren_mobile').value = phoneVal === "N/A" ? "" : phoneVal;
+    document.getElementById('ren_company').value = compVal === "N/A" ? "" : compVal;
+    document.getElementById('ren_address').value = addrVal === "N/A" ? "" : addrVal;
 
         // Photo Extraction Tool
         // Photo Extraction Tool (Bypassing Corporate SSL Filters)
@@ -668,21 +641,21 @@
         btn.innerText = "Updating Renewal Profile..."; btn.disabled = true;
         try {
             const payload = {
-                action: 'submitRenewal',
-                fullName: document.getElementById('sideName').innerText, 
-                inductionNumber: document.getElementById('sideId').value,
-                address: document.getElementById('ren_address').value, 
-                mobile: document.getElementById('ren_mobile').value,
-                companyName: document.getElementById('ren_company').value, 
-                licenseExDate: document.getElementById('ren_lic_exp').value,
-                cardStatus: document.getElementById('cardStatus').value,
-                seizedReason: document.getElementById('ren_seizedReason').value,
-                oldCard: await getFileData(document.getElementById('file_oldCard')), 
-                policeReport: await getFileData(document.getElementById('file_police')),
-                driversLicense: await getFileData(document.getElementById('file_license')), 
-                passportPhoto: await getFileData(document.getElementById('file_passport')),
-                otherDoc: await getFileData(document.getElementById('file_otherDoc'))
-            };
+        action: 'submitRenewal',
+        fullName: document.getElementById('sideName').innerText,
+        inductionNumber: document.getElementById('sideId').value,
+        address: document.getElementById('ren_address').value,
+        mobileNumber: document.getElementById('ren_mobile').value, // Standardized
+        companyName: document.getElementById('ren_company').value,
+        licenseExpiration: document.getElementById('ren_lic_exp').value, // Standardized
+        cardStatus: document.getElementById('cardStatus').value,
+        seizedBanReason: document.getElementById('ren_seizedReason').value, // Standardized
+        oldInductionCard: await getFileData(document.getElementById('file_oldCard')), // Standardized
+        policeReport: await getFileData(document.getElementById('file_police')),
+        driversLicense: await getFileData(document.getElementById('file_license')),
+        passportPhoto: await getFileData(document.getElementById('file_passport')),
+        otherDocuments: await getFileData(document.getElementById('file_otherDoc')) // Standardized
+      };
             const response = await fetch(scriptURL, { method: 'POST', body: JSON.stringify(payload) });
             const result = await response.json();
             
