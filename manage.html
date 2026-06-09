@@ -48,8 +48,8 @@
         .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
         .search-group { display: flex; gap: 12px; margin-bottom: 24px; }
         
-        input { flex: 1; padding: 14px 16px; border: 2px solid #e2e8f0; border-radius: 14px; font-size: 14px; box-sizing: border-box; transition: border-color 0.2s; }
-        input:focus { outline: none; border-color: var(--primary-blue); }
+        input, select { flex: 1; padding: 14px 16px; border: 2px solid #e2e8f0; border-radius: 14px; font-size: 14px; box-sizing: border-box; transition: border-color 0.2s; font-family: inherit; }
+        input:focus, select:focus { outline: none; border-color: var(--primary-blue); }
         
         .btn { padding: 14px 28px; border-radius: 14px; font-weight: 700; cursor: pointer; border: none; transition: 0.2s; text-transform: uppercase; font-size: 13px; }
         .btn-primary { background: var(--primary-blue); color: white; }
@@ -89,7 +89,6 @@
 </header>
 
 <div class="container">
-    <!-- BASE SEARCH INTERFACE -->
     <div id="pageManage" class="page active">
         <div class="card">
             <h2 style="color: var(--primary-blue); font-weight: 800; margin-top: 0; font-size: 24px; letter-spacing: -0.5px;">Manage Appointment</h2>
@@ -115,7 +114,6 @@
         </div>
     </div>
 
-    <!-- CALENDAR FLOW INTERFACE -->
     <div id="pageAppointment" class="page">
         <div class="card">
             <h2 style="margin-top:0; color:var(--primary-blue); font-weight:800; font-size: 24px; letter-spacing: -0.5px;">Reschedule Induction Session</h2>
@@ -128,12 +126,18 @@
             
             <div id="bookingActions" style="margin-top:30px; display:none; text-align:center; border-top: 1px solid #e2e8f0; padding-top: 20px;">
                 <p style="font-size: 15px; font-weight: 600;">Selected Appointment Date: <strong id="selectedDateText" style="color: var(--primary-blue);"></strong></p>
+                
+                <div style="margin: 15px auto 25px auto; max-width: 300px; text-align: left;">
+                    <label style="font-size: 11px; font-weight: 700; color: #64748b; text-transform: uppercase;">Select Time Slot</label>
+                    <select id="appointmentTime" required>
+                        </select>
+                </div>
+
                 <button class="btn btn-primary" style="width: 100%; max-width: 300px;" onclick="confirmBooking()">Commit Appointment Pass</button>
             </div>
         </div>
     </div>
 
-    <!-- GATE SLIP DOCUMENT OUTPUT -->
     <div id="pageSlip" class="page">
         <div class="card" id="printArea">
             <div style="border: 2px solid #0f172a; padding: 30px; text-align: center; border-radius:16px; background: white;">
@@ -146,7 +150,7 @@
                     <p style="margin: 6px 0;"><strong>APPOINTMENT DATE:</strong> <span id="slip_date" style="color: var(--text-dark);"></span></p>
                     <p style="margin: 6px 0;"><strong>APPOINTMENT ID:</strong> <span id="slip_apt_id" style="color: var(--primary-blue); font-weight: 700;"></span></p>
                     <p style="margin: 6px 0;"><strong>INDUCTION STATUS:</strong> <span id="slip_status" style="font-weight: 700; color: #166534;"></span></p>
-                    <p style="margin: 6px 0;"><strong>REPORT TIME:</strong> 09:00 AM Prompt</p>
+                    <p style="margin: 6px 0;"><strong>REPORT TIME:</strong> <span id="slip_time_display" style="color: var(--primary-blue); font-weight: 700;"></span></p>
                     <p style="margin: 6px 0;"><strong>LOCATION:</strong> WACT Training Center, Onne Port Complex.</p>
                 </div>
                 <hr style="border:0; border-top: 2px dashed #e2e8f0; margin-top: 20px; margin-bottom: 15px;">
@@ -195,7 +199,9 @@
         findBtn.innerText = "Querying Database..."; findBtn.disabled = true;
 
         try {
-            const res = await fetch(`${scriptURL}?action=getCalendarData&id=${encodeURIComponent(query)}&type=new`);
+            // 👉 Cache Buster applied here to get live data!
+            const cacheBuster = new Date().getTime();
+            const res = await fetch(`${scriptURL}?action=getCalendarData&id=${encodeURIComponent(query)}&type=new&t=${cacheBuster}`);
             const data = await res.json();
             
             if (data.error === "TOO EARLY") {
@@ -210,7 +216,7 @@
             
             if (data.currentAppointment) {
                 const dateParts = data.currentAppointment.toString().split('T')[0].split('-');
-                const formatted = `${dateParts[2]} ${["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"][parseInt(dateParts[1]) - 1]} ${dateParts[0]}`;
+                const formatted = `${dateParts[2]} ${["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"][parseInt(dateParts[1], 10) - 1]} ${dateParts[0]}`;
                 
                 const currentStatus = data.status || "Booked";
                 const count = data.rescheduleCount || 0;
@@ -225,15 +231,14 @@
                     let suspensionEndDate = new Date(failureDate);
                     let durationText = "";
 
-                    // Precise condition matching matching your requested bans
                     if (reasonStr.includes("marijuana")) {
-                        suspensionEndDate.setMonth(suspensionEndDate.getMonth() + 2); // 2 Months
+                        suspensionEndDate.setMonth(suspensionEndDate.getMonth() + 2); 
                         durationText = "2 Months";
                     } else if (reasonStr.includes("tramadol")) {
-                        suspensionEndDate.setMonth(suspensionEndDate.getMonth() + 1); // 1 Month
+                        suspensionEndDate.setMonth(suspensionEndDate.getMonth() + 1); 
                         durationText = "1 Month";
                     } else if (reasonStr.includes("alcohol")) {
-                        suspensionEndDate.setDate(suspensionEndDate.getDate() + 7);   // 1 Week
+                        suspensionEndDate.setDate(suspensionEndDate.getDate() + 7);   
                         durationText = "1 Week";
                     } else { 
                         durationText = "No Suspension"; 
@@ -271,12 +276,12 @@
         finally { findBtn.innerText = "Find Record"; findBtn.disabled = false; }
     }
 
-    function startRevalidation(truckerId) { 
-    window.location.href = 'portal-test.html'; 
-}
+    function startRevalidation() { 
+        window.location.href = 'portal-test.html'; 
+    }
+    
     function startReschedule() { startAppointmentFlow(currentUserData.id, currentUserData.type); }
     
-
     function reprintSlip() {
         if (!managementData || !managementData.currentAppointment) return alert("No active parameter file captured.");
         document.getElementById('slip_name').innerText = managementData.truckerName;
@@ -286,6 +291,8 @@
         document.getElementById('slip_date').innerText = `${d}/${m}/${y}`;
         document.getElementById('slip_status').innerText = managementData.status || "Booked";
         document.getElementById('slip_apt_id').innerText = "APT-" + Math.floor(Math.random()*100000);
+        // Default to safe value if reprinting without re-selecting time
+        document.getElementById('slip_time_display').innerText = managementData.appointmentTime ? managementData.appointmentTime + " Prompt" : "09:00 AM Prompt";
         showPage('pageSlip');
     }
 
@@ -293,22 +300,38 @@
         showPage('pageAppointment');
         document.getElementById('calendarGrid').innerHTML = "<p style='grid-column: span 7; text-align:center;'>Accessing WACT Scheduling Parameters...</p>";
         try {
-            const res = await fetch(`${scriptURL}?action=getCalendarData&id=${id}&type=${type}`);
-            calendarData = await res.json(); renderCalendar();
+            // 👉 Cache Buster applied here to grab fresh limits and blocked dates!
+            const cacheBuster = new Date().getTime();
+            const res = await fetch(`${scriptURL}?action=getCalendarData&id=${id}&type=${type}&t=${cacheBuster}`);
+            calendarData = await res.json(); 
+            renderCalendar();
         } catch(e) { alert("Failed to fetch calendar allocations."); }
     }
 
+    // --- CRASH-PROOF SMART CALENDAR ---
     function renderCalendar() {
         const grid = document.getElementById('calendarGrid');
         const monthDisplay = document.getElementById('monthDisplay');
+        if (!grid || !monthDisplay) return;
+
         grid.innerHTML = "";
         monthDisplay.innerText = currentMonth.toLocaleDateString('en-GB', { month: 'long', year: 'numeric' });
-
+        
         let firstDay = new Date(currentMonth.getFullYear(), currentMonth.getMonth(), 1).getDay();
         let totalDays = new Date(currentMonth.getFullYear(), currentMonth.getMonth() + 1, 0).getDate();
-
-        for(let i=0; i<firstDay; i++) grid.appendChild(document.createElement('div'));
-
+        
+        const safeData = calendarData || {};
+        const existingBookings = safeData.existingBookings || {};
+        const settings = safeData.settings || { capacity: 10, blockedDates: [], customCapacities: {} };
+        const blockedDates = settings.blockedDates || [];
+        const customCaps = settings.customCapacities || {};
+        const allowedMin = safeData.allowedMin || "2000-01-01";
+        const allowedMax = safeData.allowedMax || "2100-01-01";
+        
+        for(let i=0; i<firstDay; i++) {
+            grid.appendChild(document.createElement('div'));
+        }
+        
         for(let d=1; d<=totalDays; d++) {
             let dateObj = new Date(currentMonth.getFullYear(), currentMonth.getMonth(), d);
             let year = dateObj.getFullYear();
@@ -319,40 +342,98 @@
             
             let box = document.createElement('div');
             box.className = "day-box"; box.innerText = d;
-
+            
             let isWedFri = (dayOfWeek === 3 || dayOfWeek === 5);
-            let inRange = (dateStr >= calendarData.allowedMin && dateStr <= calendarData.allowedMax);
-            let bookings = calendarData.existingBookings[dateStr] || 0;
+            let inRange = (dateStr >= allowedMin && dateStr <= allowedMax);
+            let isBlocked = blockedDates.includes(dateStr); 
+            
+            let daySpecificCapacity = (customCaps[dateStr] !== undefined) ? customCaps[dateStr] : (settings.capacity || 10);
+            let maxDailyCapacity = daySpecificCapacity * 3; 
+            
+            let rawBookings = existingBookings[dateStr] || {};
+            let dayBookings = { '9AM': 0, '11AM': 0, '2PM': 0 };
 
-            if (isWedFri && inRange) {
-                if (bookings >= 10) {
+            if (typeof rawBookings === 'number') {
+                dayBookings['9AM'] = rawBookings; 
+            } else if (typeof rawBookings === 'object') {
+                dayBookings = { ...dayBookings, ...rawBookings };
+            }
+
+            let totalBookings = (dayBookings['9AM'] || 0) + (dayBookings['11AM'] || 0) + (dayBookings['2PM'] || 0);
+
+            if (isWedFri && inRange && !isBlocked) {
+                if (totalBookings >= maxDailyCapacity) {
                     box.classList.add('full'); box.innerHTML += `<span class="slots-left">FULL</span>`;
                 } else {
-                    box.classList.add('available'); box.innerHTML += `<span class="slots-left">${10 - bookings} Open</span>`;
-                    box.onclick = () => selectDate(dateStr, box);
+                    box.classList.add('available'); box.innerHTML += `<span class="slots-left">${maxDailyCapacity - totalBookings} Open</span>`;
+                    box.onclick = () => selectDate(dateStr, box, dayBookings, daySpecificCapacity);
                 }
-            } else { box.classList.add('disabled'); }
+            } else { 
+                box.classList.add('disabled'); 
+                if (isBlocked && isWedFri && inRange) {
+                    box.innerHTML += `<span class="slots-left" style="color:var(--warning); font-weight:800;">HOLIDAY</span>`;
+                }
+            }
             grid.appendChild(box);
         }
     }
 
-    function selectDate(dateStr, element) {
+    function selectDate(dateStr, element, dayBookings, capacity) {
         selectedDateStr = dateStr; 
         document.querySelectorAll('.day-box').forEach(el => el.classList.remove('selected'));
         element.classList.add('selected');
+        
         const parts = dateStr.split('-');
         const months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
-        document.getElementById('selectedDateText').innerText = `${parts[2]} ${months[parseInt(parts[1]) - 1]} ${parts[0]}`;
+        document.getElementById('selectedDateText').innerText = `${parts[2]} ${months[parseInt(parts[1], 10) - 1]} ${parts[0]}`;
+        
+        const timeSelect = document.getElementById('appointmentTime');
+        timeSelect.innerHTML = `<option value="" disabled selected>Choose a time...</option>`;
+        
+        const slots = [
+            { val: '9AM', label: '09:00 AM' },
+            { val: '11AM', label: '11:00 AM' },
+            { val: '2PM', label: '02:00 PM' }
+        ];
+
+        slots.forEach(slot => {
+            let booked = dayBookings[slot.val] || 0;
+            let opt = document.createElement('option');
+            opt.value = slot.val;
+            
+            if (booked >= capacity) {
+                opt.disabled = true;
+                opt.innerText = `${slot.label} (FULL)`;
+            } else {
+                opt.innerText = `${slot.label} (${capacity - booked} slots open)`;
+            }
+            timeSelect.appendChild(opt);
+        });
+
         document.getElementById('bookingActions').style.display = "block";
     }
 
     function changeMonth(offset) { currentMonth.setMonth(currentMonth.getMonth() + offset); renderCalendar(); }
 
     async function confirmBooking() {
-        const btn = document.querySelector('#bookingActions button');
+        const timeSelect = document.getElementById('appointmentTime');
+        if (!timeSelect.value) {
+            alert("Please select an available appointment time.");
+            return;
+        }
+
+        const btn = document.querySelector('#bookingActions button.btn-primary');
         btn.innerText = "Confirming Booking..."; btn.disabled = true;
+        
         try {
-            const payload = { action: 'book', id: currentUserData.id, type: currentUserData.type, date: selectedDateStr };
+            const payload = { 
+                action: 'book', 
+                id: currentUserData.id, 
+                type: currentUserData.type, 
+                date: selectedDateStr,
+                time: timeSelect.value // SENDS THE SELECTED TIME
+            };
+            
             const response = await fetch(scriptURL, { method: 'POST', body: JSON.stringify(payload) });
             const result = await response.json();
 
@@ -360,11 +441,16 @@
                 document.getElementById('slip_name').innerText = currentUserData.name;
                 document.getElementById('slip_id').innerText = currentUserData.id;
                 document.getElementById('slip_date').innerText = selectedDateStr;
-                document.getElementById('slip_apt_id').innerText = result.aptId;
+                
+                document.getElementById('slip_time_display').innerText = timeSelect.options[timeSelect.selectedIndex].text.split(' (')[0] + " Prompt";
+                
+                document.getElementById('slip_apt_id').innerText = result.aptId || "APT-" + Math.floor(Math.random()*100000);
                 document.getElementById('slip_status').innerText = result.status || "Booked";
+                
                 showPage('pageSlip');
             } else { alert(result.message); }
-        } catch (e) { alert("Booking engine failure."); } finally { btn.innerText = "Commit Appointment Pass"; btn.disabled = false; }
+        } catch (e) { alert("Booking engine failure."); } 
+        finally { btn.innerText = "Commit Appointment Pass"; btn.disabled = false; }
     }
 
     async function sendSlipViaEmail() {
