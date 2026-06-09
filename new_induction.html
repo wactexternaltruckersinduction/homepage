@@ -55,7 +55,6 @@
             <span class="sub">Trucker Induction Portal</span>
         </div>
     </div>
-    <!-- REPLACEMENT CLEAN NAVIGATION LINK -->
     <a href="index.html" class="btn-home">← Back to Home</a>
 </header>
 
@@ -141,8 +140,16 @@
                 <button class="btn btn-home" onclick="changeMonth(1)">Next</button>
             </div>
             <div class="calendar-grid" id="calendarGrid"></div>
-            <div id="bookingActions" style="margin-top:20px; display:none; text-align:center;">
-                <p>Selected Target Date: <strong id="selectedDateText"></strong></p>
+            
+            <div id="bookingActions" style="margin-top:20px; display:none; text-align:center; border-top: 1px solid #e2e8f0; padding-top: 20px;">
+                <p style="font-size: 15px; font-weight: 600;">Selected Target Date: <strong id="selectedDateText" style="color: var(--primary-blue);"></strong></p>
+                
+                <div style="margin: 15px auto 25px auto; max-width: 300px; text-align: left;">
+                    <label style="font-size: 11px; font-weight: 700; color: #64748b; text-transform: uppercase;">Select Time Slot</label>
+                    <select id="appointmentTime" style="width: 100%; padding: 12px; border-radius: 12px; border: 2px solid #e2e8f0;" required>
+                        </select>
+                </div>
+
                 <button class="btn btn-primary" onclick="confirmBooking()">Book Appointment Slot</button>
             </div>
         </div>
@@ -160,7 +167,7 @@
                     <p><strong>APPT DATE:</strong> <span id="slip_date"></span></p>
                     <p><strong>APPT ID:</strong> <span id="slip_apt_id"></span></p>
                     <p><strong>STATUS:</strong> <span id="slip_status"></span></p>
-                    <p><strong>TIME:</strong> 09:00 AM Prompt</p>
+                    <p><strong>TIME:</strong> <span id="slip_time_display" style="color: var(--primary-blue); font-weight: 700;"></span></p>
                     <p><strong>LOCATION:</strong> WACT Training Center, Onne Port.</p>
                 </div>
                 <hr style="border:1px solid #000;">
@@ -169,7 +176,7 @@
             <div style="margin-top: 20px; display: flex; flex-direction: column; gap: 10px;">
                 <button class="btn btn-primary" onclick="window.print()">Print Slip Paper</button>
                 <div style="display: flex; gap: 5px;">
-                    <input type="email" id="emailInput" placeholder="Enter email address">
+                    <input type="email" id="emailInput" placeholder="Enter email address" style="padding: 12px; border-radius: 12px; border: 2px solid #e2e8f0; width: 100%;">
                     <button id="sendEmailBtn" class="btn btn-home" style="white-space: nowrap;" onclick="sendSlipViaEmail()">Email Slip</button>
                 </div>
                 <p id="emailStatusMsg" style="font-size: 12px; margin:0; text-align: center; font-weight:700;"></p>
@@ -222,12 +229,19 @@
         btn.innerText = "Processing File Packages..."; btn.disabled = true;
 
         try {
+            // STANDARDIZED PAYLOAD
             const payload = {
                 action: 'submitNew',
-                fullName: this.fullName.value, address: this.address.value, state: this.state.value,
-                lga: this.lga.value, mobile: this.mobile.value, dob: this.dob.value,
-                maritalStatus: this.maritalStatus.value, licenseDetails: this.licenseDetails.value,
-                licenseExpDate: this.licenseExpDate.value, companyName: this.companyName.value,
+                fullName: this.fullName.value, 
+                address: this.address.value, 
+                state: this.state.value,
+                lga: this.lga.value, 
+                mobileNumber: this.mobile.value, 
+                dob: this.dob.value,
+                maritalStatus: this.maritalStatus.value, 
+                licenseNumber: this.licenseDetails.value,
+                licenseExpiration: this.licenseExpDate.value, 
+                companyName: this.companyName.value,
                 ref1Name: this.ref1Name.value, ref1Address: this.ref1Address.value, ref1Position: this.ref1Position.value,
                 ref1Duration: this.ref1Duration.value, ref1Contact: this.ref1Contact.value,
                 ref2Name: this.ref2Name.value, ref2Address: this.ref2Address.value, ref2Position: this.ref2Position.value,
@@ -235,7 +249,8 @@
                 consent: this.consent.checked ? "Yes" : "No",
                 passportPhoto: await getFileData(document.getElementById('new_passport')),
                 driversLicense: await getFileData(document.getElementById('new_license')),
-                recLetter: await getFileData(document.getElementById('new_recLetter'))
+                recommendationLetter: await getFileData(document.getElementById('new_recLetter')),
+                otherDocuments: await getFileData(document.getElementById('new_otherDoc'))
             };
 
             const response = await fetch(scriptURL, { method: 'POST', body: JSON.stringify(payload) });
@@ -253,7 +268,7 @@
                 this.reset();
             } else { alert("Error: " + (result.message || "Something went wrong.")); }
         } catch (err) { alert("System Error: Check internet connection."); } 
-        finally { btn.innerText = "Submit Application Parameters"; btn.disabled = false; }
+        finally { btn.innerText = "Submit Application"; btn.disabled = false; }
     });
 
     async function startAppointmentFlow(id, type) {
@@ -266,17 +281,21 @@
         } catch(e) { alert("Failed to load appointment data."); }
     }
 
+    // --- UPGRADED SMART CALENDAR ---
     function renderCalendar() {
         const grid = document.getElementById('calendarGrid');
         const monthDisplay = document.getElementById('monthDisplay');
         grid.innerHTML = "";
         monthDisplay.innerText = currentMonth.toLocaleDateString('en-GB', { month: 'long', year: 'numeric' });
-
+        
         let firstDay = new Date(currentMonth.getFullYear(), currentMonth.getMonth(), 1).getDay();
         let totalDays = new Date(currentMonth.getFullYear(), currentMonth.getMonth() + 1, 0).getDate();
-
+        
+        const settings = calendarData.settings || { capacity: 10, blockedDates: [] };
+        const maxDailyCapacity = settings.capacity * 3; // 3 time slots per day
+        
         for(let i=0; i<firstDay; i++) grid.appendChild(document.createElement('div'));
-
+        
         for(let d=1; d<=totalDays; d++) {
             let dateObj = new Date(currentMonth.getFullYear(), currentMonth.getMonth(), d);
             let year = dateObj.getFullYear();
@@ -287,40 +306,85 @@
             
             let box = document.createElement('div');
             box.className = "day-box"; box.innerText = d;
-
+            
             let isWedFri = (dayOfWeek === 3 || dayOfWeek === 5);
             let inRange = (dateStr >= calendarData.allowedMin && dateStr <= calendarData.allowedMax);
-            let bookings = calendarData.existingBookings[dateStr] || 0;
+            let isBlocked = settings.blockedDates.includes(dateStr); 
+            
+            let dayBookings = calendarData.existingBookings[dateStr] || { '9AM': 0, '11AM': 0, '2PM': 0 };
+            let totalBookings = (dayBookings['9AM'] || 0) + (dayBookings['11AM'] || 0) + (dayBookings['2PM'] || 0);
 
-            if (isWedFri && inRange) {
-                if (bookings >= 10) {
+            if (isWedFri && inRange && !isBlocked) {
+                if (totalBookings >= maxDailyCapacity) {
                     box.classList.add('full'); box.innerHTML += `<span class="slots-left">FULL</span>`;
                 } else {
-                    box.classList.add('available'); box.innerHTML += `<span class="slots-left">${10 - bookings} left</span>`;
-                    box.onclick = () => selectDate(dateStr, box);
+                    box.classList.add('available'); box.innerHTML += `<span class="slots-left">${maxDailyCapacity - totalBookings} Open</span>`;
+                    box.onclick = () => selectDate(dateStr, box, dayBookings, settings.capacity);
                 }
-            } else { box.classList.add('disabled'); }
+            } else { 
+                box.classList.add('disabled'); 
+                if (isBlocked && isWedFri && inRange) {
+                    box.innerHTML += `<span class="slots-left" style="color:var(--warning);">HOLIDAY</span>`;
+                }
+            }
             grid.appendChild(box);
         }
     }
 
-    function selectDate(dateStr, element) {
+    function selectDate(dateStr, element, dayBookings, capacity) {
         selectedDateStr = dateStr; 
         document.querySelectorAll('.day-box').forEach(el => el.classList.remove('selected'));
         element.classList.add('selected');
+        
         const parts = dateStr.split('-');
         const months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
         document.getElementById('selectedDateText').innerText = `${parts[2]} ${months[parseInt(parts[1]) - 1]} ${parts[0]}`;
+        
+        const timeSelect = document.getElementById('appointmentTime');
+        timeSelect.innerHTML = `<option value="" disabled selected>Choose a time...</option>`;
+        
+        const slots = [
+            { val: '9AM', label: '09:00 AM' },
+            { val: '11AM', label: '11:00 AM' },
+            { val: '2PM', label: '02:00 PM' }
+        ];
+
+        slots.forEach(slot => {
+            let booked = dayBookings[slot.val] || 0;
+            let opt = document.createElement('option');
+            opt.value = slot.val;
+            
+            if (booked >= capacity) {
+                opt.disabled = true;
+                opt.innerText = `${slot.label} (FULL)`;
+            } else {
+                opt.innerText = `${slot.label} (${capacity - booked} slots open)`;
+            }
+            timeSelect.appendChild(opt);
+        });
+
         document.getElementById('bookingActions').style.display = "block";
     }
 
     function changeMonth(offset) { currentMonth.setMonth(currentMonth.getMonth() + offset); renderCalendar(); }
 
     async function confirmBooking() {
+        const timeSelect = document.getElementById('appointmentTime');
+        if (!timeSelect.value) {
+            alert("Please select an available appointment time.");
+            return;
+        }
+
         const btn = document.querySelector('#bookingActions button');
         btn.innerText = "Booking Session..."; btn.disabled = true;
         try {
-            const payload = { action: 'book', id: currentUserData.id, type: currentUserData.type, date: selectedDateStr };
+            const payload = { 
+                action: 'book', 
+                id: currentUserData.id, 
+                type: currentUserData.type, 
+                date: selectedDateStr,
+                time: timeSelect.value 
+            };
             const response = await fetch(scriptURL, { method: 'POST', body: JSON.stringify(payload) });
             const result = await response.json();
 
@@ -328,6 +392,9 @@
                 document.getElementById('slip_name').innerText = currentUserData.name;
                 document.getElementById('slip_id').innerText = currentUserData.id;
                 document.getElementById('slip_date').innerText = selectedDateStr;
+                
+                document.getElementById('slip_time_display').innerText = timeSelect.options[timeSelect.selectedIndex].text.split(' (')[0] + " Prompt";
+                
                 document.getElementById('slip_apt_id').innerText = result.aptId;
                 document.getElementById('slip_status').innerText = result.status || "Booked";
                 showPage('pageSlip');
