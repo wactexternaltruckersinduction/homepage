@@ -276,6 +276,7 @@
         showPage('pageAppointment');
         document.getElementById('calendarGrid').innerHTML = "<p style='grid-column: span 7; text-align:center;'>Loading WACT Calendar Matrix...</p>";
         try {
+            const cacheBuster = new Date().getTime();
             const res = await fetch(`${scriptURL}?action=getCalendarData&id=${id}&type=${type}`);
             calendarData = await res.json();
             renderCalendar();
