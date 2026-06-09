@@ -791,7 +791,7 @@ function renderCalendar() {
             const payload = { 
                 action: 'book', 
                 id: document.getElementById('sideId').value, 
-                type: 'renewal', // Change this to 'new' on your New Induction Portal!
+                type: 'managementData.type', // Change this to 'new' on your New Induction Portal!
                 date: selectedDateStr,
                 time: timeSelect.value // SENDS THE TIME TO THE BACKEND
             };
