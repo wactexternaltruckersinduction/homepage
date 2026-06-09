@@ -186,6 +186,17 @@
             </div>
             <button onclick="fetchFilteredDrivers()" class="btn-main" style="background: var(--primary-blue); color: white; width: auto; padding: 12px 24px; margin-bottom: 0;">Search Database</button>
         </div>
+       
+        <div class="settings-card">
+  <h3>⚙️ Global System Configuration</h3>
+  <label>Max Capacity per Slot:</label>
+  <input type="number" id="adminMaxSlot" value="10">
+  
+  <label>Block Holidays (YYYY-MM-DD, comma separated):</label>
+  <input type="text" id="adminBlockedDates" placeholder="e.g., 2026-10-01, 2026-12-25">
+  
+  <button onclick="saveAdminSettings()">Save System Configuration</button>
+</div>
 
         <div id="batchActionControls" style="display: none; gap: 15px; margin-bottom: 25px; flex-wrap: wrap;">
             <button type="button" id="masterPrintBtn" class="btn-main" style="background:#16a34a; flex: 1; min-width:200px; margin-bottom: 0;" onclick="openPrintBatch()">
@@ -422,6 +433,19 @@
         // fetchAndDrawAnalytics(); 
     });
 
+async function saveAdminSettings() {
+  const payload = {
+    action: 'updateSystemSettings',
+    maxPerSlot: document.getElementById('adminMaxSlot').value,
+    blockedDates: document.getElementById('adminBlockedDates').value
+  };
+  
+  const response = await fetch(gasUrl, { method: 'POST', body: JSON.stringify(payload) });
+  const res = await response.json();
+  if(res.result === 'success') {
+     alert("System configuration updated instantly!");
+  }
+}
     async function fetchAndDrawAnalytics() {
         const start = document.getElementById('chartStartDate').value;
         const end = document.getElementById('chartEndDate').value;
