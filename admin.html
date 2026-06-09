@@ -187,15 +187,28 @@
             <button onclick="fetchFilteredDrivers()" class="btn-main" style="background: var(--primary-blue); color: white; width: auto; padding: 12px 24px; margin-bottom: 0;">Search Database</button>
         </div>
        
-        <div class="settings-card">
-  <h3>⚙️ Global System Configuration</h3>
-  <label>Max Capacity per Slot:</label>
-  <input type="number" id="adminMaxSlot" value="10">
-  
-  <label>Block Holidays (YYYY-MM-DD, comma separated):</label>
-  <input type="text" id="adminBlockedDates" placeholder="e.g., 2026-10-01, 2026-12-25">
-  
-  <button onclick="saveAdminSettings()">Save System Configuration</button>
+        <div class="card" style="border: 2px solid #0f172a; padding: 30px; border-radius: 16px; background: white; margin-bottom: 30px; max-width: 600px;">
+    <h3 style="color: #0f172a; margin-top: 0; font-weight: 800; border-bottom: 2px solid #e2e8f0; padding-bottom: 10px;">⚙️ Global System Configuration</h3>
+    
+    <div style="margin-bottom: 20px;">
+        <label style="display: block; font-size: 11px; font-weight: 700; color: #64748b; text-transform: uppercase; margin-bottom: 8px;">Global Time Slot Capacity (Default 10)</label>
+        <input type="number" id="adminMaxSlot" value="10" style="width: 100%; padding: 12px; border: 2px solid #e2e8f0; border-radius: 12px; font-weight: 600;">
+    </div>
+    
+    <div style="margin-bottom: 20px;">
+        <label style="display: block; font-size: 11px; font-weight: 700; color: #64748b; text-transform: uppercase; margin-bottom: 8px;">Block Holidays (Comma Separated)</label>
+        <input type="text" id="adminBlockedDates" placeholder="e.g. 2026-10-01, 2026-12-25" style="width: 100%; padding: 12px; border: 2px solid #e2e8f0; border-radius: 12px;">
+        <p style="font-size: 11px; color: #94a3b8; margin-top: 4px;">Drivers will be completely locked out of these dates.</p>
+    </div>
+
+    <div style="margin-bottom: 25px;">
+        <label style="display: block; font-size: 11px; font-weight: 700; color: #64748b; text-transform: uppercase; margin-bottom: 8px;">Custom Date Capacities (Overrides Global)</label>
+        <input type="text" id="adminCustomCaps" placeholder="e.g. 2026-10-05:15, 2026-10-06:5" style="width: 100%; padding: 12px; border: 2px solid #e2e8f0; border-radius: 12px;">
+        <p style="font-size: 11px; color: #94a3b8; margin-top: 4px;">Format as YYYY-MM-DD:Limit. Commas between dates.</p>
+    </div>
+    
+    <button onclick="saveAdminSettings()" style="background: #0f172a; color: white; padding: 14px 24px; border-radius: 12px; font-weight: 700; border: none; cursor: pointer; width: 100%;">Save System Configurations</button>
+    <p id="settingsSaveMsg" style="font-size: 13px; font-weight: 700; color: #16a34a; display: none; text-align: center; margin-top: 10px;">✅ Settings updated live!</p>
 </div>
 
         <div id="batchActionControls" style="display: none; gap: 15px; margin-bottom: 25px; flex-wrap: wrap;">
@@ -434,16 +447,31 @@
     });
 
 async function saveAdminSettings() {
+  const btn = document.querySelector('button[onclick="saveAdminSettings()"]');
+  const msg = document.getElementById('settingsSaveMsg');
+  btn.innerText = "Saving to Database..."; btn.disabled = true; msg.style.display = 'none';
+  
   const payload = {
     action: 'updateSystemSettings',
     maxPerSlot: document.getElementById('adminMaxSlot').value,
-    blockedDates: document.getElementById('adminBlockedDates').value
+    blockedDates: document.getElementById('adminBlockedDates').value,
+    customCapacities: document.getElementById('adminCustomCaps').value
   };
   
-  const response = await fetch(gasUrl, { method: 'POST', body: JSON.stringify(payload) });
-  const res = await response.json();
-  if(res.result === 'success') {
-     alert("System configuration updated instantly!");
+  try {
+      // NOTE: Ensure your Admin HTML file defines 'scriptURL' somewhere above this!
+      const response = await fetch(scriptURL, { method: 'POST', body: JSON.stringify(payload) });
+      const res = await response.json();
+      if(res.result === 'success') {
+         msg.style.display = 'block';
+         setTimeout(() => msg.style.display = 'none', 3000);
+      } else {
+         alert("Failed to save: " + res.message);
+      }
+  } catch (e) {
+      alert("System connection error.");
+  } finally {
+      btn.innerText = "Save System Configurations"; btn.disabled = false;
   }
 }
     async function fetchAndDrawAnalytics() {
