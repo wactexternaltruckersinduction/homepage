@@ -692,20 +692,35 @@
         } catch(e) { alert("Failed to fetch calendar allocations."); }
     }
 
-function renderCalendar() {
+// --- CRASH-PROOF CALENDAR LOGIC ---
+    function changeMonth(offset) { 
+        currentMonth.setMonth(currentMonth.getMonth() + offset); 
+        renderCalendar(); 
+    }
+
+    function renderCalendar() {
         const grid = document.getElementById('calendarGrid');
         const monthDisplay = document.getElementById('monthDisplay');
+        if (!grid || !monthDisplay) return;
+
         grid.innerHTML = "";
         monthDisplay.innerText = currentMonth.toLocaleDateString('en-GB', { month: 'long', year: 'numeric' });
         
         let firstDay = new Date(currentMonth.getFullYear(), currentMonth.getMonth(), 1).getDay();
         let totalDays = new Date(currentMonth.getFullYear(), currentMonth.getMonth() + 1, 0).getDate();
         
-        // Grab dynamic settings from backend (Default to 10 if missing)
-        const settings = calendarData.settings || { capacity: 10, blockedDates: [] };
-        const maxDailyCapacity = settings.capacity * 3; // 3 time slots per day
+        // 👉 SAFETY NETS: Prevents the calendar from crashing if data is missing
+        const safeData = calendarData || {};
+        const existingBookings = safeData.existingBookings || {};
+        const settings = safeData.settings || { capacity: 10, blockedDates: [], customCapacities: {} };
+        const blockedDates = settings.blockedDates || [];
+        const customCaps = settings.customCapacities || {};
+        const allowedMin = safeData.allowedMin || "2000-01-01";
+        const allowedMax = safeData.allowedMax || "2100-01-01";
         
-        for(let i=0; i<firstDay; i++) grid.appendChild(document.createElement('div'));
+        for(let i=0; i<firstDay; i++) {
+            grid.appendChild(document.createElement('div'));
+        }
         
         for(let d=1; d<=totalDays; d++) {
             let dateObj = new Date(currentMonth.getFullYear(), currentMonth.getMonth(), d);
@@ -719,11 +734,21 @@ function renderCalendar() {
             box.className = "day-box"; box.innerText = d;
             
             let isWedFri = (dayOfWeek === 3 || dayOfWeek === 5);
-            let inRange = (dateStr >= calendarData.allowedMin && dateStr <= calendarData.allowedMax);
-            let isBlocked = settings.blockedDates.includes(dateStr); // Checks Public Holidays
+            let inRange = (dateStr >= allowedMin && dateStr <= allowedMax);
+            let isBlocked = blockedDates.includes(dateStr); 
             
-            // Calculates how many people are booked today across all times
-            let dayBookings = calendarData.existingBookings[dateStr] || { '9AM': 0, '11AM': 0, '2PM': 0 };
+            let daySpecificCapacity = (customCaps[dateStr] !== undefined) ? customCaps[dateStr] : (settings.capacity || 10);
+            let maxDailyCapacity = daySpecificCapacity * 3; 
+            
+            let rawBookings = existingBookings[dateStr] || {};
+            let dayBookings = { '9AM': 0, '11AM': 0, '2PM': 0 };
+
+            if (typeof rawBookings === 'number') {
+                dayBookings['9AM'] = rawBookings; 
+            } else if (typeof rawBookings === 'object') {
+                dayBookings = { ...dayBookings, ...rawBookings };
+            }
+
             let totalBookings = (dayBookings['9AM'] || 0) + (dayBookings['11AM'] || 0) + (dayBookings['2PM'] || 0);
 
             if (isWedFri && inRange && !isBlocked) {
@@ -731,12 +756,12 @@ function renderCalendar() {
                     box.classList.add('full'); box.innerHTML += `<span class="slots-left">FULL</span>`;
                 } else {
                     box.classList.add('available'); box.innerHTML += `<span class="slots-left">${maxDailyCapacity - totalBookings} Open</span>`;
-                    box.onclick = () => selectDate(dateStr, box, dayBookings, settings.capacity);
+                    box.onclick = () => selectDate(dateStr, box, dayBookings, daySpecificCapacity);
                 }
             } else { 
                 box.classList.add('disabled'); 
                 if (isBlocked && isWedFri && inRange) {
-                    box.innerHTML += `<span class="slots-left" style="color:var(--warning);">HOLIDAY</span>`;
+                    box.innerHTML += `<span class="slots-left" style="color:var(--warning); font-weight:800;">HOLIDAY</span>`;
                 }
             }
             grid.appendChild(box);
@@ -750,9 +775,8 @@ function renderCalendar() {
         
         const parts = dateStr.split('-');
         const months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
-        document.getElementById('selectedDateText').innerText = `${parts[2]} ${months[parseInt(parts[1]) - 1]} ${parts[0]}`;
+        document.getElementById('selectedDateText').innerText = `${parts[2]} ${months[parseInt(parts[1], 10) - 1]} ${parts[0]}`;
         
-        // 👉 Dynamically build the Time Dropdown based on what is available!
         const timeSelect = document.getElementById('appointmentTime');
         timeSelect.innerHTML = `<option value="" disabled selected>Choose a time...</option>`;
         
