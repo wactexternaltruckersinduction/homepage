@@ -686,6 +686,7 @@
         grid.innerHTML = "<p style='grid-column: span 7; text-align:center;'>Accessing WACT Scheduling Parameters...</p>";
         try {
             const id = document.getElementById('sideId').value;
+            const cacheBuster = new Date().getTime();
             const res = await fetch(`${scriptURL}?action=getCalendarData&id=${id}&type=renewal`);
             calendarData = await res.json(); renderCalendar();
         } catch(e) { alert("Failed to fetch calendar allocations."); }
