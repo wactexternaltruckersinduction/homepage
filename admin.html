@@ -37,13 +37,11 @@
         .gate-card { background: white; width: 90%; max-width: 400px; padding: 40px; border-radius: var(--squarcle-radius); text-align: center; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.4); }
         .gate-input { width: 100%; padding: 14px; border: 2px solid #e2e8f0; border-radius: 14px; font-size: 16px; text-align: center; margin-bottom: 20px; box-sizing: border-box; }
         
-        /* Driver List Styling */
         .driver-table { width: 100%; border-collapse: collapse; margin-top: 15px; }
         .driver-table th, .driver-table td { padding: 12px; border-bottom: 1px solid #e2e8f0; text-align: left; font-size: 14px; }
         .driver-table th { background: #f8fafc; font-weight: 700; color: var(--text-muted); }
         .cb-action { width: 16px; height: 16px; cursor: pointer; }
         
-        /* 👉 NEW: TAB NAVIGATION STYLING */
         .tab-nav { display: flex; gap: 10px; margin-bottom: 25px; border-bottom: 2px solid #e2e8f0; overflow-x: auto; padding-bottom: 10px; }
         .tab-btn { background: white; border: 1px solid #e2e8f0; padding: 12px 24px; font-size: 14px; font-weight: 800; color: #64748b; cursor: pointer; border-radius: 12px; transition: 0.2s; white-space: nowrap; }
         .tab-btn:hover { background: #f8fafc; color: var(--primary-blue); }
@@ -275,20 +273,16 @@
 <footer>&copy; 2026 West Africa Container Terminal | Global APM Terminals Network</footer>
 
 <script>
-    const scriptURL = 'https://script.google.com/macros/s/AKfycbyT9VU1LktpavOtbkIKlsvjWV5_7kx_xctn1dVZS6LtiDQnMAagX4Xk5xC0zH_MhouoBg/exec';
     let activeSessionKey = "";
     let currentFilteredIds = []; 
 
-    // 👉 NEW: TAB SWITCHING LOGIC
     function switchTab(targetTabId) {
         document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
         document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
-        
         document.getElementById(targetTabId).classList.add('active');
         document.getElementById('btn-' + targetTabId).classList.add('active');
     }
 
-    // 👉 UPDATED: AUTH GATE NOW SHOWS/HIDES THE CORRECT TABS
     function unlockAdminPanel() {
         const passInput = document.getElementById('gatePasscodeField').value.trim();
         activeSessionKey = passInput;
@@ -296,7 +290,6 @@
         document.getElementById('authGateModal').style.display = 'none';
         document.getElementById('protectedContent').style.display = 'block';
         
-        // Show Navigation, hide all buttons by default
         document.getElementById('adminTabs').style.display = 'flex';
         document.querySelectorAll('.tab-btn').forEach(btn => btn.style.display = 'none');
         
@@ -304,7 +297,6 @@
             document.getElementById('portalTitle').innerText = "Medic Diagnostic Center";
             document.getElementById('medicSection').style.display = 'block';
             document.getElementById('hseSection').style.display = 'none';
-            
             document.getElementById('btn-tab-workspace').style.display = 'block';
             document.getElementById('btn-tab-workspace').innerText = "⚕️ Medic Workspace";
             switchTab('tab-workspace');
@@ -313,7 +305,6 @@
             document.getElementById('portalTitle').innerText = "HSE Induction Register Desk";
             document.getElementById('hseSection').style.display = 'block';
             document.getElementById('medicSection').style.display = 'none';
-            
             document.getElementById('btn-tab-workspace').style.display = 'block';
             document.getElementById('btn-tab-workspace').innerText = "🦺 HSE Workspace";
             switchTab('tab-workspace');
@@ -322,13 +313,10 @@
             document.getElementById('portalTitle').innerText = "Master Status Override Tool";
             document.getElementById('medicSection').style.display = 'block';
             document.getElementById('hseSection').style.display = 'block';
-            
-            // Master gets all tabs!
             document.getElementById('btn-tab-analytics').style.display = 'block';
             document.getElementById('btn-tab-registry').style.display = 'block';
             document.getElementById('btn-tab-workspace').style.display = 'block';
             document.getElementById('btn-tab-settings').style.display = 'block';
-            
             switchTab('tab-analytics');
             fetchFilteredDrivers(); 
         }
@@ -365,9 +353,8 @@
         currentFilteredIds = [];
 
         try {
-            const queryUrl = `${scriptURL}?action=getFilteredList&date=${fDate}&status=${fStatus}`;
-            const res = await fetch(queryUrl);
-            const list = await res.json();
+            // 👉 Calls the Supabase engine directly!
+            const list = await getFilteredList(fDate, fStatus);
             
             container.innerHTML = "";
             if(list.length === 0) {
@@ -410,7 +397,8 @@
         if (checkedBoxes.length === 0) return alert("Please tick at least one driver to reprint.");
         
         const selectedIds = Array.from(checkedBoxes).map(cb => cb.value);
-        window.open(scriptURL + "?action=printBatch&ids=" + encodeURIComponent(selectedIds.join(",")), "_blank"); 
+        // 👉 Routes directly to your upcoming print generator!
+        window.open("print.html?ids=" + encodeURIComponent(selectedIds.join(",")), "_blank"); 
     }
 
     async function markSelectedCheckboxes() {
@@ -421,13 +409,14 @@
         if (!confirm(`Are you sure you want to mark these ${selectedIds.length} drivers as 'Card Generated'?`)) return;
 
         try {
-            const response = await fetch(scriptURL, { 
-                method: 'POST', 
-                body: JSON.stringify({ action: 'markCardsGenerated', ids: selectedIds }) 
-            });
-            const res = await response.json();
-            alert(`Success! ${res.count} drivers updated in the database.`);
-            fetchFilteredDrivers(); 
+            // 👉 Direct call to Supabase updater!
+            const res = await markCardsGenerated(selectedIds);
+            if (res.result === 'success') {
+                alert(`Success! ${res.count} drivers updated in the database.`);
+                fetchFilteredDrivers(); 
+            } else {
+                alert("Database update failed: " + res.message);
+            }
         } catch (err) { 
             alert("Error communicating with the database."); 
         }
@@ -450,14 +439,13 @@
         }
 
         const btn = document.getElementById('verifySubmitBtn');
-        btn.innerText = "Writing Parameters to sheet database..."; btn.disabled = true;
+        btn.innerText = "Writing Parameters to database..."; btn.disabled = true;
         
         try {
-            const payload = { action: 'adminBulkVerify', ids: ids, passcode: activeSessionKey, attended: indYes, daPassed: daYes, reason: reason };
-            const response = await fetch(scriptURL, { method: 'POST', body: JSON.stringify(payload) });
-            const res = await response.json();
-
+            // 👉 Direct connection to code.js bulk updater
+            const res = await adminBulkVerify(ids, activeSessionKey, indYes, daYes, reason);
             alert(res.message);
+            
             if (res.result === 'success') { 
                 document.getElementById('bulkIds').value = ""; 
                 document.querySelectorAll('input[type=radio]').forEach(r => r.checked = false);
@@ -470,7 +458,8 @@
     function openPrintBatch() { 
         if (currentFilteredIds.length === 0) return alert("No drivers to print.");
         const idString = currentFilteredIds.join(",");
-        window.open(scriptURL + "?action=printBatch&ids=" + encodeURIComponent(idString), "_blank"); 
+        // 👉 Routes directly to your upcoming print generator!
+        window.open("print.html?ids=" + encodeURIComponent(idString), "_blank"); 
     }
 
     window.addEventListener('DOMContentLoaded', () => {
@@ -480,13 +469,11 @@
         document.getElementById('filterDate').value = todayStr;
     });
 
-    // --- ANALYTICS DASHBOARD LOGIC ---
     let myPieChart = null; 
 
     window.addEventListener('DOMContentLoaded', () => {
         const today = new Date();
         const firstDay = new Date(today.getFullYear(), today.getMonth(), 1);
-        
         document.getElementById('chartStartDate').value = firstDay.toISOString().split('T')[0];
         document.getElementById('chartEndDate').value = today.toISOString().split('T')[0];
     });
@@ -496,24 +483,20 @@
       const msg = document.getElementById('settingsSaveMsg');
       btn.innerText = "Saving to Database..."; btn.disabled = true; msg.style.display = 'none';
       
-      const payload = {
-        action: 'updateSystemSettings',
-        maxPerSlot: document.getElementById('adminMaxSlot').value,
-        blockedDates: document.getElementById('adminBlockedDates').value,
-        customCapacities: document.getElementById('adminCustomCaps').value
-      };
-      
       try {
-          const response = await fetch(scriptURL, { method: 'POST', body: JSON.stringify(payload) });
-          const res = await response.json();
-          if(res.result === 'success') {
-             msg.style.display = 'block';
-             setTimeout(() => msg.style.display = 'none', 3000);
-          } else {
-             alert("Failed to save: " + res.message);
-          }
+          // 👉 Direct Supabase UPSERT table override
+          const { error } = await supabase.from('system_settings').upsert([
+              { setting_key: 'global_capacity', setting_value: document.getElementById('adminMaxSlot').value },
+              { setting_key: 'blocked_dates', setting_value: document.getElementById('adminBlockedDates').value },
+              { setting_key: 'custom_capacities', setting_value: document.getElementById('adminCustomCaps').value }
+          ], { onConflict: 'setting_key' });
+          
+          if (error) throw error;
+          
+          msg.style.display = 'block';
+          setTimeout(() => msg.style.display = 'none', 3000);
       } catch (e) {
-          alert("System connection error.");
+          alert("System connection error: " + e.message);
       } finally {
           btn.innerText = "Save System Configurations"; btn.disabled = false;
       }
@@ -528,10 +511,8 @@
         loader.style.display = "block";
 
         try {
-            const payload = { action: 'getAnalytics', startDate: start, endDate: end };
-            const response = await fetch(scriptURL, { method: 'POST', body: JSON.stringify(payload) });
-            const res = await response.json();
-
+            // 👉 Direct connection to code.js analytics query
+            const res = await getAnalytics(start, end);
             loader.style.display = "none";
 
             if (res.result === 'success') {
@@ -545,7 +526,6 @@
                 document.getElementById('stat_generated').innerText = data.generated;
 
                 const ctx = document.getElementById('inductionPieChart').getContext('2d');
-                
                 if (myPieChart !== null) { myPieChart.destroy(); }
 
                 myPieChart = new Chart(ctx, {
@@ -568,7 +548,7 @@
         }
     }
 </script>
-<!-- 2. NOW we open and close the new database tools in their own clean zones -->
+
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="code.js"></script>
 
