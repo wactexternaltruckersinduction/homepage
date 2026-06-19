@@ -340,32 +340,27 @@
     }
 
     // --- LOGIN LOGIC ---
+    // --- LOGIN LOGIC (UPGRADED FOR SUPABASE) ---
     document.getElementById('loginForm').addEventListener('submit', async (e) => {
         e.preventDefault();
         const id = document.getElementById('loginId').value;
         const pass = document.getElementById('loginPass').value;
         const btn = document.getElementById('loginBtn');
         const err = document.getElementById('loginError');
-
-        btn.innerText = "Authenticating..."; btn.disabled = true; err.style.display = "none";
-
+        
+        btn.innerText = "Authenticating..."; 
+        btn.disabled = true; 
+        err.style.display = "none";
+        
         try {
-            // 1. Fetch Profile from Master DB
-            const response = await fetch(scriptURL, {
-                method: 'POST',
-                body: JSON.stringify({ action: 'driverLogin', inductionNumber: id, password: pass })
-            });
-            const res = await response.json();
-
-            if (res.result === 'success') {
-                currentUserProfile = res.profile;
+            // Talk directly to Supabase via code.js
+            const response = await driverLogin(id, pass);
+            
+            if (response.result === 'success') {
+                currentUserProfile = response.profile;
+                managementData = response.apptData;
                 
-                // 2. Fetch Live Calendar/Status from operational sheets (Exactly like Manage Application)
-                btn.innerText = "Syncing Records...";
-                const calRes = await fetch(`${scriptURL}?action=getCalendarData&id=${encodeURIComponent(id)}&type=renewal`);
-                managementData = await calRes.json();
-
-                // 3. Build the combined UI
+                // Build the combined UI using your existing function!
                 buildDashboard(currentUserProfile, managementData);
                 
                 document.getElementById('loginView').style.display = 'none';
@@ -373,14 +368,15 @@
                 document.getElementById('logoutBtn').style.display = 'block';
                 switchView('viewSnapshot');
             } else {
-                err.innerText = "❌ " + res.message;
+                err.innerText = "❌ " + response.message;
                 err.style.display = "block";
             }
         } catch (error) {
             err.innerText = "❌ Server communication failed. Try again.";
             err.style.display = "block";
         } finally {
-            btn.innerText = "Secure Login"; btn.disabled = false;
+            btn.innerText = "Secure Login"; 
+            btn.disabled = false;
         }
     });
 
@@ -870,5 +866,10 @@
         } finally { btn.innerText = "Dispatch Email"; btn.disabled = false; }
     }
 </script>
+
+<!-- Load Supabase and your custom backend -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="code.js"></script>
+
 </body>
 </html>
