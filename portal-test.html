@@ -357,7 +357,7 @@
                 err.style.display = "block";
             }
         } catch (error) {
-            err.innerText = "❌ Server communication failed. Try again.";
+            err.innerText = "❌ " + error.message;
             err.style.display = "block";
         } finally {
             btn.innerText = "Secure Login"; 
