@@ -67,7 +67,7 @@
         .appt-card { background: white; border: 2px solid #e2e8f0; border-radius: var(--squarcle-radius); padding: 30px; margin-bottom: 25px; box-shadow: var(--shadow-soft);}
         .appt-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #e2e8f0; padding-bottom: 15px; margin-bottom: 20px;}
         
-        /* CALENDAR (From Manage Application) */
+        /* CALENDAR */
         .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 10px; margin-top: 20px;}
         .day-box { border: 1px solid #e2e8f0; padding: 12px; border-radius: 12px; text-align: center; cursor: pointer; transition: 0.2s; background: white; font-weight: 600;}
         .day-box.disabled { background: #f1f5f9; color: #cbd5e1; cursor: not-allowed; border: transparent; }
@@ -94,11 +94,10 @@
     </div>
     <div style="display: flex; gap: 10px;">
         <a href="index.html" class="btn-main" style="background: white; color: var(--text-dark); border: 2px solid #e2e8f0; padding: 10px 20px; text-decoration: none; text-transform: uppercase; font-size: 12px; border-radius: 12px; display: inline-block; font-weight: 800;">← Back to Home</a>
-    <button id="logoutBtn" style="display:none; padding: 10px 20px; border-radius: 12px; background: white; border: 2px solid #e2e8f0; cursor: pointer; font-weight: 700; color: var(--text-muted); font-size: 12px; text-transform: uppercase;" onclick="logout()">Log Out</button>
-        </div>
+        <button id="logoutBtn" style="display:none; padding: 10px 20px; border-radius: 12px; background: white; border: 2px solid #e2e8f0; cursor: pointer; font-weight: 700; color: var(--text-muted); font-size: 12px; text-transform: uppercase;" onclick="logout()">Log Out</button>
+    </div>
 </header>
 
-<!-- LOGIN VIEW -->
 <div id="loginView">
     <div class="card" style="width: 100%; max-width: 400px; text-align: center; padding: 40px 30px;">
         <div style="font-size: 40px; margin-bottom: 15px;">🔒</div>
@@ -120,11 +119,9 @@
     </div>
 </div>
 
-<!-- DASHBOARD VIEW -->
 <div id="dashboardView">
     <div class="dash-grid">
         
-        <!-- SIDEBAR: Immutable Identity (Squarcles) -->
         <div class="card profile-sidebar" style="margin-bottom: 0;">
             <img id="sidePhoto" class="profile-photo" src="" alt="Driver Photo">
             <h2 id="sideName" class="profile-name">---</h2>
@@ -143,18 +140,17 @@
             </div>
         </div>
 
-        <!-- MAIN CONTENT AREA -->
         <div>
-            <!-- VIEW 1: SNAPSHOT -->
             <div id="viewSnapshot" class="section-view active">
                 <h2 style="color: var(--primary-blue); margin-top: 0; font-weight: 800; font-size: 24px; margin-bottom: 25px; letter-spacing: -0.5px;">Compliance Dashboard</h2>
+                
                 <div id="downloadCardBox" class="card" style="display: none; border: 2px solid var(--success); background: #f0fdf4; text-align: center; padding: 30px; margin-bottom: 25px;">
                     <h3 style="margin: 0 0 10px 0; color: var(--success); font-size: 20px; font-weight: 900;">🎉 Induction Approved</h3>
                     <p style="font-size: 14px; color: #166534; margin-bottom: 20px; font-weight: 600;">Your renewal has been verified. You can now generate your digital ID card.</p>
                     <button id="downloadCardBtn" class="btn-main" style="background: var(--success); width: auto; font-size: 14px; padding: 16px 32px; box-shadow: 0 4px 10px rgba(22,163,74,0.3);">🖨️ Generate My ID Card</button>
                 </div>
+
                 <div class="grid-2" style="margin-bottom: 25px;">
-                    <!-- BOX 1: Induction Validity -->
                     <div id="boxInduction" class="status-box">
                         <div>
                             <div style="font-size: 11px; color: var(--text-muted); font-weight: 700; text-transform: uppercase;">Induction Validity</div>
@@ -163,7 +159,6 @@
                         <span id="badgeInduction" class="badge">---</span>
                     </div>
 
-                    <!-- BOX 2: License Validity -->
                     <div id="boxLicense" class="status-box">
                         <div>
                             <div style="font-size: 11px; color: var(--text-muted); font-weight: 700; text-transform: uppercase;">License Validity</div>
@@ -173,7 +168,6 @@
                     </div>
                 </div>
 
-                <!-- PERMANENT APPOINTMENT SQUARCLE -->
                 <div id="apptBox" class="appt-card">
                     <div class="appt-header">
                         <h3 style="margin: 0; color: var(--primary-blue); font-size: 16px; text-transform: uppercase; font-weight: 800;">📅 Session Manager</h3>
@@ -191,7 +185,6 @@
                     </div>
                 </div>
 
-                <!-- Current Editable Variables -->
                 <div class="card" style="background: #f8fafc; border: 2px solid #e2e8f0; padding: 30px;">
                     <h3 style="margin: 0 0 20px 0; font-size: 14px; color: var(--primary-blue); text-transform: uppercase; font-weight: 800;">Current Variable Records</h3>
                     <div class="grid-2">
@@ -201,7 +194,6 @@
                     </div>
                 </div>
 
-                <!-- Renewal Control Box -->
                 <div id="renewActionBox" class="card" style="display: none; border: 2px solid var(--orange); background: #fff7ed; text-align: center; padding: 35px;">
                     <h3 style="margin: 0 0 10px 0; color: var(--orange); font-size: 20px; font-weight: 800;">Renewal Window Open</h3>
                     <p style="font-size: 14px; color: #9a3412; margin-bottom: 25px; font-weight: 600;">Your induction expires in less than 4 weeks. You may now update your documents.</p>
@@ -214,7 +206,6 @@
                 </div>
             </div>
 
-            <!-- VIEW 2: RENEWAL FORM (From Renewal.html) -->
             <div id="viewRenewal" class="section-view card">
                 <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #e2e8f0; padding-bottom: 20px; margin-bottom: 25px;">
                     <h2 style="margin: 0; color: var(--primary-blue); font-weight: 800; font-size: 24px; letter-spacing: -0.5px;">Induction Card Renewal</h2>
@@ -246,20 +237,19 @@
 
                     <h3 style="font-size: 13px; color: var(--primary-blue); text-transform: uppercase; font-weight: 800; margin-top: 30px; border-bottom: 2px solid #f1f5f9; padding-bottom: 8px;">Document Uploads</h3>
                     <div class="grid-2">
-                        <div class="input-group"><label>Driver's License Update (Required)</label><input type="file" id="file_license" class="modern-input" required></div>
-                        <div class="input-group"><label>Recent Passport Photo (Required)</label><input type="file" id="file_passport" class="modern-input" required></div>
+                        <div class="input-group"><label>Driver's License Update (Required)</label><input type="file" id="file_license" class="modern-input" accept="image/*,application/pdf" required></div>
+                        <div class="input-group"><label>Recent Passport Photo (Required)</label><input type="file" id="file_passport" class="modern-input" accept="image/*" required></div>
                     </div>
                     <div class="grid-2">
-                        <div class="input-group" id="wrap_oldCard"><label>Current Induction Card (Optional)</label><input type="file" id="file_oldCard" class="modern-input"></div>
-                        <div class="input-group" id="wrap_policeReport" style="display: none;"><label>Police Report (Required if Lost)</label><input type="file" id="file_police" class="modern-input"></div>
-                        <div class="input-group"><label>Other Supporting Documents (Optional)</label><input type="file" id="file_otherDoc" class="modern-input"></div>
+                        <div class="input-group" id="wrap_oldCard"><label>Current Induction Card (Optional)</label><input type="file" id="file_oldCard" class="modern-input" accept="image/*,application/pdf"></div>
+                        <div class="input-group" id="wrap_policeReport" style="display: none;"><label>Police Report (Required if Lost)</label><input type="file" id="file_police" class="modern-input" accept="image/*,application/pdf"></div>
+                        <div class="input-group"><label>Other Supporting Documents (Optional)</label><input type="file" id="file_otherDoc" class="modern-input" accept="image/*,application/pdf"></div>
                     </div>
 
                     <button type="submit" id="renSubmitBtn" class="btn-main btn-primary" style="margin-top: 20px;">Submit Renewal Request</button>
                 </form>
             </div>
 
-            <!-- VIEW 3: APPOINTMENT SCHEDULER (From Manage Application) -->
             <div id="pageAppointment" class="section-view card">
                 <h2 style="margin-top:0; color:var(--primary-blue); font-weight:800; font-size: 24px; letter-spacing: -0.5px;">Reschedule Induction Session</h2>
                 <div style="display:flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
@@ -274,8 +264,7 @@
                     
                     <div style="margin: 15px auto 25px auto; max-width: 300px; text-align: left;">
                         <label style="font-size: 11px; font-weight: 700; color: #64748b; text-transform: uppercase;">Select Time Slot</label>
-                        <select id="appointmentTime" class="modern-input" required>
-                            </select>
+                        <select id="appointmentTime" class="modern-input" required></select>
                     </div>
 
                     <div style="display: flex; gap: 15px; justify-content: center;">
@@ -285,7 +274,6 @@
                 </div>
             </div>
 
-            <!-- VIEW 4: GATE SLIP DOCUMENT OUTPUT (From Manage Application) -->
             <div id="pageSlip" class="section-view card">
                 <div id="printArea">
                     <div style="border: 2px solid #0f172a; padding: 30px; text-align: center; border-radius:16px; background: white;">
@@ -321,17 +309,17 @@
 </div>
 
 <script>
-    const scriptURL = 'https://script.google.com/macros/s/AKfycbyT9VU1LktpavOtbkIKlsvjWV5_7kx_xctn1dVZS6LtiDQnMAagX4Xk5xC0zH_MhouoBg/exec';
+    // Supabase handles the database, Google Apps Script handles ONLY email dispatch!
+    const emailScriptURL = 'https://script.google.com/macros/s/AKfycbyT9VU1LktpavOtbkIKlsvjWV5_7kx_xctn1dVZS6LtiDQnMAagX4Xk5xC0zH_MhouoBg/exec';
     
     // Core Data stores
     let currentUserProfile = null;
-    let managementData = null; // Holds the calendar/appointment payload
+    let managementData = null;
     let calendarData = {};
     let currentMonth = new Date();
     let selectedDateStr = "";
     let isSuspended = false;
 
-    // --- VIEW CONTROLLER ---
     function switchView(viewId) {
         document.querySelectorAll('.section-view').forEach(el => el.classList.remove('active'));
         document.getElementById(viewId).classList.add('active');
@@ -339,8 +327,7 @@
         if (viewId === 'pageAppointment') { loadCalendar(); }
     }
 
-    // --- LOGIN LOGIC ---
-    // --- LOGIN LOGIC (UPGRADED FOR SUPABASE) ---
+    // --- DIRECT SUPABASE LOGIN ---
     document.getElementById('loginForm').addEventListener('submit', async (e) => {
         e.preventDefault();
         const id = document.getElementById('loginId').value;
@@ -353,14 +340,12 @@
         err.style.display = "none";
         
         try {
-            // Talk directly to Supabase via code.js
             const response = await driverLogin(id, pass);
             
             if (response.result === 'success') {
                 currentUserProfile = response.profile;
                 managementData = response.apptData;
                 
-                // Build the combined UI using your existing function!
                 buildDashboard(currentUserProfile, managementData);
                 
                 document.getElementById('loginView').style.display = 'none';
@@ -388,67 +373,45 @@
         document.getElementById('loginForm').reset();
     }
 
-    // --- DASHBOARD BUILDER & EXACT SUSPENSION LOGIC ---
     function buildDashboard(profile, apptData) {
-    // 1. CLEAN DATA EXTRACTION (No more messy loops!)
-    // Because your backend now normalizes everything, we can call the exact keys directly.
-    let indExpVal = profile.inductionExpiration || "Not Found";
-    let licExpVal = profile.licenseExpiration || "Not Found";
-    let issueVal = profile.dateOfIssue || "N/A";
-    let licVal = profile.licenseNumber || "N/A";
+        let indExpVal = profile.inductionExpiration || "Not Found";
+        let licExpVal = profile.licenseExpiration || "Not Found";
+        let issueVal = profile.dateOfIssue || "N/A";
+        let licVal = profile.licenseNumber || "N/A";
 
-    if (indExpVal.includes("T")) indExpVal = indExpVal.split("T")[0];
-    if (licExpVal.includes("T")) licExpVal = licExpVal.split("T")[0];
-    if (issueVal.includes("T")) issueVal = issueVal.split("T")[0];
+        if (indExpVal.includes("T")) indExpVal = indExpVal.split("T")[0];
+        if (licExpVal.includes("T")) licExpVal = licExpVal.split("T")[0];
+        if (issueVal.includes("T")) issueVal = issueVal.split("T")[0];
 
-    let nameVal = profile.fullName || "Unknown Driver";
-    let idVal = profile.inductionNumber || "N/A";
-    let dobVal = profile.dob || "N/A";
-    let photoUrl = profile.passportPhoto;
-    let phoneVal = profile.mobileNumber || "N/A";
-    let compVal = profile.companyName || "N/A";
-    let addrVal = profile.address || "N/A";
+        let nameVal = profile.fullName || "Unknown Driver";
+        let idVal = profile.inductionNumber || "N/A";
+        let dobVal = profile.dob || "N/A";
+        let photoUrl = profile.passportPhoto;
+        let phoneVal = profile.mobileNumber || "N/A";
+        let compVal = profile.companyName || "N/A";
+        let addrVal = profile.address || "N/A";
 
-    // Assign to UI
-    document.getElementById('sideName').innerText = nameVal;
-    document.getElementById('sideId').value = idVal;
-    document.getElementById('sideLicense').value = licVal;
-    document.getElementById('sideDob').value = dobVal;
-    document.getElementById('sideIssue').value = issueVal;
+        document.getElementById('sideName').innerText = nameVal;
+        document.getElementById('sideId').value = idVal;
+        document.getElementById('sideLicense').value = licVal;
+        document.getElementById('sideDob').value = dobVal;
+        document.getElementById('sideIssue').value = issueVal;
 
-    document.getElementById('currPhone').value = phoneVal;
-    document.getElementById('currCompany').value = compVal;
-    document.getElementById('currAddress').value = addrVal;
+        document.getElementById('currPhone').value = phoneVal;
+        document.getElementById('currCompany').value = compVal;
+        document.getElementById('currAddress').value = addrVal;
 
-    // Pre-fill hidden/editable Renewal Form
-    document.getElementById('ren_mobile').value = phoneVal === "N/A" ? "" : phoneVal;
-    document.getElementById('ren_company').value = compVal === "N/A" ? "" : compVal;
-    document.getElementById('ren_address').value = addrVal === "N/A" ? "" : addrVal;
+        document.getElementById('ren_mobile').value = phoneVal === "N/A" ? "" : phoneVal;
+        document.getElementById('ren_company').value = compVal === "N/A" ? "" : compVal;
+        document.getElementById('ren_address').value = addrVal === "N/A" ? "" : addrVal;
 
-        // Photo Extraction Tool
-        // Photo Extraction Tool (Bypassing Corporate SSL Filters)
-  // Photo Extraction Tool (Bypassing Corporate SSL Filters)
-  let finalImgSrc = "https://via.placeholder.com/140?text=No+Photo";
-  
-  if (photoUrl) {
-      let photoStr = String(photoUrl);
-      
-      if (photoStr.startsWith("data:image")) {
-          finalImgSrc = photoStr;
-      } 
-      else {
-          let match = photoStr.match(/[-\w]{25,}/);
-          if (match) {
-              finalImgSrc = "https://drive.google.com/thumbnail?id=" + match[0] + "&sz=w400";
-          } else {
-              finalImgSrc = photoStr;
-          }
-      }
-  }
-  
-  document.getElementById('sidePhoto').src = finalImgSrc;
+        // 👉 CLEAN SUPABASE PHOTO EXTRACTION
+        let finalImgSrc = "https://via.placeholder.com/140?text=No+Photo";
+        if (photoUrl && photoUrl !== "") {
+            finalImgSrc = photoUrl; // Supabase gives us a clean link directly to the image!
+        }
+        document.getElementById('sidePhoto').src = finalImgSrc;
 
-        // 2. THE EXACT D/A SUSPENSION LOGIC (From Manage.html)
         isSuspended = false;
         let daInput = document.getElementById('sideDA');
         let suspText = document.getElementById('suspensionText');
@@ -457,7 +420,7 @@
         const reasonStr = String(apptData.daReason || "").toLowerCase();
 
         if (currentStatus === "Failed D/A") {
-            const failureDate = new Date(apptData.currentAppointment);
+            const failureDate = new Date(apptData.currentAppointment || new Date());
             let suspensionEndDate = new Date(failureDate);
             let durationText = "";
             
@@ -494,7 +457,6 @@
             suspText.style.display = "none";
         }
 
-        // 3. APPOINTMENT SQUARCLE (ALWAYS VISIBLE)
         document.getElementById('apptBox').style.display = "block";
         const manageBtn = document.getElementById('manageSessionBtn');
         
@@ -507,7 +469,6 @@
             document.getElementById('apptBadge').style.display = "inline-block";
             document.getElementById('dispatchSlipBtn').style.display = "inline-block";
             
-            // Lock logic exactly like Manage.html
             if (currentStatus === "Verified" || currentStatus === "Card Generated") {
                 manageBtn.disabled = true; manageBtn.innerText = "Profile Locked";
             } else if ((apptData.rescheduleCount || 0) >= 2) {
@@ -517,7 +478,6 @@
                 manageBtn.innerText = isSuspended ? "Session Locked" : "Reschedule Session";
             }
             
-            // Pre-fill Slip for printing
             document.getElementById('slip_name').innerText = nameVal;
             document.getElementById('slip_id').innerText = idVal;
             document.getElementById('slip_date').innerText = formattedApt;
@@ -532,26 +492,24 @@
             manageBtn.disabled = isSuspended;
             manageBtn.innerText = isSuspended ? "Session Locked" : "Book New Session";
         }
-        // --- DRIVER HTML CARD GENERATOR ---
+
+        // 👉 DIRECT PRINT ROUTE
         const downloadBox = document.getElementById('downloadCardBox');
         if (currentStatus === "Verified" || currentStatus === "Card Generated") {
             downloadBox.style.display = "block";
-            // Fires the exact same generator your Admin portal uses!
             document.getElementById('downloadCardBtn').onclick = () => {
-                window.open(scriptURL + "?action=printBatch&ids=" + encodeURIComponent(idVal) + "&role=driver", "_blank");
+                window.open("print.html?ids=" + encodeURIComponent(idVal), "_blank");
             };
         } else {
             downloadBox.style.display = "none";
         }
 
-        // 4. COMPLIANCE & 4-WEEK LOGIC
         const indDaysLeft = evaluateDateStatus(indExpVal, 'boxInduction', 'expInductionDate', 'badgeInduction');
         evaluateDateStatus(licExpVal, 'boxLicense', 'expLicenseDate', 'badgeLicense');
 
         const actionBox = document.getElementById('renewActionBox');
         const lockedBox = document.getElementById('renewLockedBox');
         
-        // Strict pending check: They are booked and the appointment date is in the future.
         const isPendingRenewal = (currentStatus === "Booked" || currentStatus === "Rescheduled") && apptData.currentAppointment;
 
         if (isSuspended) {
@@ -562,7 +520,6 @@
             document.getElementById('renewLockedText').style.color = "var(--danger)";
         } 
         else if (isPendingRenewal) {
-            // SHOW RENEWAL PENDING STATE
             const indBox = document.getElementById('boxInduction');
             const indBadge = document.getElementById('badgeInduction');
             indBox.className = "status-box status-info"; indBadge.className = "badge badge-info";
@@ -613,7 +570,6 @@
         return daysLeft;
     }
 
-    // --- RENEWAL FORM LOGIC (From Renewal.html) ---
     function handleCardStatusChange() {
         const status = document.getElementById('cardStatus').value;
         const wrapOldCard = document.getElementById('wrap_oldCard');
@@ -638,43 +594,46 @@
         });
     }
 
+    // --- DIRECT SUPABASE RENEWAL SUBMISSION ---
     document.getElementById('renewalForm').addEventListener('submit', async function(e) {
         e.preventDefault();
         const btn = document.getElementById('renSubmitBtn');
-        btn.innerText = "Updating Renewal Profile..."; btn.disabled = true;
+        btn.innerText = "Updating Profile to Supabase..."; btn.disabled = true;
+        
         try {
             const payload = {
-        action: 'submitRenewal',
-        fullName: document.getElementById('sideName').innerText,
-        inductionNumber: document.getElementById('sideId').value,
-        address: document.getElementById('ren_address').value,
-        mobileNumber: document.getElementById('ren_mobile').value, // Standardized
-        companyName: document.getElementById('ren_company').value,
-        licenseExpiration: document.getElementById('ren_lic_exp').value, // Standardized
-        cardStatus: document.getElementById('cardStatus').value,
-        seizedBanReason: document.getElementById('ren_seizedReason').value, // Standardized
-        oldInductionCard: await getFileData(document.getElementById('file_oldCard')), // Standardized
-        policeReport: await getFileData(document.getElementById('file_police')),
-        driversLicense: await getFileData(document.getElementById('file_license')),
-        passportPhoto: await getFileData(document.getElementById('file_passport')),
-        otherDocuments: await getFileData(document.getElementById('file_otherDoc')) // Standardized
-      };
-            const response = await fetch(scriptURL, { method: 'POST', body: JSON.stringify(payload) });
-            const result = await response.json();
+                fullName: document.getElementById('sideName').innerText,
+                inductionNumber: document.getElementById('sideId').value,
+                address: document.getElementById('ren_address').value,
+                mobileNumber: document.getElementById('ren_mobile').value,
+                companyName: document.getElementById('ren_company').value,
+                licenseExpiration: document.getElementById('ren_lic_exp').value,
+                cardStatus: document.getElementById('cardStatus').value,
+                seizedBanReason: document.getElementById('ren_seizedReason').value,
+                passportPhoto: await getFileData(document.getElementById('file_passport')),
+                driversLicense: await getFileData(document.getElementById('file_license')),
+                oldInductionCard: await getFileData(document.getElementById('file_oldCard')),
+                policeReport: await getFileData(document.getElementById('file_police')),
+                otherDocuments: await getFileData(document.getElementById('file_otherDoc')) 
+            };
+            
+            // Call Supabase code.js engine directly!
+            const result = await submitRenewal(payload);
             
             if (result.result === 'success') {
                 alert("Renewal Details Updated Successfully! Proceeding to Appointment Scheduling.");
-                
-                // BUG FIX: Removed the automatic login refresh that was kicking you out!
-                // Now it just safely moves you directly to the calendar.
                 switchView('pageAppointment');
-                
-            } else { alert("Application Rejected: " + (result.message || "Unknown error.")); }
-        } catch (err) { alert("Error submitting renewal."); } 
-        finally { btn.innerText = "Submit Renewal Request"; btn.disabled = false; }
+            } else { 
+                alert("Database Error: " + (result.message || "Unknown error.")); 
+            }
+        } catch (err) { 
+            alert("Error submitting renewal via database connection."); 
+        } finally { 
+            btn.innerText = "Submit Renewal Request"; btn.disabled = false; 
+        }
     });
 
-    // --- CALENDAR LOGIC (From Manage Application) ---
+    // --- DIRECT SUPABASE CALENDAR LOAD ---
     function startReschedule() { switchView('pageAppointment'); }
 
     async function loadCalendar() {
@@ -682,13 +641,13 @@
         grid.innerHTML = "<p style='grid-column: span 7; text-align:center;'>Accessing WACT Scheduling Parameters...</p>";
         try {
             const id = document.getElementById('sideId').value;
-            const cacheBuster = new Date().getTime();
-            const res = await fetch(`${scriptURL}?action=getCalendarData&id=${id}&type=renewal`);
-            calendarData = await res.json(); renderCalendar();
-        } catch(e) { alert("Failed to fetch calendar allocations."); }
+            calendarData = await getCalendarData(id, 'renewal'); // Call code.js directly
+            renderCalendar();
+        } catch(e) { 
+            alert("Failed to fetch calendar allocations from database."); 
+        }
     }
 
-// --- CRASH-PROOF CALENDAR LOGIC ---
     function changeMonth(offset) { 
         currentMonth.setMonth(currentMonth.getMonth() + offset); 
         renderCalendar(); 
@@ -705,7 +664,6 @@
         let firstDay = new Date(currentMonth.getFullYear(), currentMonth.getMonth(), 1).getDay();
         let totalDays = new Date(currentMonth.getFullYear(), currentMonth.getMonth() + 1, 0).getDate();
         
-        // 👉 SAFETY NETS: Prevents the calendar from crashing if data is missing
         const safeData = calendarData || {};
         const existingBookings = safeData.existingBookings || {};
         const settings = safeData.settings || { capacity: 10, blockedDates: [], customCapacities: {} };
@@ -714,9 +672,7 @@
         const allowedMin = safeData.allowedMin || "2000-01-01";
         const allowedMax = safeData.allowedMax || "2100-01-01";
         
-        for(let i=0; i<firstDay; i++) {
-            grid.appendChild(document.createElement('div'));
-        }
+        for(let i=0; i<firstDay; i++) { grid.appendChild(document.createElement('div')); }
         
         for(let d=1; d<=totalDays; d++) {
             let dateObj = new Date(currentMonth.getFullYear(), currentMonth.getMonth(), d);
@@ -739,11 +695,8 @@
             let rawBookings = existingBookings[dateStr] || {};
             let dayBookings = { '9AM': 0, '11AM': 0, '2PM': 0 };
 
-            if (typeof rawBookings === 'number') {
-                dayBookings['9AM'] = rawBookings; 
-            } else if (typeof rawBookings === 'object') {
-                dayBookings = { ...dayBookings, ...rawBookings };
-            }
+            if (typeof rawBookings === 'number') { dayBookings['9AM'] = rawBookings; } 
+            else if (typeof rawBookings === 'object') { dayBookings = { ...dayBookings, ...rawBookings }; }
 
             let totalBookings = (dayBookings['9AM'] || 0) + (dayBookings['11AM'] || 0) + (dayBookings['2PM'] || 0);
 
@@ -799,6 +752,7 @@
         document.getElementById('bookingActions').style.display = "block";
     }
 
+    // --- DIRECT SUPABASE BOOKING ---
     async function confirmBooking() {
         const timeSelect = document.getElementById('appointmentTime');
         if (!timeSelect.value) {
@@ -810,38 +764,33 @@
         btn.innerText = "Confirming Booking..."; btn.disabled = true;
         try {
             const payload = { 
-                action: 'book', 
                 id: document.getElementById('sideId').value, 
-                type: 'managementData.type', // Change this to 'new' on your New Induction Portal!
+                type: 'renewal',
                 date: selectedDateStr,
-                time: timeSelect.value // SENDS THE TIME TO THE BACKEND
+                time: timeSelect.value
             };
             
-            const response = await fetch(scriptURL, { method: 'POST', body: JSON.stringify(payload) });
-            const result = await response.json();
+            // Direct call to code.js
+            const result = await processBooking(payload);
 
             if (result.result === 'success') {
-                // Populate the generated Gate Slip
                 document.getElementById('slip_name').innerText = document.getElementById('sideName').innerText;
                 document.getElementById('slip_id').innerText = document.getElementById('sideId').value;
                 document.getElementById('slip_date').innerText = selectedDateStr;
-                
-                // Set the specific time they chose
                 document.getElementById('slip_time_display').innerText = timeSelect.options[timeSelect.selectedIndex].text.split(' (')[0] + " Prompt";
-                
                 document.getElementById('slip_apt_id').innerText = result.aptId || "APT-" + Math.floor(Math.random()*100000);
                 document.getElementById('slip_status').innerText = result.status || "Booked";
                 
                 switchView('pageSlip');
             } else { alert(result.message); }
-        } catch (e) { alert("Booking engine failure."); } 
-        finally { btn.innerText = "Commit Appointment Pass"; btn.disabled = false; }
+        } catch (e) { 
+            alert("Booking engine database failure."); 
+        } finally { 
+            btn.innerText = "Commit Appointment Pass"; btn.disabled = false; 
+        }
     }    
-    
-    
-    
 
-    // --- EMAIL SLIP DISPATCHER ---
+    // --- GOOGLE EMAIL DISPATCHER (Intentionally kept) ---
     async function sendSlipViaEmail() {
         const emailField = document.getElementById('emailInput');
         const btn = document.getElementById('sendEmailBtn');
@@ -852,8 +801,9 @@
         const id = document.getElementById('slip_id')?.textContent || "N/A";
         const date = document.getElementById('slip_date')?.textContent || "N/A";
         btn.innerText = "Transmitting..."; btn.disabled = true;
-        if (msg) { msg.innerText = "Sending Appointment Slip..."; msg.style.color = "#004a99"; }
-        const finalURL = `${scriptURL}?action=dispatchSlip&contact=${encodeURIComponent(email)}&name=${encodeURIComponent(name)}&id=${encodeURIComponent(id)}&date=${encodeURIComponent(date)}`;
+        if (msg) { msg.innerText = "Sending Appointment Slip via Email System..."; msg.style.color = "#004a99"; }
+        
+        const finalURL = `${emailScriptURL}?action=dispatchSlip&contact=${encodeURIComponent(email)}&name=${encodeURIComponent(name)}&id=${encodeURIComponent(id)}&date=${encodeURIComponent(date)}`;
         try {
             const response = await fetch(finalURL);
             const res = await response.json();
@@ -867,7 +817,6 @@
     }
 </script>
 
-<!-- Load Supabase and your custom backend -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="code.js"></script>
 
