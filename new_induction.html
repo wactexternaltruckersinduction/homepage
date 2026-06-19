@@ -117,12 +117,12 @@
             <div class="grid">
                 <div class="form-group"><label>PASSPORT PHOTO (Required)</label><input type="file" id="new_passport" accept="image/*" required></div>
                 <div class="form-group"><label>DRIVER'S LICENSE (Required)</label><input type="file" id="new_license" accept="image/*,application/pdf" required></div>
-                </div>
-            <div class="grid" style="margin-top: 20px;">
-            <div class="form-group"><label>RECOMMENDATION LETTER (Optional but Recommended)</label><input type="file" id="new_recLetter" accept="image/*,application/pdf"></div>
-            <div class="form-group"><label>OTHER DOCUMENTS (Optional)</label><input type="file" id="new_otherDoc" accept="image/*,application/pdf"></div>
             </div>
-                <div class="form-group" style="margin-top:20px;">
+            <div class="grid" style="margin-top: 20px;">
+                <div class="form-group"><label>RECOMMENDATION LETTER (Optional but Recommended)</label><input type="file" id="new_recLetter" accept="image/*,application/pdf"></div>
+                <div class="form-group"><label>OTHER DOCUMENTS (Optional)</label><input type="file" id="new_otherDoc" accept="image/*,application/pdf"></div>
+            </div>
+            <div class="form-group" style="margin-top:20px;">
                 <label style="display: flex; align-items: center; gap: 10px; text-transform: none; font-size:13px; font-weight:600; color:var(--text-dark);">
                     <input type="checkbox" name="consent" required style="width: auto; margin:0;"> I confirm that the details provided are correct and accurate and incorrect information can lead to a ban.
                 </label>
@@ -146,8 +146,7 @@
                 
                 <div style="margin: 15px auto 25px auto; max-width: 300px; text-align: left;">
                     <label style="font-size: 11px; font-weight: 700; color: #64748b; text-transform: uppercase;">Select Time Slot</label>
-                    <select id="appointmentTime" style="width: 100%; padding: 12px; border-radius: 12px; border: 2px solid #e2e8f0;" required>
-                        </select>
+                    <select id="appointmentTime" style="width: 100%; padding: 12px; border-radius: 12px; border: 2px solid #e2e8f0;" required></select>
                 </div>
 
                 <button class="btn btn-primary" onclick="confirmBooking()">Book Appointment Slot</button>
@@ -200,7 +199,9 @@
 <footer>&copy; 2026 West Africa Container Terminal | Global APM Terminals Network</footer>
 
 <script>
-    const scriptURL = 'https://script.google.com/macros/s/AKfycbyT9VU1LktpavOtbkIKlsvjWV5_7kx_xctn1dVZS6LtiDQnMAagX4Xk5xC0zH_MhouoBg/exec';
+    // Note: We retain Google Apps Script URL strictly to act as our Email Dispatcher. 
+    // Supabase handles the database, Google handles the emails!
+    const emailScriptURL = 'https://script.google.com/macros/s/AKfycbyT9VU1LktpavOtbkIKlsvjWV5_7kx_xctn1dVZS6LtiDQnMAagX4Xk5xC0zH_MhouoBg/exec';
 
     let currentUserData = { name: '', id: '', type: '' };
     let calendarData = {};
@@ -226,38 +227,34 @@
     document.getElementById('newTruckerForm').addEventListener('submit', async function(e) {
         e.preventDefault();
         const btn = document.getElementById('newSubmitBtn');
-        btn.innerText = "Processing File Packages..."; btn.disabled = true;
+        btn.innerText = "Processing File Packages to Supabase..."; btn.disabled = true;
 
         try {
-            // STANDARDIZED PAYLOAD
+            // 👉 Maps exact payload needed for our code.js Supabase backend
             const payload = {
-                action: 'submitNew',
                 fullName: this.fullName.value, 
                 address: this.address.value, 
                 state: this.state.value,
                 lga: this.lga.value, 
                 religion: this.religion.value,
-                mobileNumber: this.mobile.value, 
+                mobile: this.mobile.value, 
                 dob: this.dob.value,
                 maritalStatus: this.maritalStatus.value, 
-                licenseNumber: this.licenseDetails.value,
-                licenseExpiration: this.licenseExpDate.value, 
+                licenseDetails: this.licenseDetails.value,
+                licenseExpDate: this.licenseExpDate.value, 
                 companyName: this.companyName.value,
                 ref1Name: this.ref1Name.value, ref1Address: this.ref1Address.value, ref1Position: this.ref1Position.value,
                 ref1Duration: this.ref1Duration.value, ref1Contact: this.ref1Contact.value,
-                ref2Name: this.ref2Name.value, ref2Address: this.ref2Address.value, ref2Position: this.ref2Position.value,
-                ref2Duration: this.ref2Duration.value, ref2Contact: this.ref2Contact.value,
-                consent: this.consent.checked ? "Yes" : "No",
+                ref2Name: this.ref2Name.value, 
                 passportPhoto: await getFileData(document.getElementById('new_passport')),
                 driversLicense: await getFileData(document.getElementById('new_license')),
-                recommendationLetter: await getFileData(document.getElementById('new_recLetter')),
-                otherDocuments: await getFileData(document.getElementById('new_otherDoc'))
+                recLetter: await getFileData(document.getElementById('new_recLetter'))
             };
 
-            const response = await fetch(scriptURL, { method: 'POST', body: JSON.stringify(payload) });
-            const result = await response.json();
+            // 👉 Calls the direct Supabase submit logic in code.js
+            const result = await submitNew(payload);
 
-            if (result.result === 'success' || result.inductionNumber) {
+            if (result.result === 'success') {
                 currentUserData = { name: this.fullName.value, id: result.inductionNumber, type: 'new' };
                 document.getElementById('displayID').innerText = result.inductionNumber;
                 document.getElementById('successModal').style.display = "block";
@@ -267,24 +264,28 @@
                     startAppointmentFlow(currentUserData.id, currentUserData.type);
                 };
                 this.reset();
-            } else { alert("Error: " + (result.message || "Something went wrong.")); }
-        } catch (err) { alert("System Error: Check internet connection."); } 
-        finally { btn.innerText = "Submit Application"; btn.disabled = false; }
+            } else { 
+                alert("Database Error: " + (result.message || "Something went wrong.")); 
+            }
+        } catch (err) { 
+            alert("System Error: Check internet connection."); 
+        } finally { 
+            btn.innerText = "Submit Application"; btn.disabled = false; 
+        }
     });
 
     async function startAppointmentFlow(id, type) {
         showPage('pageAppointment');
         document.getElementById('calendarGrid').innerHTML = "<p style='grid-column: span 7; text-align:center;'>Loading WACT Calendar Matrix...</p>";
         try {
-            const cacheBuster = new Date().getTime();
-            const res = await fetch(`${scriptURL}?action=getCalendarData&id=${id}&type=${type}`);
-            calendarData = await res.json();
+            // 👉 Direct DB call via code.js
+            calendarData = await getCalendarData(id, type);
             renderCalendar();
-        } catch(e) { alert("Failed to load appointment data."); }
+        } catch(e) { 
+            alert("Failed to load appointment data."); 
+        }
     }
 
-    // --- UPGRADED SMART CALENDAR ---
-    // --- CRASH-PROOF CALENDAR LOGIC ---
     function changeMonth(offset) { 
         currentMonth.setMonth(currentMonth.getMonth() + offset); 
         renderCalendar(); 
@@ -301,7 +302,6 @@
         let firstDay = new Date(currentMonth.getFullYear(), currentMonth.getMonth(), 1).getDay();
         let totalDays = new Date(currentMonth.getFullYear(), currentMonth.getMonth() + 1, 0).getDate();
         
-        // 👉 SAFETY NETS: Prevents the calendar from crashing if data is missing
         const safeData = calendarData || {};
         const existingBookings = safeData.existingBookings || {};
         const settings = safeData.settings || { capacity: 10, blockedDates: [], customCapacities: {} };
@@ -405,15 +405,15 @@
         const btn = document.querySelector('#bookingActions button');
         btn.innerText = "Booking Session..."; btn.disabled = true;
         try {
+            // 👉 Direct booking insertion via code.js
             const payload = { 
-                action: 'book', 
                 id: currentUserData.id, 
                 type: currentUserData.type, 
                 date: selectedDateStr,
                 time: timeSelect.value 
             };
-            const response = await fetch(scriptURL, { method: 'POST', body: JSON.stringify(payload) });
-            const result = await response.json();
+            
+            const result = await processBooking(payload);
 
             if (result.result === 'success') {
                 document.getElementById('slip_name').innerText = currentUserData.name;
@@ -426,7 +426,11 @@
                 document.getElementById('slip_status').innerText = result.status || "Booked";
                 showPage('pageSlip');
             } else { alert(result.message); }
-        } catch (e) { alert("Booking failed."); } finally { btn.innerText = "Book Appointment Slot"; btn.disabled = false; }
+        } catch (e) { 
+            alert("Booking failed."); 
+        } finally { 
+            btn.innerText = "Book Appointment Slot"; btn.disabled = false; 
+        }
     }
 
     async function sendSlipViaEmail() {
@@ -444,7 +448,8 @@
         btn.innerText = "Sending..."; btn.disabled = true;
         if (msg) { msg.innerText = "Talking to WACT mail system..."; msg.style.color = "#004a99"; }
 
-        const finalURL = `${scriptURL}?action=dispatchSlip&contact=${encodeURIComponent(email)}&name=${encodeURIComponent(name)}&id=${encodeURIComponent(id)}&date=${encodeURIComponent(date)}`;
+        // 👉 Still using Google Apps Script strictly as an Email Delivery System
+        const finalURL = `${emailScriptURL}?action=dispatchSlip&contact=${encodeURIComponent(email)}&name=${encodeURIComponent(name)}&id=${encodeURIComponent(id)}&date=${encodeURIComponent(date)}`;
 
         try {
             const response = await fetch(finalURL);
@@ -459,7 +464,6 @@
     }
 </script>
 
-<!-- 2. NOW we open and close the new database tools in their own clean zones -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="code.js"></script>
 
