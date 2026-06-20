@@ -13,7 +13,6 @@
         }
         body { font-family: 'Segoe UI', system-ui, sans-serif; background-color: var(--bg-light); color: var(--text-dark); margin: 0; padding: 0; min-height: 100vh; display: flex; flex-direction: column; }
         
-        /* HEADER */
         header { background: white; padding: 20px 40px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid #e2e8f0; }
         .header-brand { display: flex; align-items: center; gap: 16px; }
         .logo-circle { width: 55px; height: 55px; border-radius: 16px; display: flex; justify-content: center; align-items: center; background: #fafafa; border: 1px solid #e2e8f0; overflow: hidden; }
@@ -21,40 +20,47 @@
         .brand-text .name { font-weight: 800; color: var(--primary-blue); font-size: 16px; display: block; line-height: 1.2;}
         .brand-text .sub { font-size: 11px; color: var(--text-muted); font-weight: 600; text-transform: uppercase; letter-spacing: 1px; margin-top: 2px; display: block;}
         
-        /* SHARED COMPONENTS */
         .card { background: white; border-radius: var(--squarcle-radius); padding: 35px; box-shadow: var(--shadow-soft); border: 1px solid #e2e8f0; margin-bottom: 25px;}
         .btn-main { padding: 14px 28px; border: none; border-radius: 14px; font-weight: 700; cursor: pointer; font-size: 13px; text-transform: uppercase; transition: 0.2s; background: var(--primary-blue); color: white; width: 100%; box-sizing: border-box;}
         .btn-main:hover { opacity: 0.9; transform: translateY(-1px); box-shadow: 0 4px 10px rgba(0,74,153,0.2);}
         .btn-main:disabled { background: #cbd5e1 !important; color: #f8fafc !important; cursor: not-allowed; box-shadow: none; transform: none;}
         .btn-secondary { background: #64748b; color: white; }
+        .btn-small { padding: 8px 12px; font-size: 11px; border-radius: 8px; }
+        
+        /* 👉 NEW: Attention-Grabbing Pulse */
+        @keyframes pulseAlert {
+            0% { box-shadow: 0 0 0 0 rgba(244, 124, 32, 0.7); }
+            70% { box-shadow: 0 0 0 10px rgba(244, 124, 32, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(244, 124, 32, 0); }
+        }
+        .btn-pulse { animation: pulseAlert 2s infinite; background: var(--orange) !important; color: white; font-weight: 800; border: 2px solid #ea580c; }
         
         .input-group { margin-bottom: 20px; text-align: left; }
         .input-group label { display: block; font-size: 11px; font-weight: 700; color: #64748b; margin-bottom: 8px; text-transform: uppercase;}
         .modern-input { width: 100%; padding: 14px 16px; border: 2px solid #e2e8f0; border-radius: 14px; font-size: 14px; box-sizing: border-box; transition: 0.2s; background: white; font-family: inherit; font-weight: 600; color: var(--text-dark);}
         .modern-input:focus { outline: none; border-color: var(--primary-blue); }
         
-        /* SQUARCLE LOCKED INPUTS */
         .locked-input { background: #f1f5f9; color: #64748b; cursor: not-allowed; border-color: #e2e8f0; }
+        .unlocked-input { background: #fff; cursor: text; border-color: var(--orange); }
         
         .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
 
-        /* VIEWS */
         #loginView { display: flex; justify-content: center; align-items: center; flex: 1; padding: 20px; }
         #dashboardView { display: none; padding: 40px 20px; max-width: 1200px; margin: 0 auto; width: 100%; box-sizing: border-box; }
         .section-view { display: none; }
         .section-view.active { display: block; }
         
-        /* DASHBOARD GRID */
         .dash-grid { display: grid; grid-template-columns: 350px 1fr; gap: 30px; align-items: start; }
         @media (max-width: 900px) { .dash-grid { grid-template-columns: 1fr; } }
         
-        /* PROFILE SIDEBAR */
         .profile-sidebar { text-align: center; padding: 40px 30px;}
-        .profile-photo { width: 130px; height: 130px; border-radius: 50%; border: 4px solid white; box-shadow: 0 4px 15px rgba(0,0,0,0.1); margin: 0 auto 15px auto; background: #e2e8f0; object-fit: cover; display: block; }
-        .profile-name { font-size: 20px; font-weight: 800; color: var(--primary-blue); margin: 0 0 5px 0; }
+        .profile-photo { width: 130px; height: 130px; border-radius: 50%; border: 4px solid white; box-shadow: 0 4px 15px rgba(0,0,0,0.1); margin: 0 auto; background: #e2e8f0; object-fit: cover; display: block; }
+        .edit-photo-btn { position: absolute; bottom: 0; right: 0; background: var(--orange); color: white; border: 2px solid white; border-radius: 50%; width: 36px; height: 36px; cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,0.2); font-size: 16px; display: flex; align-items: center; justify-content: center; transition: 0.2s; }
+        .edit-photo-btn:hover { transform: scale(1.1); background: var(--primary-blue); }
+
+        .profile-name { font-size: 20px; font-weight: 800; color: var(--primary-blue); margin: 15px 0 5px 0; }
         .profile-role { font-size: 12px; font-weight: 700; color: var(--orange); text-transform: uppercase; margin: 0 0 25px 0;}
 
-        /* STATUS BADGES & CARDS */
         .status-box { padding: 20px 25px; border-radius: 16px; display: flex; justify-content: space-between; align-items: center; border: 2px solid #e2e8f0; background: white;}
         .status-valid { background: #f0fdf4; border-color: #bbf7d0; }
         .status-warn { background: #fefce8; border-color: #fef08a; }
@@ -63,11 +69,11 @@
         
         .badge { padding: 6px 12px; border-radius: 8px; font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px;}
         
-        /* SQUARCLE APPOINTMENT CARD */
         .appt-card { background: white; border: 2px solid #e2e8f0; border-radius: var(--squarcle-radius); padding: 30px; margin-bottom: 25px; box-shadow: var(--shadow-soft);}
         .appt-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #e2e8f0; padding-bottom: 15px; margin-bottom: 20px;}
         
-        /* CALENDAR */
+        .vault-item { display: flex; justify-content: space-between; align-items: center; padding: 15px; border: 1px solid #e2e8f0; border-radius: 12px; background: white; margin-bottom: 10px; }
+
         .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 10px; margin-top: 20px;}
         .day-box { border: 1px solid #e2e8f0; padding: 12px; border-radius: 12px; text-align: center; cursor: pointer; transition: 0.2s; background: white; font-weight: 600;}
         .day-box.disabled { background: #f1f5f9; color: #cbd5e1; cursor: not-allowed; border: transparent; }
@@ -76,7 +82,6 @@
         .day-box.full { background: #fee2e2; color: #ef4444; border: 1px solid #fecaca; cursor: not-allowed; }
         .slots-left { font-size: 10px; display: block; margin-top: 4px; font-weight: 700; }
         
-        /* SLIP PRINT AREA */
         @media print { body * { visibility: hidden; } #printArea, #printArea * { visibility: visible; } #printArea { position: absolute; left: 0; top: 0; width: 100%; } }
     </style>
 </head>
@@ -122,15 +127,35 @@
 <div id="dashboardView">
     <div class="dash-grid">
         
+        <!-- SIDEBAR -->
         <div class="card profile-sidebar" style="margin-bottom: 0;">
-            <img id="sidePhoto" class="profile-photo" src="" alt="Driver Photo">
+            <div style="position: relative; width: 130px; margin: 0 auto;">
+                <img id="sidePhoto" class="profile-photo" src="" alt="Driver Photo">
+                <button class="edit-photo-btn" onclick="document.getElementById('quickPhotoInput').click()" title="Update Profile Picture">✎</button>
+                <input type="file" id="quickPhotoInput" style="display: none;" accept="image/*" onchange="triggerAtomicUpdate('passport_photo', this)">
+            </div>
+
             <h2 id="sideName" class="profile-name">---</h2>
             <p class="profile-role">External Truck Driver</p>
+            <p id="atomicUpdateMsg" style="color: var(--success); font-size: 12px; font-weight: 700; display: none;">✅ Profile Updated</p>
+            
+            <!-- 👉 NEW: Smart Top Renewal Button -->
+            <div id="quickRenewTopBox" style="display: none; margin-top: 20px;">
+                <button class="btn-main btn-pulse" onclick="switchView('viewRenewal')">⚡ Renew Induction Now</button>
+            </div>
             
             <div style="margin-top: 30px;">
                 <div class="input-group"><label>🔒 Induction ID</label><input type="text" id="sideId" class="modern-input locked-input" readonly></div>
                 <div class="input-group"><label>🔒 License Number</label><input type="text" id="sideLicense" class="modern-input locked-input" readonly></div>
-                <div class="input-group"><label>🔒 Date of Birth</label><input type="text" id="sideDob" class="modern-input locked-input" readonly></div>
+                
+                <div class="input-group">
+                    <label style="display: flex; justify-content: space-between;">Date of Birth <span onclick="enableDobEdit()" style="cursor: pointer; color: var(--orange); font-size: 11px;">✎ EDIT</span></label>
+                    <div style="display: flex; gap: 8px;">
+                        <input type="text" id="sideDob" class="modern-input locked-input" readonly>
+                        <button id="saveDobBtn" class="btn-main" style="display: none; width: auto; padding: 0 20px;" onclick="triggerAtomicUpdate('dob', document.getElementById('sideDob'))">Save</button>
+                    </div>
+                </div>
+
                 <div class="input-group"><label>🔒 Date of Issue</label><input type="text" id="sideIssue" class="modern-input locked-input" readonly></div>
                 
                 <hr style="border: 0; border-top: 2px dashed #e2e8f0; margin: 25px 0;">
@@ -141,6 +166,7 @@
         </div>
 
         <div>
+            <!-- VIEW 1: SNAPSHOT -->
             <div id="viewSnapshot" class="section-view active">
                 <h2 style="color: var(--primary-blue); margin-top: 0; font-weight: 800; font-size: 24px; margin-bottom: 25px; letter-spacing: -0.5px;">Compliance Dashboard</h2>
                 
@@ -185,13 +211,35 @@
                     </div>
                 </div>
 
-                <div class="card" style="background: #f8fafc; border: 2px solid #e2e8f0; padding: 30px;">
+                <div class="card" style="background: #f8fafc; border: 2px solid #e2e8f0; padding: 30px; margin-bottom: 25px;">
                     <h3 style="margin: 0 0 20px 0; font-size: 14px; color: var(--primary-blue); text-transform: uppercase; font-weight: 800;">Current Variable Records</h3>
                     <div class="grid-2">
                         <div class="input-group"><label>Registered Phone</label><input type="text" class="modern-input locked-input" id="currPhone" readonly></div>
                         <div class="input-group"><label>Operating Company</label><input type="text" class="modern-input locked-input" id="currCompany" readonly></div>
                         <div class="input-group" style="grid-column: span 2;"><label>Current Address</label><input type="text" class="modern-input locked-input" id="currAddress" readonly></div>
                     </div>
+                </div>
+
+                <div class="card" style="background: #f8fafc; border: 2px solid #e2e8f0; padding: 30px;">
+                    <h3 style="margin: 0 0 20px 0; font-size: 14px; color: var(--primary-blue); text-transform: uppercase; font-weight: 800;">📁 My Document Vault</h3>
+                    
+                    <div class="vault-item">
+                        <div>
+                            <strong style="font-size: 14px; color: var(--text-dark);">Driver's License</strong>
+                            <span id="status_doc_license" style="display:block; font-size: 11px; color: var(--text-muted); margin-top:3px;">Checking...</span>
+                        </div>
+                        <div style="display: flex; gap: 8px;" id="action_doc_license"></div>
+                    </div>
+
+                    <div class="vault-item">
+                        <div>
+                            <strong style="font-size: 14px; color: var(--text-dark);">Other Documents</strong>
+                            <span id="status_doc_other" style="display:block; font-size: 11px; color: var(--text-muted); margin-top:3px;">Checking...</span>
+                        </div>
+                        <div style="display: flex; gap: 8px;" id="action_doc_other"></div>
+                    </div>
+                    
+                    <input type="file" id="vaultFilePicker" style="display: none;" onchange="executeVaultUpload(this)">
                 </div>
 
                 <div id="renewActionBox" class="card" style="display: none; border: 2px solid var(--orange); background: #fff7ed; text-align: center; padding: 35px;">
@@ -206,6 +254,7 @@
                 </div>
             </div>
 
+            <!-- VIEW 2: RENEWAL FORM -->
             <div id="viewRenewal" class="section-view card">
                 <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #e2e8f0; padding-bottom: 20px; margin-bottom: 25px;">
                     <h2 style="margin: 0; color: var(--primary-blue); font-weight: 800; font-size: 24px; letter-spacing: -0.5px;">Induction Card Renewal</h2>
@@ -238,7 +287,7 @@
                     <h3 style="font-size: 13px; color: var(--primary-blue); text-transform: uppercase; font-weight: 800; margin-top: 30px; border-bottom: 2px solid #f1f5f9; padding-bottom: 8px;">Document Uploads</h3>
                     <div class="grid-2">
                         <div class="input-group"><label>Driver's License Update (Required)</label><input type="file" id="file_license" class="modern-input" accept="image/*,application/pdf" required></div>
-                        <div class="input-group"><label>Recent Passport Photo (Required)</label><input type="file" id="file_passport" class="modern-input" accept="image/*" required></div>
+                        <div class="input-group"><label>Recent Passport Photo (Optional)</label><input type="file" id="file_passport" class="modern-input" accept="image/*"></div>
                     </div>
                     <div class="grid-2">
                         <div class="input-group" id="wrap_oldCard"><label>Current Induction Card (Optional)</label><input type="file" id="file_oldCard" class="modern-input" accept="image/*,application/pdf"></div>
@@ -250,6 +299,7 @@
                 </form>
             </div>
 
+            <!-- VIEW 3: APPOINTMENT -->
             <div id="pageAppointment" class="section-view card">
                 <h2 style="margin-top:0; color:var(--primary-blue); font-weight:800; font-size: 24px; letter-spacing: -0.5px;">Reschedule Induction Session</h2>
                 <div style="display:flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
@@ -274,6 +324,7 @@
                 </div>
             </div>
 
+            <!-- VIEW 4: SLIP -->
             <div id="pageSlip" class="section-view card">
                 <div id="printArea">
                     <div style="border: 2px solid #0f172a; padding: 30px; text-align: center; border-radius:16px; background: white;">
@@ -309,25 +360,120 @@
 </div>
 
 <script>
-    // Supabase handles the database, Google Apps Script handles ONLY email dispatch!
     const emailScriptURL = 'https://script.google.com/macros/s/AKfycbyT9VU1LktpavOtbkIKlsvjWV5_7kx_xctn1dVZS6LtiDQnMAagX4Xk5xC0zH_MhouoBg/exec';
     
-    // Core Data stores
     let currentUserProfile = null;
     let managementData = null;
     let calendarData = {};
     let currentMonth = new Date();
     let selectedDateStr = "";
     let isSuspended = false;
+    let sessionPassword = "";
+    let currentVaultDocType = "";
 
     function switchView(viewId) {
         document.querySelectorAll('.section-view').forEach(el => el.classList.remove('active'));
-        document.getElementById(viewId).classList.add('active');
-        window.scrollTo(0,0);
+        const targetView = document.getElementById(viewId);
+        targetView.classList.add('active');
+        
+        if (window.innerWidth <= 900 && viewId !== 'viewSnapshot') {
+            targetView.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        } else {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+        
         if (viewId === 'pageAppointment') { loadCalendar(); }
     }
 
-    // --- DIRECT SUPABASE LOGIN ---
+    async function silentDashboardRefresh() {
+        if(!currentUserProfile || !sessionPassword) return;
+        try {
+            const freshData = await driverLogin(currentUserProfile.inductionNumber, sessionPassword);
+            if(freshData.result === 'success') {
+                currentUserProfile = freshData.profile;
+                managementData = freshData.apptData;
+                buildDashboard(currentUserProfile, managementData);
+                
+                const msg = document.getElementById('atomicUpdateMsg');
+                if (msg) {
+                    msg.style.display = 'block';
+                    setTimeout(() => { msg.style.display = 'none'; }, 3000);
+                }
+            }
+        } catch(e) { console.error("Silent refresh failed"); }
+    }
+
+    function enableDobEdit() {
+        const input = document.getElementById('sideDob');
+        const btn = document.getElementById('saveDobBtn');
+        input.readOnly = false;
+        input.type = "date";
+        input.classList.remove('locked-input');
+        input.classList.add('unlocked-input');
+        btn.style.display = 'block';
+        input.focus();
+    }
+
+    async function triggerAtomicUpdate(fieldName, sourceElement) {
+        if (!currentUserProfile) return;
+        
+        let value = null;
+        let isFile = false;
+        const id = currentUserProfile.inductionNumber;
+        const name = currentUserProfile.fullName;
+
+        if (sourceElement.type === 'file') {
+            if (!sourceElement.files[0]) return;
+            const file = sourceElement.files[0];
+            value = await new Promise((resolve) => {
+                const reader = new FileReader();
+                reader.onload = () => resolve({ base64: reader.result.split(',')[1], type: file.type, name: file.name });
+                reader.readAsDataURL(file);
+            });
+            isFile = true;
+        } else {
+            value = sourceElement.value;
+            sourceElement.readOnly = true;
+            sourceElement.type = "text";
+            sourceElement.classList.remove('unlocked-input');
+            sourceElement.classList.add('locked-input');
+            document.getElementById('saveDobBtn').style.display = 'none';
+        }
+
+        const msg = document.getElementById('atomicUpdateMsg');
+        if (msg) {
+            msg.innerText = "⏳ Saving...";
+            msg.style.color = "var(--orange)";
+            msg.style.display = 'block';
+        }
+
+        const result = await quickUpdate(id, name, fieldName, value, isFile);
+        
+        if (result.result === 'success') {
+            if (msg) { msg.innerText = "✅ Updated Successfully"; msg.style.color = "var(--success)"; }
+            await silentDashboardRefresh();
+        } else {
+            if (msg) { msg.innerText = "❌ Update Failed"; msg.style.color = "var(--danger)"; }
+            alert("Failed to update profile: " + result.message);
+        }
+    }
+
+    function triggerVaultUpload(dbColumnName) {
+        currentVaultDocType = dbColumnName;
+        document.getElementById('vaultFilePicker').click();
+    }
+
+    async function executeVaultUpload(inputElement) {
+        if (!currentVaultDocType) return;
+        let targetTextId = currentVaultDocType === 'drivers_license' ? 'status_doc_license' : 'status_doc_other';
+        const txtEl = document.getElementById(targetTextId);
+        if (txtEl) {
+            txtEl.innerText = "Uploading securely to vault...";
+            txtEl.style.color = "var(--orange)";
+        }
+        await triggerAtomicUpdate(currentVaultDocType, inputElement);
+    }
+
     document.getElementById('loginForm').addEventListener('submit', async (e) => {
         e.preventDefault();
         const id = document.getElementById('loginId').value;
@@ -335,14 +481,12 @@
         const btn = document.getElementById('loginBtn');
         const err = document.getElementById('loginError');
         
-        btn.innerText = "Authenticating..."; 
-        btn.disabled = true; 
-        err.style.display = "none";
+        btn.innerText = "Authenticating..."; btn.disabled = true; err.style.display = "none";
         
         try {
             const response = await driverLogin(id, pass);
-            
             if (response.result === 'success') {
+                sessionPassword = pass; 
                 currentUserProfile = response.profile;
                 managementData = response.apptData;
                 
@@ -353,20 +497,16 @@
                 document.getElementById('logoutBtn').style.display = 'block';
                 switchView('viewSnapshot');
             } else {
-                err.innerText = "❌ " + response.message;
-                err.style.display = "block";
+                err.innerText = "❌ " + response.message; err.style.display = "block";
             }
         } catch (error) {
-            err.innerText = "❌ " + error.message;
+            err.innerText = "❌ Server communication failed. " + error.message; 
             err.style.display = "block";
-        } finally {
-            btn.innerText = "Secure Login"; 
-            btn.disabled = false;
-        }
+        } finally { btn.innerText = "Secure Login"; btn.disabled = false; }
     });
 
     function logout() {
-        currentUserProfile = null; managementData = null;
+        currentUserProfile = null; managementData = null; sessionPassword = "";
         document.getElementById('loginView').style.display = 'flex';
         document.getElementById('dashboardView').style.display = 'none';
         document.getElementById('logoutBtn').style.display = 'none';
@@ -374,6 +514,9 @@
     }
 
     function buildDashboard(profile, apptData) {
+        const setVal = (id, val) => { const el = document.getElementById(id); if(el) el.value = val; };
+        const setTxt = (id, val) => { const el = document.getElementById(id); if(el) el.innerText = val; };
+
         let indExpVal = profile.inductionExpiration || "Not Found";
         let licExpVal = profile.licenseExpiration || "Not Found";
         let issueVal = profile.dateOfIssue || "N/A";
@@ -391,31 +534,50 @@
         let compVal = profile.companyName || "N/A";
         let addrVal = profile.address || "N/A";
 
-        document.getElementById('sideName').innerText = nameVal;
-        document.getElementById('sideId').value = idVal;
-        document.getElementById('sideLicense').value = licVal;
-        document.getElementById('sideDob').value = dobVal;
-        document.getElementById('sideIssue').value = issueVal;
+        setTxt('sideName', nameVal);
+        setVal('sideId', idVal);
+        setVal('sideLicense', licVal);
+        setVal('sideDob', dobVal);
+        setVal('sideIssue', issueVal);
 
-        document.getElementById('currPhone').value = phoneVal;
-        document.getElementById('currCompany').value = compVal;
-        document.getElementById('currAddress').value = addrVal;
+        setVal('currPhone', phoneVal);
+        setVal('currCompany', compVal);
+        setVal('currAddress', addrVal);
 
-        document.getElementById('ren_mobile').value = phoneVal === "N/A" ? "" : phoneVal;
-        document.getElementById('ren_company').value = compVal === "N/A" ? "" : compVal;
-        document.getElementById('ren_address').value = addrVal === "N/A" ? "" : addrVal;
+        setVal('ren_mobile', phoneVal === "N/A" ? "" : phoneVal);
+        setVal('ren_company', compVal === "N/A" ? "" : compVal);
+        setVal('ren_address', addrVal === "N/A" ? "" : addrVal);
 
-        // 👉 CLEAN SUPABASE PHOTO EXTRACTION
         let finalImgSrc = "https://via.placeholder.com/140?text=No+Photo";
-        if (photoUrl && photoUrl !== "") {
-            finalImgSrc = photoUrl; // Supabase gives us a clean link directly to the image!
-        }
-        document.getElementById('sidePhoto').src = finalImgSrc;
+        if (photoUrl && photoUrl !== "") { finalImgSrc = photoUrl; }
+        const photoEl = document.getElementById('sidePhoto');
+        if (photoEl) photoEl.src = finalImgSrc;
+
+        const buildVaultItem = (docUrl, statusId, actionId, dbColumn) => {
+            const statSpan = document.getElementById(statusId);
+            const actDiv = document.getElementById(actionId);
+            if (!statSpan || !actDiv) return; 
+            
+            if (docUrl && String(docUrl).length > 10) {
+                statSpan.innerText = "✓ Uploaded securely";
+                statSpan.style.color = "var(--success)";
+                actDiv.innerHTML = `
+                    <button class="btn-main btn-small" style="background: white; color: var(--primary-blue); border: 2px solid #e2e8f0;" onclick="window.open('${docUrl}', '_blank')">View</button>
+                    <button class="btn-main btn-small" onclick="triggerVaultUpload('${dbColumn}')">Update</button>
+                `;
+            } else {
+                statSpan.innerText = "No document on file";
+                statSpan.style.color = "var(--danger)";
+                actDiv.innerHTML = `<button class="btn-main btn-small" onclick="triggerVaultUpload('${dbColumn}')">Upload Now</button>`;
+            }
+        };
+
+        buildVaultItem(profile.docLicense, 'status_doc_license', 'action_doc_license', 'drivers_license');
+        buildVaultItem(profile.docOther, 'status_doc_other', 'action_doc_other', 'other_documents');
 
         isSuspended = false;
         let daInput = document.getElementById('sideDA');
         let suspText = document.getElementById('suspensionText');
-        
         const currentStatus = apptData.status || "Booked";
         const reasonStr = String(apptData.daReason || "").toLowerCase();
 
@@ -424,164 +586,155 @@
             let suspensionEndDate = new Date(failureDate);
             let durationText = "";
             
-            if (reasonStr.includes("marijuana")) {
-                suspensionEndDate.setMonth(suspensionEndDate.getMonth() + 2); // 2 Months
-                durationText = "2 Months";
-            } else if (reasonStr.includes("tramadol")) {
-                suspensionEndDate.setMonth(suspensionEndDate.getMonth() + 1); // 1 Month
-                durationText = "1 Month";
-            } else if (reasonStr.includes("alcohol")) {
-                suspensionEndDate.setDate(suspensionEndDate.getDate() + 7);   // 1 Week
-                durationText = "1 Week";
-            } else { 
-                durationText = "No Suspension"; 
-            }
+            if (reasonStr.includes("marijuana")) { suspensionEndDate.setMonth(suspensionEndDate.getMonth() + 2); durationText = "2 Months"; } 
+            else if (reasonStr.includes("tramadol")) { suspensionEndDate.setMonth(suspensionEndDate.getMonth() + 1); durationText = "1 Month"; } 
+            else if (reasonStr.includes("alcohol")) { suspensionEndDate.setDate(suspensionEndDate.getDate() + 7); durationText = "1 Week"; } 
+            else { durationText = "No Suspension"; }
             
             const today = new Date();
             if (today < suspensionEndDate && durationText !== "No Suspension") {
                 isSuspended = true;
                 const formattedEnd = suspensionEndDate.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
                 
-                daInput.value = `Failed: ${apptData.daReason}`;
-                daInput.style.color = "var(--danger)"; daInput.style.borderColor = "var(--danger)"; daInput.style.background = "#fef2f2";
-                suspText.style.display = "block";
-                suspText.innerText = `Suspended Protocol: ${durationText}\nTerminates: ${formattedEnd}`;
+                if(daInput) { daInput.value = `Failed: ${apptData.daReason}`; daInput.style.color = "var(--danger)"; daInput.style.borderColor = "var(--danger)"; daInput.style.background = "#fef2f2"; }
+                if(suspText) { suspText.style.display = "block"; suspText.innerText = `Suspended Protocol: ${durationText}\nTerminates: ${formattedEnd}`; }
             } else {
-                daInput.value = "Suspension Expired: Eligible";
-                daInput.style.color = "var(--warning)";
-                suspText.style.display = "none";
+                if(daInput) { daInput.value = "Suspension Expired: Eligible"; daInput.style.color = "var(--warning)"; }
+                if(suspText) suspText.style.display = "none";
             }
         } else {
-            daInput.value = "Passed / Clear";
-            daInput.style.color = "var(--success)";
-            suspText.style.display = "none";
+            if(daInput) { daInput.value = "Passed / Clear"; daInput.style.color = "var(--success)"; }
+            if(suspText) suspText.style.display = "none";
         }
 
-        document.getElementById('apptBox').style.display = "block";
+        const apptBox = document.getElementById('apptBox');
+        if(apptBox) apptBox.style.display = "block";
         const manageBtn = document.getElementById('manageSessionBtn');
         
         if (apptData.currentAppointment) {
             const dateParts = apptData.currentAppointment.toString().split('T')[0].split('-');
             const formattedApt = `${dateParts[2]} ${["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"][parseInt(dateParts[1]) - 1]} ${dateParts[0]}`;
             
-            document.getElementById('apptDetails').innerText = formattedApt;
-            document.getElementById('apptBadge').innerText = currentStatus.toUpperCase();
-            document.getElementById('apptBadge').style.display = "inline-block";
-            document.getElementById('dispatchSlipBtn').style.display = "inline-block";
+            setTxt('apptDetails', formattedApt);
+            setTxt('apptBadge', currentStatus.toUpperCase());
+            const badgeEl = document.getElementById('apptBadge'); if(badgeEl) badgeEl.style.display = "inline-block";
+            const slipBtn = document.getElementById('dispatchSlipBtn'); if(slipBtn) slipBtn.style.display = "inline-block";
             
-            if (currentStatus === "Verified" || currentStatus === "Card Generated") {
-                manageBtn.disabled = true; manageBtn.innerText = "Profile Locked";
-            } else if ((apptData.rescheduleCount || 0) >= 2) {
-                manageBtn.disabled = true; manageBtn.innerText = "Limit Reached";
-            } else {
-                manageBtn.disabled = isSuspended;
-                manageBtn.innerText = isSuspended ? "Session Locked" : "Reschedule Session";
+            if(manageBtn) {
+                if (currentStatus === "Verified" || currentStatus === "Card Generated") { manageBtn.disabled = true; manageBtn.innerText = "Profile Locked"; } 
+                else if ((apptData.rescheduleCount || 0) >= 2) { manageBtn.disabled = true; manageBtn.innerText = "Limit Reached"; } 
+                else { manageBtn.disabled = isSuspended; manageBtn.innerText = isSuspended ? "Session Locked" : "Reschedule Session"; }
             }
             
-            document.getElementById('slip_name').innerText = nameVal;
-            document.getElementById('slip_id').innerText = idVal;
-            document.getElementById('slip_date').innerText = formattedApt;
-            document.getElementById('slip_status').innerText = currentStatus;
-            document.getElementById('slip_apt_id').innerText = "APT-" + Math.floor(Math.random()*100000);
+            setTxt('slip_name', nameVal); 
+            setTxt('slip_id', idVal); 
+            setTxt('slip_date', formattedApt); 
+            setTxt('slip_status', currentStatus);
             
         } else {
-            document.getElementById('apptDetails').innerText = "No Active Session";
-            document.getElementById('apptBadge').style.display = "none";
-            document.getElementById('dispatchSlipBtn').style.display = "none";
-            
-            manageBtn.disabled = isSuspended;
-            manageBtn.innerText = isSuspended ? "Session Locked" : "Book New Session";
+            setTxt('apptDetails', "No Active Session");
+            const badgeEl = document.getElementById('apptBadge'); if(badgeEl) badgeEl.style.display = "none";
+            const slipBtn = document.getElementById('dispatchSlipBtn'); if(slipBtn) slipBtn.style.display = "none";
+            if(manageBtn) { manageBtn.disabled = isSuspended; manageBtn.innerText = isSuspended ? "Session Locked" : "Book New Session"; }
         }
 
-        // 👉 DIRECT PRINT ROUTE
         const downloadBox = document.getElementById('downloadCardBox');
-        if (currentStatus === "Verified" || currentStatus === "Card Generated") {
-            downloadBox.style.display = "block";
-            document.getElementById('downloadCardBtn').onclick = () => {
-                window.open("print.html?ids=" + encodeURIComponent(idVal), "_blank");
-            };
-        } else {
-            downloadBox.style.display = "none";
+        if (downloadBox) {
+            if (currentStatus === "Verified" || currentStatus === "Card Generated") {
+                downloadBox.style.display = "block"; 
+                const dlBtn = document.getElementById('downloadCardBtn');
+                if(dlBtn) dlBtn.onclick = () => { window.open("print.html?ids=" + encodeURIComponent(idVal), "_blank"); };
+            } else { 
+                downloadBox.style.display = "none"; 
+            }
         }
 
         const indDaysLeft = evaluateDateStatus(indExpVal, 'boxInduction', 'expInductionDate', 'badgeInduction');
         evaluateDateStatus(licExpVal, 'boxLicense', 'expLicenseDate', 'badgeLicense');
 
-        const actionBox = document.getElementById('renewActionBox');
+        const actionBox = document.getElementById('renewActionBox'); 
         const lockedBox = document.getElementById('renewLockedBox');
+        const lockedText = document.getElementById('renewLockedText');
+        const quickRenewBtn = document.getElementById('quickRenewTopBox');
         
         const isPendingRenewal = (currentStatus === "Booked" || currentStatus === "Rescheduled") && apptData.currentAppointment;
 
         if (isSuspended) {
-            actionBox.style.display = "none";
-            lockedBox.style.display = "block";
-            lockedBox.style.borderColor = "var(--danger)"; lockedBox.style.background = "#fef2f2";
-            document.getElementById('renewLockedText').innerText = "Renewal disabled due to active security or medical suspension.";
-            document.getElementById('renewLockedText').style.color = "var(--danger)";
+            if(actionBox) actionBox.style.display = "none"; 
+            if(quickRenewBtn) quickRenewBtn.style.display = "none";
+            if(lockedBox) { lockedBox.style.display = "block"; lockedBox.style.borderColor = "var(--danger)"; lockedBox.style.background = "#fef2f2"; }
+            if(lockedText) { lockedText.innerText = "Renewal disabled due to active security or medical suspension."; lockedText.style.color = "var(--danger)"; }
         } 
-        else if (isPendingRenewal) {
-            const indBox = document.getElementById('boxInduction');
-            const indBadge = document.getElementById('badgeInduction');
-            indBox.className = "status-box status-info"; indBadge.className = "badge badge-info";
-            indBadge.innerText = "PENDING RENEWAL";
+        else if (isPendingRenewal || currentStatus === "Verified" || currentStatus === "Card Generated") {
+            if(actionBox) actionBox.style.display = "none"; 
+            if(quickRenewBtn) quickRenewBtn.style.display = "none";
+            if(lockedBox) lockedBox.style.display = "block";
             
-            actionBox.style.display = "none";
-            lockedBox.style.display = "block";
-            lockedBox.style.borderColor = "var(--info)"; lockedBox.style.background = "#f0f9ff";
-            document.getElementById('renewLockedText').innerText = "Renewal Application Submitted successfully. Please attend your scheduled session.";
-            document.getElementById('renewLockedText').style.color = "var(--info)";
+            if(currentStatus === "Verified" || currentStatus === "Card Generated") {
+                if(lockedBox) { lockedBox.style.borderColor = "var(--success)"; lockedBox.style.background = "#f0fdf4"; }
+                if(lockedText) { lockedText.innerText = "Compliance Valid. No action required."; lockedText.style.color = "var(--success)"; }
+            } else {
+                const indBox = document.getElementById('boxInduction'); const indBadge = document.getElementById('badgeInduction');
+                if(indBox) indBox.className = "status-box status-info"; 
+                if(indBadge) { indBadge.className = "badge badge-info"; indBadge.innerText = "PENDING SESSION"; }
+                if(lockedBox) { lockedBox.style.borderColor = "var(--info)"; lockedBox.style.background = "#f0f9ff"; }
+                if(lockedText) { lockedText.innerText = "Renewal Submitted successfully. Please attend your scheduled session."; lockedText.style.color = "var(--info)"; }
+            }
         }
-        else if (indDaysLeft <= 28 || isNaN(indDaysLeft)) {
-            actionBox.style.display = "block";
-            lockedBox.style.display = "none";
-        } else {
-            actionBox.style.display = "none";
-            lockedBox.style.display = "block";
-            lockedBox.style.borderColor = "var(--success)"; lockedBox.style.background = "#f0fdf4";
-            document.getElementById('renewLockedText').innerText = `Your card is valid. Renewal opens 4 weeks before expiration (in ${indDaysLeft - 28} days).`;
-            document.getElementById('renewLockedText').style.color = "var(--success)";
+        else if (indDaysLeft <= 28 || isNaN(indDaysLeft)) { 
+            if(actionBox) actionBox.style.display = "block"; 
+            if(quickRenewBtn) quickRenewBtn.style.display = "block"; 
+            if(lockedBox) lockedBox.style.display = "none"; 
+        } 
+        else {
+            if(actionBox) actionBox.style.display = "none"; 
+            if(quickRenewBtn) quickRenewBtn.style.display = "none";
+            if(lockedBox) { lockedBox.style.display = "block"; lockedBox.style.borderColor = "var(--success)"; lockedBox.style.background = "#f0fdf4"; }
+            if(lockedText) { lockedText.innerText = `Your card is valid. Renewal opens 4 weeks before expiration (in ${indDaysLeft - 28} days).`; lockedText.style.color = "var(--success)"; }
         }
     }
 
     function evaluateDateStatus(dateString, boxId, textId, badgeId) {
-        const box = document.getElementById(boxId);
-        const text = document.getElementById(textId);
-        const badge = document.getElementById(badgeId);
-
+        const box = document.getElementById(boxId); const text = document.getElementById(textId); const badge = document.getElementById(badgeId);
         if (!dateString || dateString === "Not Found" || dateString === "") {
-            text.innerText = "Data Missing";
-            box.className = "status-box status-danger";
-            badge.className = "badge badge-danger"; badge.innerText = "ACTION REQ";
+            if(text) text.innerText = "Data Missing"; 
+            if(box) box.className = "status-box status-danger"; 
+            if(badge) { badge.className = "badge badge-danger"; badge.innerText = "ACTION REQ"; }
             return NaN;
         }
-
-        text.innerText = dateString;
-        const expiryDate = new Date(dateString);
-        const today = new Date();
+        if(text) text.innerText = dateString;
+        const expiryDate = new Date(dateString); const today = new Date();
         const daysLeft = Math.ceil((expiryDate - today) / (1000 * 60 * 60 * 24));
-
-        if (daysLeft < 0) {
-            box.className = "status-box status-danger"; badge.className = "badge badge-danger"; badge.innerText = "EXPIRED";
-        } else if (daysLeft <= 28) {
-            box.className = "status-box status-warn"; badge.className = "badge badge-warn"; badge.innerText = "EXPIRING SOON";
-        } else {
-            box.className = "status-box status-valid"; badge.className = "badge badge-valid"; badge.innerText = "VALID";
+        if (daysLeft < 0) { 
+            if(box) box.className = "status-box status-danger"; if(badge) { badge.className = "badge badge-danger"; badge.innerText = "EXPIRED"; }
+        } else if (daysLeft <= 28) { 
+            if(box) box.className = "status-box status-warn"; if(badge) { badge.className = "badge badge-warn"; badge.innerText = "EXPIRING SOON"; }
+        } else { 
+            if(box) box.className = "status-box status-valid"; if(badge) { badge.className = "badge badge-valid"; badge.innerText = "VALID"; }
         }
         return daysLeft;
     }
 
     function handleCardStatusChange() {
         const status = document.getElementById('cardStatus').value;
-        const wrapOldCard = document.getElementById('wrap_oldCard');
-        const wrapPolice = document.getElementById('wrap_policeReport');
-        const wrapSeized = document.getElementById('wrap_seizedReason');
+        const wrapOldCard = document.getElementById('wrap_oldCard'); const wrapPolice = document.getElementById('wrap_policeReport'); const wrapSeized = document.getElementById('wrap_seizedReason');
+        if(wrapOldCard) wrapOldCard.style.display = 'none'; 
+        if(wrapPolice) wrapPolice.style.display = 'none'; 
+        if(wrapSeized) wrapSeized.style.display = 'none';
         
-        wrapOldCard.style.display = 'none'; wrapPolice.style.display = 'none'; wrapSeized.style.display = 'none';
-        document.getElementById('file_police').required = false; document.getElementById('ren_seizedReason').required = false;
+        const polInput = document.getElementById('file_police'); if(polInput) polInput.required = false; 
+        const seizedInput = document.getElementById('ren_seizedReason'); if(seizedInput) seizedInput.required = false;
         
-        if (status === "No") { wrapOldCard.style.display = 'block'; } 
-        else if (status === "Lost") { wrapPolice.style.display = 'block'; document.getElementById('file_police').required = true; } 
-        else if (status === "Seized") { wrapSeized.style.display = 'block'; wrapOldCard.style.display = 'block'; document.getElementById('ren_seizedReason').required = true; }
+        if (status === "No") { if(wrapOldCard) wrapOldCard.style.display = 'block'; } 
+        else if (status === "Lost") { 
+            if(wrapPolice) wrapPolice.style.display = 'block'; 
+            if(polInput) polInput.required = true; 
+        } 
+        else if (status === "Seized") { 
+            if(wrapSeized) wrapSeized.style.display = 'block'; 
+            if(wrapOldCard) wrapOldCard.style.display = 'block'; 
+            if(seizedInput) seizedInput.required = true; 
+        }
     }
     
     async function getFileData(fileInput) {
@@ -594,11 +747,10 @@
         });
     }
 
-    // --- DIRECT SUPABASE RENEWAL SUBMISSION ---
     document.getElementById('renewalForm').addEventListener('submit', async function(e) {
         e.preventDefault();
         const btn = document.getElementById('renSubmitBtn');
-        btn.innerText = "Updating Profile to Supabase..."; btn.disabled = true;
+        btn.innerText = "Updating Profile to Database..."; btn.disabled = true;
         
         try {
             const payload = {
@@ -609,7 +761,7 @@
                 companyName: document.getElementById('ren_company').value,
                 licenseExpiration: document.getElementById('ren_lic_exp').value,
                 cardStatus: document.getElementById('cardStatus').value,
-                seizedBanReason: document.getElementById('ren_seizedReason').value,
+                seizedBanReason: document.getElementById('ren_seizedReason') ? document.getElementById('ren_seizedReason').value : "",
                 passportPhoto: await getFileData(document.getElementById('file_passport')),
                 driversLicense: await getFileData(document.getElementById('file_license')),
                 oldInductionCard: await getFileData(document.getElementById('file_oldCard')),
@@ -617,23 +769,17 @@
                 otherDocuments: await getFileData(document.getElementById('file_otherDoc')) 
             };
             
-            // Call Supabase code.js engine directly!
             const result = await submitRenewal(payload);
             
             if (result.result === 'success') {
                 alert("Renewal Details Updated Successfully! Proceeding to Appointment Scheduling.");
+                await silentDashboardRefresh(); 
                 switchView('pageAppointment');
-            } else { 
-                alert("Database Error: " + (result.message || "Unknown error.")); 
-            }
-        } catch (err) { 
-            alert("Error submitting renewal via database connection."); 
-        } finally { 
-            btn.innerText = "Submit Renewal Request"; btn.disabled = false; 
-        }
+            } else { alert("Database Error: " + (result.message || "Unknown error.")); }
+        } catch (err) { alert("Error submitting renewal via database connection."); } 
+        finally { btn.innerText = "Submit Renewal Request"; btn.disabled = false; }
     });
 
-    // --- DIRECT SUPABASE CALENDAR LOAD ---
     function startReschedule() { switchView('pageAppointment'); }
 
     async function loadCalendar() {
@@ -641,25 +787,18 @@
         grid.innerHTML = "<p style='grid-column: span 7; text-align:center;'>Accessing WACT Scheduling Parameters...</p>";
         try {
             const id = document.getElementById('sideId').value;
-            calendarData = await getCalendarData(id, 'renewal'); // Call code.js directly
+            calendarData = await getCalendarData(id, 'renewal'); 
             renderCalendar();
-        } catch(e) { 
-            alert("Failed to fetch calendar allocations from database."); 
-        }
+        } catch(e) { alert("Failed to fetch calendar allocations from database."); }
     }
 
-    function changeMonth(offset) { 
-        currentMonth.setMonth(currentMonth.getMonth() + offset); 
-        renderCalendar(); 
-    }
+    function changeMonth(offset) { currentMonth.setMonth(currentMonth.getMonth() + offset); renderCalendar(); }
 
     function renderCalendar() {
-        const grid = document.getElementById('calendarGrid');
-        const monthDisplay = document.getElementById('monthDisplay');
+        const grid = document.getElementById('calendarGrid'); const monthDisplay = document.getElementById('monthDisplay');
         if (!grid || !monthDisplay) return;
 
-        grid.innerHTML = "";
-        monthDisplay.innerText = currentMonth.toLocaleDateString('en-GB', { month: 'long', year: 'numeric' });
+        grid.innerHTML = ""; monthDisplay.innerText = currentMonth.toLocaleDateString('en-GB', { month: 'long', year: 'numeric' });
         
         let firstDay = new Date(currentMonth.getFullYear(), currentMonth.getMonth(), 1).getDay();
         let totalDays = new Date(currentMonth.getFullYear(), currentMonth.getMonth() + 1, 0).getDate();
@@ -667,51 +806,37 @@
         const safeData = calendarData || {};
         const existingBookings = safeData.existingBookings || {};
         const settings = safeData.settings || { capacity: 10, blockedDates: [], customCapacities: {} };
-        const blockedDates = settings.blockedDates || [];
-        const customCaps = settings.customCapacities || {};
-        const allowedMin = safeData.allowedMin || "2000-01-01";
-        const allowedMax = safeData.allowedMax || "2100-01-01";
+        const blockedDates = settings.blockedDates || []; const customCaps = settings.customCapacities || {};
+        const allowedMin = safeData.allowedMin || "2000-01-01"; const allowedMax = safeData.allowedMax || "2100-01-01";
         
         for(let i=0; i<firstDay; i++) { grid.appendChild(document.createElement('div')); }
         
         for(let d=1; d<=totalDays; d++) {
             let dateObj = new Date(currentMonth.getFullYear(), currentMonth.getMonth(), d);
-            let year = dateObj.getFullYear();
-            let month = String(dateObj.getMonth() + 1).padStart(2, '0');
-            let day = String(dateObj.getDate()).padStart(2, '0');
-            let dateStr = `${year}-${month}-${day}`;
-            let dayOfWeek = dateObj.getDay(); 
+            let year = dateObj.getFullYear(); let month = String(dateObj.getMonth() + 1).padStart(2, '0'); let day = String(dateObj.getDate()).padStart(2, '0');
+            let dateStr = `${year}-${month}-${day}`; let dayOfWeek = dateObj.getDay(); 
             
-            let box = document.createElement('div');
-            box.className = "day-box"; box.innerText = d;
+            let box = document.createElement('div'); box.className = "day-box"; box.innerText = d;
             
             let isWedFri = (dayOfWeek === 3 || dayOfWeek === 5);
-            let inRange = (dateStr >= allowedMin && dateStr <= allowedMax);
-            let isBlocked = blockedDates.includes(dateStr); 
+            let inRange = (dateStr >= allowedMin && dateStr <= allowedMax); let isBlocked = blockedDates.includes(dateStr); 
             
             let daySpecificCapacity = (customCaps[dateStr] !== undefined) ? customCaps[dateStr] : (settings.capacity || 10);
             let maxDailyCapacity = daySpecificCapacity * 3; 
             
-            let rawBookings = existingBookings[dateStr] || {};
-            let dayBookings = { '9AM': 0, '11AM': 0, '2PM': 0 };
-
-            if (typeof rawBookings === 'number') { dayBookings['9AM'] = rawBookings; } 
-            else if (typeof rawBookings === 'object') { dayBookings = { ...dayBookings, ...rawBookings }; }
-
+            let rawBookings = existingBookings[dateStr] || {}; let dayBookings = { '9AM': 0, '11AM': 0, '2PM': 0 };
+            if (typeof rawBookings === 'number') { dayBookings['9AM'] = rawBookings; } else if (typeof rawBookings === 'object') { dayBookings = { ...dayBookings, ...rawBookings }; }
             let totalBookings = (dayBookings['9AM'] || 0) + (dayBookings['11AM'] || 0) + (dayBookings['2PM'] || 0);
 
             if (isWedFri && inRange && !isBlocked) {
-                if (totalBookings >= maxDailyCapacity) {
-                    box.classList.add('full'); box.innerHTML += `<span class="slots-left">FULL</span>`;
-                } else {
+                if (totalBookings >= maxDailyCapacity) { box.classList.add('full'); box.innerHTML += `<span class="slots-left">FULL</span>`; } 
+                else {
                     box.classList.add('available'); box.innerHTML += `<span class="slots-left">${maxDailyCapacity - totalBookings} Open</span>`;
                     box.onclick = () => selectDate(dateStr, box, dayBookings, daySpecificCapacity);
                 }
             } else { 
                 box.classList.add('disabled'); 
-                if (isBlocked && isWedFri && inRange) {
-                    box.innerHTML += `<span class="slots-left" style="color:var(--warning); font-weight:800;">HOLIDAY</span>`;
-                }
+                if (isBlocked && isWedFri && inRange) { box.innerHTML += `<span class="slots-left" style="color:var(--warning); font-weight:800;">HOLIDAY</span>`; }
             }
             grid.appendChild(box);
         }
@@ -729,36 +854,19 @@
         const timeSelect = document.getElementById('appointmentTime');
         timeSelect.innerHTML = `<option value="" disabled selected>Choose a time...</option>`;
         
-        const slots = [
-            { val: '9AM', label: '09:00 AM' },
-            { val: '11AM', label: '11:00 AM' },
-            { val: '2PM', label: '02:00 PM' }
-        ];
-
+        const slots = [{ val: '9AM', label: '09:00 AM' }, { val: '11AM', label: '11:00 AM' }, { val: '2PM', label: '02:00 PM' }];
         slots.forEach(slot => {
-            let booked = dayBookings[slot.val] || 0;
-            let opt = document.createElement('option');
-            opt.value = slot.val;
-            
-            if (booked >= capacity) {
-                opt.disabled = true;
-                opt.innerText = `${slot.label} (FULL)`;
-            } else {
-                opt.innerText = `${slot.label} (${capacity - booked} slots open)`;
-            }
+            let booked = dayBookings[slot.val] || 0; let opt = document.createElement('option'); opt.value = slot.val;
+            if (booked >= capacity) { opt.disabled = true; opt.innerText = `${slot.label} (FULL)`; } 
+            else { opt.innerText = `${slot.label} (${capacity - booked} slots open)`; }
             timeSelect.appendChild(opt);
         });
-
         document.getElementById('bookingActions').style.display = "block";
     }
 
-    // --- DIRECT SUPABASE BOOKING ---
     async function confirmBooking() {
         const timeSelect = document.getElementById('appointmentTime');
-        if (!timeSelect.value) {
-            alert("Please select an available appointment time.");
-            return;
-        }
+        if (!timeSelect.value) return alert("Please select an available appointment time.");
 
         const btn = document.querySelector('#bookingActions button.btn-primary');
         btn.innerText = "Confirming Booking..."; btn.disabled = true;
@@ -770,7 +878,6 @@
                 time: timeSelect.value
             };
             
-            // Direct call to code.js
             const result = await processBooking(payload);
 
             if (result.result === 'success') {
@@ -781,39 +888,31 @@
                 document.getElementById('slip_apt_id').innerText = result.aptId || "APT-" + Math.floor(Math.random()*100000);
                 document.getElementById('slip_status').innerText = result.status || "Booked";
                 
+                await silentDashboardRefresh(); 
                 switchView('pageSlip');
             } else { alert(result.message); }
-        } catch (e) { 
-            alert("Booking engine database failure."); 
-        } finally { 
-            btn.innerText = "Commit Appointment Pass"; btn.disabled = false; 
-        }
+        } catch (e) { alert("Booking engine database failure."); } 
+        finally { btn.innerText = "Commit Appointment Pass"; btn.disabled = false; }
     }    
 
-    // --- GOOGLE EMAIL DISPATCHER (Intentionally kept) ---
     async function sendSlipViaEmail() {
-        const emailField = document.getElementById('emailInput');
-        const btn = document.getElementById('sendEmailBtn');
-        const msg = document.getElementById('emailStatusMsg');
+        const emailField = document.getElementById('emailInput'); const btn = document.getElementById('sendEmailBtn'); const msg = document.getElementById('emailStatusMsg');
         const email = emailField.value.trim();
         if (!email || !email.includes('@')) return alert("Please enter a valid email address.");
-        const name = document.getElementById('slip_name')?.textContent || "N/A";
-        const id = document.getElementById('slip_id')?.textContent || "N/A";
-        const date = document.getElementById('slip_date')?.textContent || "N/A";
+        const name = document.getElementById('slip_name')?.textContent || "N/A"; const id = document.getElementById('slip_id')?.textContent || "N/A"; const date = document.getElementById('slip_date')?.textContent || "N/A";
+        
         btn.innerText = "Transmitting..."; btn.disabled = true;
         if (msg) { msg.innerText = "Sending Appointment Slip via Email System..."; msg.style.color = "#004a99"; }
         
         const finalURL = `${emailScriptURL}?action=dispatchSlip&contact=${encodeURIComponent(email)}&name=${encodeURIComponent(name)}&id=${encodeURIComponent(id)}&date=${encodeURIComponent(date)}`;
         try {
-            const response = await fetch(finalURL);
-            const res = await response.json();
+            const response = await fetch(finalURL); const res = await response.json();
             if (res.success) {
                 if (msg) { msg.style.color = "green"; msg.innerText = "✅ Appointment Slip sent successfully to " + email; }
                 emailField.value = "";
             } else { throw new Error(res.message || "Relay rejected dispatch vector"); }
-        } catch (error) {
-            if (msg) { msg.style.color = "red"; msg.innerText = "❌ Transmission Fault: " + error.message; }
-        } finally { btn.innerText = "Dispatch Email"; btn.disabled = false; }
+        } catch (error) { if (msg) { msg.style.color = "red"; msg.innerText = "❌ Transmission Fault: " + error.message; } } 
+        finally { btn.innerText = "Dispatch Email"; btn.disabled = false; }
     }
 </script>
 
