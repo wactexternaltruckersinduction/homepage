@@ -4,7 +4,11 @@
 const SUPABASE_URL = 'https://vokpqpwwdpclxnqkhsry.supabase.co'; 
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZva3BxcHd3ZHBjbHhucWtoc3J5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE4NDMxMTAsImV4cCI6MjA5NzQxOTExMH0.ZEPAUHGuWoKOUSPyPcMpAlydRgDQ0bf3-p6yKZvg8_8';
 
-const supabaseClient = typeof supabase !== 'undefined' ? supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY) : null;
+// Safely bind to the window object to ensure global availability
+window.supabaseClient = null;
+if (typeof supabase !== 'undefined') {
+    window.supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+}
 
 // ==========================================
 // 2. SYSTEM SETTINGS MANAGER
@@ -42,7 +46,6 @@ async function uploadToStorage(fileObj, inductionId, driverName, documentType) {
         const safeId = String(inductionId).replace(/\//g, '-');
         const safeName = String(driverName).replace(/[^a-zA-Z0-9]/g, '_');
         
-        // NO EXTENSION - Guarantees perfect overwrite
         const fileName = `${safeName}_${documentType}_${safeId}`;
         
         const { data, error } = await supabaseClient.storage.from('driver-documents')
@@ -61,15 +64,11 @@ async function uploadToStorage(fileObj, inductionId, driverName, documentType) {
 // ==========================================
 // 4. DRIVER LOGIN ENGINE
 // ==========================================
-// ==========================================
-// 4. DRIVER LOGIN ENGINE (High-Speed Parallel Processing)
-// ==========================================
 async function driverLogin(inductionNumber, password) {
     try {
         const inputId = String(inductionNumber).trim();
         const inputPass = String(password).trim().toLowerCase();
 
-        // 👉 SPEED UPGRADE: Fire both database sweeps at the EXACT SAME MILLISECOND
         const [idSearch, licSearch] = await Promise.all([
             supabaseClient.from('drivers').select('*').ilike('induction_number', `%${inputId}%`),
             supabaseClient.from('drivers').select('*').ilike('license_number', `%${inputId}%`)
@@ -78,28 +77,20 @@ async function driverLogin(inductionNumber, password) {
         if (idSearch.error) throw idSearch.error;
         if (licSearch.error) throw licSearch.error;
 
-        // Combine the results instantly
         let allMatches = [];
         if (idSearch.data) allMatches.push(...idSearch.data);
         if (licSearch.data) allMatches.push(...licSearch.data);
 
-        if (allMatches.length === 0) {
-            return { result: 'error', message: 'User ID or License not found.' };
-        }
+        if (allMatches.length === 0) return { result: 'error', message: 'User ID or License not found.' };
 
-        // Smart Scanner: Find the EXACT driver whose password matches
         let validDriver = null;
         for (let d of allMatches) {
             const licenseLast5 = String(d.license_number).trim().toLowerCase().slice(-5);
-            if (licenseLast5 === inputPass) {
-                validDriver = d;
-                break;
-            }
+            if (licenseLast5 === inputPass) { validDriver = d; break; }
         }
 
         if (!validDriver) return { result: 'error', message: 'Incorrect License Password.' };
 
-        // Fetch Appointment Data
         const { data: appts } = await supabaseClient
             .from('appointments')
             .select('*')
@@ -109,25 +100,58 @@ async function driverLogin(inductionNumber, password) {
             
         const appt = (appts && appts.length > 0) ? appts[0] : null;
 
+        // 👉 NEW: Reading the ban directly from the medic_status column!
+        let isSuspended = false;
+        let suspensionEnd = null;
+        let activeBanReason = "";
+
+        if (appt && appt.medic_status && appt.medic_status.startsWith('Failed')) {
+            activeBanReason = appt.medic_status.replace('Failed: ', '');
+            const failDate = new Date(appt.appointment_date);
+            let banEndDate = new Date(failDate);
+
+            const match = activeBanReason.match(/\((\d+)\s+(week|month|year)s?\s+ban\)/i);
+            const isPerm = activeBanReason.toLowerCase().includes('permanent');
+
+            if (isPerm) {
+                isSuspended = true;
+                banEndDate.setFullYear(banEndDate.getFullYear() + 99); 
+            } else if (match) {
+                const amount = parseInt(match[1]);
+                const unit = match[2].toLowerCase();
+
+                if (unit === 'week') banEndDate.setDate(banEndDate.getDate() + (amount * 7));
+                if (unit === 'month') banEndDate.setMonth(banEndDate.getMonth() + amount);
+                if (unit === 'year') banEndDate.setFullYear(banEndDate.getFullYear() + amount);
+
+                if (new Date() < banEndDate) {
+                    isSuspended = true;
+                    suspensionEnd = banEndDate.toISOString().split('T')[0];
+                }
+            }
+        }
+
         const formattedProfile = {
             fullName: validDriver.full_name, inductionNumber: validDriver.induction_number, licenseNumber: validDriver.license_number,
             dob: validDriver.dob, passportPhoto: validDriver.passport_photo, mobileNumber: validDriver.mobile_number,
             companyName: validDriver.company_name, address: validDriver.address, inductionExpiration: validDriver.induction_expiration,
-            licenseExpiration: validDriver.license_expiration,
-            docLicense: validDriver.drivers_license,
+            licenseExpiration: validDriver.license_expiration, docLicense: validDriver.drivers_license,
             docOther: validDriver.other_documents || validDriver.recommendation_letter 
         };
 
         const managementData = {
             status: appt ? appt.appointment_status : "Booked", 
-            daReason: validDriver.da_reason || "",
+            daReason: activeBanReason, // Passed safely to UI
             currentAppointment: appt ? appt.appointment_date : "",
-            rescheduleCount: appt ? appt.reschedule_count : 0
+            appointmentTime: appt ? appt.appointment_time : "",
+            appointmentId: appt ? appt.appointment_id : "",
+            rescheduleCount: appt ? appt.reschedule_count : 0,
+            isSuspended: isSuspended,
+            suspensionEnd: suspensionEnd
         };
 
         return { result: 'success', profile: formattedProfile, apptData: managementData };
     } catch (err) { 
-        console.error("Login Error:", err);
         return { result: 'error', message: 'Database connection failed.' }; 
     }
 }
@@ -142,14 +166,59 @@ async function submitNew(payload) {
         minValidDate.setMonth(minValidDate.getMonth() + 3);
         if (expDate < minValidDate) return { result: 'error', message: "Application Rejected: Driver's license must be valid for at least 3 months." };
 
-        const currentYear = new Date().getFullYear();
-        const { data: latest } = await supabaseClient.from('drivers').select('induction_number').like('induction_number', `%${currentYear}%`).order('induction_number', { ascending: false }).limit(1);
+        const cleanLicense = String(payload.licenseDetails).trim();
+        const { data: existingDriver, error: licErr } = await supabaseClient
+            .from('drivers')
+            .select('full_name, induction_number')
+            .ilike('license_number', cleanLicense)
+            .limit(1);
+
+        if (licErr) throw licErr;
         
-        let nextNum = 1001; 
-        if (latest && latest.length > 0) {
-            const parts = latest[0].induction_number.split('/');
-            nextNum = parseInt(parts[parts.length - 1]) + 1;
+        if (existingDriver && existingDriver.length > 0) {
+            const recoveredName = existingDriver[0].full_name || "Unknown";
+            const recoveredId = existingDriver[0].induction_number || "Unknown";
+            return { 
+                result: 'error', 
+                message: `Driver already exists! Please login using the Renewal Portal to access details.\n\n👤 Name: ${recoveredName}\n🆔 Induction Number: ${recoveredId}` 
+            };
         }
+
+        const currentYear = new Date().getFullYear();
+        let allDrivers = [];
+        let fetchMore = true;
+        let rangeStart = 0;
+        const step = 1000; 
+
+        while (fetchMore) {
+            const { data, error: numErr } = await supabaseClient
+                .from('drivers')
+                .select('induction_number')
+                .range(rangeStart, rangeStart + step - 1);
+                
+            if (numErr) throw numErr;
+            
+            if (data && data.length > 0) {
+                allDrivers.push(...data);
+                rangeStart += step;
+                if (data.length < step) fetchMore = false; 
+            } else {
+                fetchMore = false;
+            }
+        }
+
+        let highestNum = 1000; 
+        if (allDrivers.length > 0) {
+            for (let d of allDrivers) {
+                if (d.induction_number) {
+                    const parts = d.induction_number.split('/');
+                    const lastDigit = parseInt(parts[parts.length - 1]);
+                    if (!isNaN(lastDigit) && lastDigit > highestNum) highestNum = lastDigit;
+                }
+            }
+        }
+        
+        const nextNum = highestNum + 1;
         const newID = `SI/EXT/${currentYear}/${nextNum.toString().padStart(4, '0')}`;
 
         const passportUrl = await uploadToStorage(payload.passportPhoto, newID, payload.fullName, "Passport");
@@ -159,7 +228,7 @@ async function submitNew(payload) {
         const { error } = await supabaseClient.from('drivers').insert([{
             induction_number: newID, full_name: payload.fullName, address: payload.address, state: payload.state,
             lga: payload.lga, religion: payload.religion, mobile_number: payload.mobile, dob: payload.dob,
-            marital_status: payload.maritalStatus, license_number: payload.licenseDetails, license_expiration: payload.licenseExpDate,
+            marital_status: payload.maritalStatus, license_number: cleanLicense, license_expiration: payload.licenseExpDate,
             company_name: payload.companyName, ref1_name: payload.ref1Name, ref1_address: payload.ref1Address,
             ref1_position: payload.ref1Position, ref1_duration: payload.ref1Duration, ref1_contact: payload.ref1Contact,
             ref2_name: payload.ref2Name, passport_photo: passportUrl, drivers_license: licenseUrl, other_documents: otherUrl,
@@ -167,8 +236,14 @@ async function submitNew(payload) {
         }]);
 
         if (error) throw error;
+        
         return { result: 'success', inductionNumber: newID };
-    } catch (err) { return { result: 'error', message: err.message }; }
+    } catch (err) { 
+        if (err.message && err.message.includes('unique constraint')) {
+            return { result: 'error', message: 'System generated a duplicate ID. Please try submitting again.' };
+        }
+        return { result: 'error', message: err.message }; 
+    }
 }
 
 async function submitRenewal(payload) {
@@ -180,7 +255,7 @@ async function submitRenewal(payload) {
 
         let updates = { 
             address: payload.address, mobile_number: payload.mobileNumber, company_name: payload.companyName, 
-            license_expiration: payload.licenseExpiration, da_reason: payload.seizedBanReason, induction_status: 'Pending'
+            license_expiration: payload.licenseExpiration, seizure_reason: payload.seizedBanReason, induction_status: 'Pending'
         };
 
         if (payload.passportPhoto) updates.passport_photo = await uploadToStorage(payload.passportPhoto, payload.inductionNumber, payload.fullName, "Passport");
@@ -194,12 +269,10 @@ async function submitRenewal(payload) {
     } catch (err) { return { result: 'error', message: err.message }; }
 }
 
-// ATOMIC QUICK UPDATE ENGINE
 async function quickUpdate(inductionNumber, driverName, fieldName, value, isFile = false) {
     try {
         let finalValue = value;
         if (isFile && value) {
-            // If it's a file, push it to storage first
             finalValue = await uploadToStorage(value, inductionNumber, driverName, fieldName);
             if (!finalValue) throw new Error("File upload failed to connect to storage bucket.");
         }
@@ -243,63 +316,78 @@ async function processBooking(payload) {
         
         if (existing && existing.length > 0) {
             let currentCount = existing[0].reschedule_count || 0;
-            
-            if (currentCount >= 2) {
-                return { result: 'error', message: 'Maximum of 2 reschedules allowed. Please contact HSE at 08129915418 to clear your record.' };
-            }
+            if (currentCount >= 2) return { result: 'error', message: 'Maximum of 2 reschedules allowed. Please contact HSE at 08129915418 to clear your record.' };
             
             const { error: updateErr } = await supabaseClient.from('appointments').update({
-                appointment_date: payload.date, 
-                appointment_time: payload.time || '9AM', 
-                appointment_status: 'Rescheduled', 
-                reschedule_count: currentCount + 1,
-                appointment_id: aptId
+                appointment_date: payload.date, appointment_time: payload.time || '9AM', 
+                appointment_status: 'Rescheduled', reschedule_count: currentCount + 1, appointment_id: aptId
             }).eq('induction_number', payload.id);
-            
             if (updateErr) throw updateErr;
-            
             return { result: 'success', aptId: aptId, status: 'Rescheduled' };
         } else {
             const { error: insertErr } = await supabaseClient.from('appointments').insert([{
-                induction_number: payload.id, 
-                appointment_date: payload.date, 
-                appointment_time: payload.time || '9AM',
-                application_type: payload.type, 
-                appointment_status: 'Booked',
-                appointment_id: aptId
+                induction_number: payload.id, appointment_date: payload.date, appointment_time: payload.time || '9AM',
+                application_type: payload.type, appointment_status: 'Booked', appointment_id: aptId
             }]);
-            
             if (insertErr) throw insertErr;
-            
             return { result: 'success', aptId: aptId, status: 'Booked' };
         }
     } catch (err) { 
-        console.error("Booking Error:", err.message);
-        return { result: 'error', message: err.message }; 
+        console.error("Booking Error:", err.message); return { result: 'error', message: err.message }; 
     }
 }
 
 // ==========================================
-// 7. ADMIN DASHBOARD ACTIONS
+// 7. ADMIN DASHBOARD ACTIONS 
 // ==========================================
 async function adminBulkVerify(idsString, passcode, attended, daPassed, reason) {
-    const idList = idsString.split(/[,\n]+/).map(id => id.trim().toLowerCase()).filter(id => id.length > 0);
+    const idList = idsString.split(/[,\n]+/).map(id => id.trim()).filter(id => id.length > 0);
     if (idList.length === 0) return { result: 'error', message: 'No IDs provided' };
+    
     try {
-        let statusUpdate = ""; let daUpdate = "";
-        if (passcode === "MEDIC2026") { statusUpdate = daPassed ? "Booked" : "Failed D/A"; daUpdate = daPassed ? "" : reason; } 
-        else if (passcode === "HSE2026") { if (attended) statusUpdate = "Verified"; } 
-        else if (passcode === "MASTER2026" || passcode === "WACT2026") { statusUpdate = "Verified"; daUpdate = ""; } 
-        else { return { result: 'error', message: 'Invalid Passcode' }; }
+        const { data: currentAppts, error: fetchErr } = await supabaseClient
+            .from('appointments')
+            .select('induction_number, medic_status, hse_status')
+            .in('induction_number', idList);
+            
+        if (fetchErr) throw fetchErr;
+        
+        for (let appt of currentAppts) {
+            let newMedic = appt.medic_status || 'Pending';
+            let newHse = appt.hse_status || 'Pending';
+            let newMaster = 'Booked';
 
-        if (passcode === "MEDIC2026" || passcode === "MASTER2026") {
-            await supabaseClient.from('drivers').update({ da_reason: daUpdate, induction_status: statusUpdate }).in('induction_number', idList);
+            // 👉 NEW: Writing the reason directly into the medic_status string!
+            if (passcode === "MEDIC2026") {
+                newMedic = daPassed ? 'Passed' : `Failed: ${reason}`;
+            } else if (passcode === "HSE2026") {
+                if (attended) newHse = 'Attended';
+            } else if (passcode === "MASTER2026" || passcode === "WACT2026") {
+                newMedic = 'Passed';
+                newHse = 'Attended';
+            } else {
+                throw new Error('Invalid Passcode');
+            }
+
+            if (newMedic.startsWith('Failed')) {
+                newMaster = 'Failed D/A'; 
+            } else if (newMedic === 'Passed' && newHse === 'Attended') {
+                newMaster = 'Verified'; 
+            } else {
+                newMaster = 'Booked'; 
+            }
+
+            await supabaseClient.from('appointments').update({
+                medic_status: newMedic,
+                hse_status: newHse,
+                appointment_status: newMaster
+            }).eq('induction_number', appt.induction_number);
         }
-        if (statusUpdate) {
-            await supabaseClient.from('appointments').update({ appointment_status: statusUpdate }).in('induction_number', idList);
-        }
+        
         return { result: 'success', message: `Successfully updated ${idList.length} records.` };
-    } catch (err) { return { result: 'error', message: err.message }; }
+    } catch (err) { 
+        return { result: 'error', message: err.message }; 
+    }
 }
 
 async function markCardsGenerated(idsList) {

@@ -625,11 +625,19 @@
                 else if ((apptData.rescheduleCount || 0) >= 2) { manageBtn.disabled = true; manageBtn.innerText = "Limit Reached"; } 
                 else { manageBtn.disabled = isSuspended; manageBtn.innerText = isSuspended ? "Session Locked" : "Reschedule Session"; }
             }
-            
+            let displayTime = "Pending";
+            if (apptData.appointmentTime === '9AM') displayTime = "09:00 AM Prompt";
+            else if (apptData.appointmentTime === '11AM') displayTime = "11:00 AM Prompt";
+            else if (apptData.appointmentTime === '2PM') displayTime = "02:00 PM Prompt";
+
             setTxt('slip_name', nameVal); 
             setTxt('slip_id', idVal); 
             setTxt('slip_date', formattedApt); 
             setTxt('slip_status', currentStatus);
+            // 👉 FIX: Print the Time and ID directly to the slip
+            setTxt('slip_time_display', displayTime);
+            setTxt('slip_apt_id', apptData.appointmentId || "Processing...");
+            
             
         } else {
             setTxt('apptDetails', "No Active Session");
