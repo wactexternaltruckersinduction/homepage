@@ -575,35 +575,49 @@
         buildVaultItem(profile.docLicense, 'status_doc_license', 'action_doc_license', 'drivers_license');
         buildVaultItem(profile.docOther, 'status_doc_other', 'action_doc_other', 'other_documents');
 
-        isSuspended = false;
+        isSuspended = apptData.isSuspended || false;
         let daInput = document.getElementById('sideDA');
+        // 👉 NEW: Populates the HSE Date box
+        let hseInput = document.getElementById('sideHseDate'); 
+        if(hseInput) {
+             hseInput.value = apptData.hseDate 
+                 ? new Date(apptData.hseDate).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' }) 
+                 : "Pending / Not Attended";
+             
+             // Color code it green if they attended, grey if pending
+             hseInput.style.color = apptData.hseDate ? "var(--success)" : "var(--text-muted)";
+        }
         let suspText = document.getElementById('suspensionText');
         const currentStatus = apptData.status || "Booked";
         const reasonStr = String(apptData.daReason || "").toLowerCase();
 
-        if (currentStatus === "Failed D/A") {
-            const failureDate = new Date(apptData.currentAppointment || new Date());
-            let suspensionEndDate = new Date(failureDate);
-            let durationText = "";
+        if (isSuspended) {
+            const formattedEnd = apptData.suspensionEnd 
+                ? new Date(apptData.suspensionEnd).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' }) 
+                : "Indefinite";
             
-            if (reasonStr.includes("marijuana")) { suspensionEndDate.setMonth(suspensionEndDate.getMonth() + 2); durationText = "2 Months"; } 
-            else if (reasonStr.includes("tramadol")) { suspensionEndDate.setMonth(suspensionEndDate.getMonth() + 1); durationText = "1 Month"; } 
-            else if (reasonStr.includes("alcohol")) { suspensionEndDate.setDate(suspensionEndDate.getDate() + 7); durationText = "1 Week"; } 
-            else { durationText = "No Suspension"; }
-            
-            const today = new Date();
-            if (today < suspensionEndDate && durationText !== "No Suspension") {
-                isSuspended = true;
-                const formattedEnd = suspensionEndDate.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
+            // Extracts the duration from the admin's string, e.g., grabs "6 Months Ban" out of "(6 Months Ban)"
+            let durationMatch = apptData.daReason.match(/\((.*?)\)/);
+            let durationText = durationMatch ? durationMatch[1] : "Active Ban";
                 
-                if(daInput) { daInput.value = `Failed: ${apptData.daReason}`; daInput.style.color = "var(--danger)"; daInput.style.borderColor = "var(--danger)"; daInput.style.background = "#fef2f2"; }
-                if(suspText) { suspText.style.display = "block"; suspText.innerText = `Suspended Protocol: ${durationText}\nTerminates: ${formattedEnd}`; }
-            } else {
-                if(daInput) { daInput.value = "Suspension Expired: Eligible"; daInput.style.color = "var(--warning)"; }
-                if(suspText) suspText.style.display = "none";
+            if(daInput) { 
+                daInput.value = `Failed: ${apptData.daReason}`; 
+                daInput.style.color = "var(--danger)"; 
+                daInput.style.borderColor = "var(--danger)"; 
+                daInput.style.background = "#fef2f2"; 
             }
+            if(suspText) { 
+                suspText.style.display = "block"; 
+                suspText.innerText = `Suspended Protocol: ${durationText}\nTerminates: ${formattedEnd}`; 
+            }
+        } else if (currentStatus === "Failed D/A") {
+            if(daInput) { daInput.value = "Suspension Expired: Eligible"; daInput.style.color = "var(--warn)"; daInput.style.borderColor = "#cbd5e1"; daInput.style.background = "white"; }
+            if(suspText) suspText.style.display = "none";
+        } else if (currentStatus === "Verified" || currentStatus === "Card Generated") {
+            if(daInput) { daInput.value = "Passed / Clear"; daInput.style.color = "var(--success)"; daInput.style.borderColor = "#cbd5e1"; daInput.style.background = "white"; }
+            if(suspText) suspText.style.display = "none";
         } else {
-            if(daInput) { daInput.value = "Passed / Clear"; daInput.style.color = "var(--success)"; }
+            if(daInput) { daInput.value = "Pending"; daInput.style.color = "var(--text-muted)"; daInput.style.borderColor = "#cbd5e1"; daInput.style.background = "white"; }
             if(suspText) suspText.style.display = "none";
         }
 
@@ -780,7 +794,7 @@
             const result = await submitRenewal(payload);
             
             if (result.result === 'success') {
-                alert("Renewal Details Updated Successfully! Proceeding to Appointment Scheduling.");
+                alert("Renewal Submitted Successfully! Proceeding to Book Appointment.");
                 await silentDashboardRefresh(); 
                 switchView('pageAppointment');
             } else { alert("Database Error: " + (result.message || "Unknown error.")); }

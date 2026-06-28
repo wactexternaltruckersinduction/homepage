@@ -15,12 +15,23 @@ if (typeof supabase !== 'undefined') {
 // ==========================================
 async function getSystemSettings() {
     const { data, error } = await supabaseClient.from('system_settings').select('*');
-    if (error) return { capacity: 10, blockedDates: [], customCapacities: {} };
+    if (error) return { capacity: 10, blockedDates: [], blockedTimes: [], customCapacities: {} };
 
-    let settings = { capacity: 10, blockedDates: [], customCapacities: {} };
+    let settings = { capacity: 10, blockedDates: [], blockedTimes: [], customCapacities: {} };
+    
     data.forEach(row => {
         if (row.setting_key === 'global_capacity') settings.capacity = parseInt(row.setting_value) || 10;
-        if (row.setting_key === 'blocked_dates' && row.setting_value) settings.blockedDates = row.setting_value.split(',').map(d => d.trim());
+        
+        if (row.setting_key === 'blocked_dates' && row.setting_value) {
+            settings.blockedDates = row.setting_value.split(',').map(d => d.trim());
+        }
+        
+        // NEW: Block specific times on specific dates (e.g., "2026-10-05|9AM")
+        if (row.setting_key === 'blocked_times' && row.setting_value) {
+            settings.blockedTimes = row.setting_value.split(',').map(d => d.trim());
+        }
+        
+        // FIXED: Granular custom capacities (e.g., "2026-10-05:15" or "2026-10-06|9AM:5")
         if (row.setting_key === 'custom_capacities' && row.setting_value) {
             row.setting_value.split(',').forEach(pair => {
                 let parts = pair.split(':');
@@ -100,7 +111,6 @@ async function driverLogin(inductionNumber, password) {
             
         const appt = (appts && appts.length > 0) ? appts[0] : null;
 
-        // 👉 NEW: Reading the ban directly from the medic_status column!
         let isSuspended = false;
         let suspensionEnd = null;
         let activeBanReason = "";
@@ -119,7 +129,6 @@ async function driverLogin(inductionNumber, password) {
             } else if (match) {
                 const amount = parseInt(match[1]);
                 const unit = match[2].toLowerCase();
-
                 if (unit === 'week') banEndDate.setDate(banEndDate.getDate() + (amount * 7));
                 if (unit === 'month') banEndDate.setMonth(banEndDate.getMonth() + amount);
                 if (unit === 'year') banEndDate.setFullYear(banEndDate.getFullYear() + amount);
@@ -127,6 +136,17 @@ async function driverLogin(inductionNumber, password) {
                 if (new Date() < banEndDate) {
                     isSuspended = true;
                     suspensionEnd = banEndDate.toISOString().split('T')[0];
+                } else {
+                    // 👉 CORRECTION 1: THE BAN HAS EXPIRED! AUTO-CLEAN THE DATABASE
+                    supabaseClient.from('appointments').update({
+                        medic_status: 'Pending', hse_status: 'Pending', appointment_status: 'Booked', reschedule_count: 0
+                    }).eq('induction_number', validDriver.induction_number).then();
+                    
+                    supabaseClient.from('drivers').update({ da_reason: "" })
+                    .eq('induction_number', validDriver.induction_number).then();
+                    
+                    activeBanReason = "";
+                    appt.appointment_status = "Booked"; // Update local memory so UI sees them as clean today
                 }
             }
         }
@@ -141,19 +161,18 @@ async function driverLogin(inductionNumber, password) {
 
         const managementData = {
             status: appt ? appt.appointment_status : "Booked", 
-            daReason: activeBanReason, // Passed safely to UI
+            daReason: activeBanReason, 
             currentAppointment: appt ? appt.appointment_date : "",
             appointmentTime: appt ? appt.appointment_time : "",
             appointmentId: appt ? appt.appointment_id : "",
+            hseDate: appt ? appt.hse_date : "", // 👉 CORRECTION 3: Pulling the HSE Date for the portal
             rescheduleCount: appt ? appt.reschedule_count : 0,
             isSuspended: isSuspended,
             suspensionEnd: suspensionEnd
         };
 
         return { result: 'success', profile: formattedProfile, apptData: managementData };
-    } catch (err) { 
-        return { result: 'error', message: 'Database connection failed.' }; 
-    }
+    } catch (err) { return { result: 'error', message: 'Database connection failed.' }; }
 }
 
 // ==========================================
@@ -304,6 +323,7 @@ async function getCalendarData(searchId, type) {
     let minDate = new Date(); minDate.setDate(minDate.getDate() + 1);
     let maxDate = new Date(); maxDate.setFullYear(maxDate.getFullYear() + 2);
 
+    // Pass settings perfectly to UI so the frontend can calculate exact slot availability
     return { allowedMin: minDate.toISOString().split('T')[0], allowedMax: maxDate.toISOString().split('T')[0], existingBookings: counts, settings: settings };
 }
 
@@ -352,42 +372,63 @@ async function adminBulkVerify(idsString, passcode, attended, daPassed, reason) 
             
         if (fetchErr) throw fetchErr;
         
+        const todayStr = new Date().toISOString().split('T')[0];
+
         for (let appt of currentAppts) {
             let newMedic = appt.medic_status || 'Pending';
             let newHse = appt.hse_status || 'Pending';
             let newMaster = 'Booked';
+            let hseDateUpdate = null;
 
-            // 👉 NEW: Writing the reason directly into the medic_status string!
             if (passcode === "MEDIC2026") {
                 newMedic = daPassed ? 'Passed' : `Failed: ${reason}`;
             } else if (passcode === "HSE2026") {
-                if (attended) newHse = 'Attended';
+                if (attended) { newHse = 'Attended'; hseDateUpdate = todayStr; } // 👉 CORRECTION 3: Record Date
             } else if (passcode === "MASTER2026" || passcode === "WACT2026") {
-                newMedic = 'Passed';
-                newHse = 'Attended';
-            } else {
-                throw new Error('Invalid Passcode');
-            }
+                newMedic = 'Passed'; newHse = 'Attended'; hseDateUpdate = todayStr;
+            } else { throw new Error('Invalid Passcode'); }
 
-            if (newMedic.startsWith('Failed')) {
-                newMaster = 'Failed D/A'; 
-            } else if (newMedic === 'Passed' && newHse === 'Attended') {
-                newMaster = 'Verified'; 
-            } else {
-                newMaster = 'Booked'; 
-            }
+            if (newMedic.startsWith('Failed')) { newMaster = 'Failed D/A'; } 
+            else if (newMedic === 'Passed' && newHse === 'Attended') { newMaster = 'Verified'; } 
+            else { newMaster = 'Booked'; }
 
-            await supabaseClient.from('appointments').update({
-                medic_status: newMedic,
-                hse_status: newHse,
-                appointment_status: newMaster
-            }).eq('induction_number', appt.induction_number);
+            let updatePayload = { medic_status: newMedic, hse_status: newHse, appointment_status: newMaster };
+            if (hseDateUpdate) updatePayload.hse_date = hseDateUpdate;
+
+            await supabaseClient.from('appointments').update(updatePayload).eq('induction_number', appt.induction_number);
         }
         
         return { result: 'success', message: `Successfully updated ${idList.length} records.` };
-    } catch (err) { 
-        return { result: 'error', message: err.message }; 
-    }
+    } catch (err) { return { result: 'error', message: err.message }; }
+}
+
+async function getAnalytics(startDate, endDate) {
+    try {
+        const { data, error } = await supabaseClient.from('appointments').select('appointment_status, application_type, medic_status').gte('appointment_date', startDate).lte('appointment_date', endDate);
+        if (error) throw error;
+        
+        let stats = { total: 0, booked: 0, verified: 0, generated: 0, newCount: 0, renewalCount: 0 };
+        let failureReasons = {}; // 👉 CORRECTION 4: Dynamic Failure Tally
+
+        data.forEach(row => {
+            stats.total++;
+            if (row.application_type === 'new') stats.newCount++;
+            if (row.application_type === 'renewal') stats.renewalCount++;
+            
+            const stat = row.appointment_status;
+            if (stat === 'Booked' || stat === 'Rescheduled') stats.booked++;
+            if (stat === 'Verified') stats.verified++;
+            if (stat === 'Card Generated') stats.generated++;
+            
+            // Tally the exact failure reasons
+            if (row.medic_status && row.medic_status.startsWith('Failed:')) {
+                const cleanReason = row.medic_status.replace('Failed: ', '').split(' (')[0].trim(); // Grabs "Positive to Alcohol"
+                failureReasons[cleanReason] = (failureReasons[cleanReason] || 0) + 1;
+            }
+        });
+        
+        return { result: 'success', data: stats, failures: failureReasons };
+    } catch (err) { return { result: 'error', message: err.message }; }
 }
 
 async function markCardsGenerated(idsList) {
