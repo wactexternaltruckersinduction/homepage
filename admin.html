@@ -17,7 +17,7 @@
         .logo-circle img { max-width: 80%; height: auto; }
         .brand-text .name { font-weight: 800; color: var(--primary-blue); font-size: 16px; display: block; line-height: 1.2; }
         .brand-text .sub { font-size: 11px; color: var(--text-muted); font-weight: 600; text-transform: uppercase; letter-spacing: 1px; margin-top: 2px; display: block;}
-        .btn-home { padding: 10px 18px; border-radius: 12px; font-weight: 700; font-size: 12px; text-transform: uppercase; text-decoration: none; color: var(--text-muted); border: 2px solid #e2e8f0; transition: 0.2s; }
+        .btn-home { padding: 10px 18px; border-radius: 12px; font-weight: 700; font-size: 12px; text-transform: uppercase; text-decoration: none; color: var(--text-muted); border: 2px solid #e2e8f0; transition: 0.2s; white-space: nowrap;}
         .btn-home:hover { background: #f1f5f9; color: var(--text-dark); }
 
         .container { flex: 1; max-width: 1100px; margin: 30px auto; padding: 0 20px; width: 100%; box-sizing: border-box; }
@@ -28,8 +28,8 @@
         .btn-main { padding: 12px 20px; border: none; border-radius: 12px; font-weight: 800; cursor: pointer; font-size: 13px; text-transform: uppercase; transition: 0.2s; display: inline-block;}
         .btn-main:hover { opacity: 0.9; transform: translateY(-1px); }
 
-        #authGateModal, #dynamicBanModal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(15, 23, 42, 0.75); backdrop-filter: blur(8px); display: none; align-items: center; justify-content: center; z-index: 99999; }
-        .gate-card { background: white; width: 90%; max-width: 450px; padding: 40px; border-radius: var(--squarcle-radius); text-align: center; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.4); }
+        .modal-bg { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(15, 23, 42, 0.75); backdrop-filter: blur(8px); display: none; align-items: center; justify-content: center; z-index: 99999; }
+        .gate-card { background: white; width: 90%; max-width: 500px; padding: 40px; border-radius: var(--squarcle-radius); text-align: center; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.4); }
         .gate-input { width: 100%; padding: 14px; border: 2px solid #e2e8f0; border-radius: 14px; font-size: 16px; text-align: center; margin-bottom: 20px; box-sizing: border-box; font-weight: 700;}
         
         .driver-table { width: 100%; border-collapse: collapse; margin-top: 15px; background: white; border-radius: 12px; overflow: hidden; border: 1px solid #e2e8f0; }
@@ -49,9 +49,7 @@
         .tab-btn.active { background: var(--primary-blue); color: white; border-color: var(--primary-blue); box-shadow: 0 4px 10px rgba(0,74,153,0.2); }
         .tab-content { display: none; }
         .tab-content.active { display: block; animation: fadeIn 0.3s ease-in-out; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
 
-        /* SETTINGS CHIPS */
         .setting-chip { display: inline-flex; align-items: center; gap: 8px; background: #f1f5f9; padding: 6px 12px; border-radius: 8px; font-size: 12px; font-weight: 700; color: #334155; margin: 4px; border: 1px solid #cbd5e1; }
         .chip-delete { cursor: pointer; color: #ef4444; font-weight: 900; }
         .chip-delete:hover { color: #991b1b; }
@@ -62,53 +60,9 @@
 </head>
 <body>
 
-<div id="authGateModal" style="display: flex;">
-    <div class="gate-card">
-        <div style="font-size: 40px; margin-bottom: 15px;">🔒</div>
-        <h2 style="color: var(--primary-blue); font-weight: 800; margin-top: 0;">Access Clearance</h2>
-        <p style="color: var(--text-muted); font-size: 14px; font-weight: 600; margin-bottom: 25px;">Identify your department workspace by entering your security access code credentials below.</p>
-        <input type="password" id="gatePasscodeField" class="gate-input" placeholder="Enter Administrative Passcode">
-        <button type="button" class="btn-main" style="background: var(--primary-blue); color: white; width: 100%;" onclick="unlockAdminPanel()">Verify Identity</button>
-    </div>
-</div>
-
-<div id="dynamicBanModal">
-    <div class="gate-card" style="max-width: 500px; text-align: left;">
-        <h2 style="color: var(--danger); font-weight: 800; margin-top: 0; border-bottom: 2px solid #fee2e2; padding-bottom: 10px;">❌ Register D/A Failure & Ban</h2>
-        
-        <label style="font-size: 11px; font-weight: 800; color: #475569; text-transform: uppercase;">1. Select Substance / Breach</label>
-        <select id="dynBanSubstance" class="modern-input" style="border-color: var(--danger);">
-            <option value="Alcohol">Alcohol</option>
-            <option value="Marijuana">Marijuana / THC</option>
-            <option value="Tramadol">Tramadol / Opioids</option>
-            <option value="Cocaine">Cocaine</option>
-            <option value="Refusal to Test">Refused to Test</option>
-            <option value="Other">Other Infraction</option>
-        </select>
-
-        <label style="font-size: 11px; font-weight: 800; color: #475569; text-transform: uppercase;">2. Establish Ban Duration</label>
-        <div style="display: flex; gap: 10px;">
-            <input type="number" id="dynBanValue" class="modern-input" placeholder="e.g. 6" value="1" style="flex: 1; border-color: var(--danger);">
-            <select id="dynBanUnit" class="modern-input" style="flex: 1; border-color: var(--danger);">
-                <option value="Weeks">Weeks</option>
-                <option value="Months">Months</option>
-                <option value="Years">Years</option>
-                <option value="Indefinite">Indefinite (Permaban)</option>
-            </select>
-        </div>
-
-        <div style="display: flex; gap: 10px; margin-top: 15px;">
-            <button type="button" class="btn-main" style="background: white; color: var(--text-muted); border: 2px solid #e2e8f0; width: 100%;" onclick="document.getElementById('dynamicBanModal').style.display='none'">Cancel</button>
-            <button type="button" class="btn-main" style="background: var(--danger); color: white; width: 100%;" onclick="executeDynamicBan()">Implement Ban</button>
-        </div>
-    </div>
-</div>
-
 <header>
     <div class="header-brand">
-        <div class="logo-circle">
-            <img src="https://cms-cd.apmterminals.com/onne/-/jssmedia/mainsite/africa-and-middle-east/Onne/Standard-Hero-images/wact-logo-square-400-ext.png" alt="WACT Logo">
-        </div>
+        <div class="logo-circle"><img src="https://cms-cd.apmterminals.com/onne/-/jssmedia/mainsite/africa-and-middle-east/Onne/Standard-Hero-images/wact-logo-square-400-ext.png" alt="WACT Logo"></div>
         <div class="brand-text">
             <span class="name">WEST AFRICA CONTAINER TERMINAL</span>
             <span class="sub">Administrative Control Portal</span>
@@ -117,8 +71,92 @@
     <a href="index.html" class="btn-home">← Back to Home</a>
 </header>
 
+<!-- UNIQUE ADMIN LOGIN GATE -->
+<div id="authGateModal" class="modal-bg" style="display: flex;">
+    <div class="gate-card">
+        <div style="font-size: 40px; margin-bottom: 10px;">🛡️</div>
+        <h2 style="color: var(--primary-blue); font-weight: 900; margin-top: 0; letter-spacing: -0.5px;">IMS Secure Login</h2>
+        <p style="color: #64748b; font-size: 13px; font-weight: 600; margin-bottom: 20px;">Enter your unique Admin UID and Password. All actions are logged and audited.</p>
+        
+        <input type="text" id="gateUidField" class="gate-input" placeholder="Admin UID (e.g. ADMIN-001)" style="margin-bottom: 12px; text-transform: uppercase;">
+        <input type="password" id="gatePasscodeField" class="gate-input" placeholder="Password">
+        
+        <button type="button" id="loginBtn" class="btn-main" style="background: var(--primary-blue); color: white; width: 100%; font-size: 15px;" onclick="unlockAdminPanel()">Verify Identity</button>
+    </div>
+</div>
+
+<!-- DYNAMIC BAN MODAL -->
+<div id="dynamicBanModal" class="modal-bg">
+    <div class="gate-card" style="text-align: left;">
+        <h2 style="color: var(--danger); font-weight: 800; margin-top: 0; border-bottom: 2px solid #fee2e2; padding-bottom: 10px;">❌ Register Failure & Ban</h2>
+        <label style="font-size: 11px; font-weight: 800; color: #475569;">1. Select Substance</label>
+        <select id="dynBanSubstance" class="modern-input" style="border-color: var(--danger);">
+            <option value="Marijuana (THC)">Marijuana - THC</option>
+            <option value="Opiate-Morphine (OPI/MOR)">Opiate-Morphine - OPI/MOR</option>
+            <option value="Cocaine (COC)">Cocaine - COC</option>
+            <option value="Methamphetamine (MAMP)">Methamphetamine - MAMP</option>
+            <option value="Methadone Metabolic (EDD)">Methadone Metabolic - EDD</option>
+            <option value="Ethylglucoronide (ETG)">Ethylglucoronide - ETG</option>
+            <option value="Amphetamine (AMP)">Amphetamine - AMP</option>
+            <option value="Phencyclidine (PCP)">Phencyclidine - PCP</option>
+            <option value="Synthetic Cannabis (K2)">Synthetic Cannabis - K2</option>
+            <option value="Barbiturates (BAR)">Barbiturates - BAR</option>
+            <option value="Benzodiazepine (BZO)">Benzodiazepine - BZO</option>
+            <option value="Tramadol (TML)">Tramadol - TML</option>
+            <option value="Methadone (MTD)">Methadone - MTD</option>
+            <option value="Ecstasy (MDMA)">Ecstasy - MDMA</option>
+            <option value="Methaqualone (MQL)">Methaqualone - MQL</option>
+            <option value="Tricyclic (TCA)">Tricyclic - TCA</option>
+            <option value="Oxycodone (OXY)">Oxycodone - OXY</option>
+            <option value="Fentanyl (FYL)">Fentanyl - FYL</option>
+            <option value="Propoxyphene (PPX)">Propoxyphene - PPX</option>
+            <option value="Alcohol (ALC)">Alcohol - ALC</option>
+            <option value="Ketamine (KET)">Ketamine - KET</option>
+            <option value="Nicotine/Cotinine (COT)">Nicotine/Cotinine - COT</option>
+            <option value="Buprenorphine (BUP)">Buprenorphine - BUP</option>
+            <option value="Refusal to Test">Refusal to Test</option>
+        </select>
+        <label style="font-size: 11px; font-weight: 800; color: #475569;">2. Ban Duration</label>
+        <div style="display: flex; gap: 10px;">
+            <input type="number" id="dynBanValue" class="modern-input" placeholder="6" value="1" style="flex: 1; border-color: var(--danger);">
+            <select id="dynBanUnit" class="modern-input" style="flex: 1; border-color: var(--danger);">
+                <option value="Weeks">Weeks</option>
+                <option value="Months">Months</option>
+                <option value="Years">Years</option>
+                <option value="Indefinite">Indefinite</option>
+            </select>
+        </div>
+        <div style="display: flex; gap: 10px; margin-top: 15px;">
+            <button class="btn-main" style="background: white; color: var(--text-muted); border: 2px solid #e2e8f0; width: 100%;" onclick="document.getElementById('dynamicBanModal').style.display='none'">Cancel</button>
+            <button class="btn-main" style="background: var(--danger); color: white; width: 100%;" onclick="executeDynamicBan()">Implement Ban</button>
+        </div>
+    </div>
+</div>
+
+<!-- POKA-YOKE MASS RESCHEDULE MODAL -->
+<div id="pokaYokeModal" class="modal-bg">
+    <div class="gate-card" style="text-align: left; max-width: 650px;">
+        <h2 style="color: var(--warn); font-weight: 800; margin-top: 0; border-bottom: 2px solid #ffedd5; padding-bottom: 10px;">⚠️ Action Required: Affected Truckers</h2>
+        <p style="font-size: 14px; font-weight: 600; color: #475569;">Blocking this date/time affects all the scheduled drivers below. Select a new operational date, and the system will automatically distribute them across available slots.</p>
+        
+        <div style="max-height: 200px; overflow-y: auto; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; margin-bottom: 15px;">
+            <table class="driver-table" style="margin-top: 0; border: none; font-size: 12px;">
+                <tbody id="affectedTruckersBody"></tbody>
+            </table>
+        </div>
+
+        <button onclick="copyPokaYokePhones()" class="btn-main" style="background: #0f172a; color: white; width: 100%; margin-bottom: 20px;">📱 Copy Phone Numbers (For Bulk SMS)</button>
+
+        <label style="font-size: 11px; font-weight: 800; color: #475569;">SELECT NEW DATE FOR MASS RESCHEDULE</label>
+        <div style="display: flex; gap: 10px;">
+            <input type="date" id="massRescheduleDate" class="modern-input" style="flex: 2; border-color: var(--warn); margin-bottom: 0;">
+            <button onclick="executeMassReschedule()" class="btn-main" style="background: var(--warn); color: white; flex: 1; margin-bottom: 0;">Move Drivers</button>
+        </div>
+        <button class="btn-main" style="background: transparent; color: #94a3b8; width: 100%; margin-top: 15px;" onclick="cancelPokaYoke()">Cancel Block Action</button>
+    </div>
+</div>
+
 <div id="protectedContent" class="container">
-    
     <div class="tab-nav" id="adminTabs" style="display: none;">
         <button class="tab-btn" id="btn-tab-analytics" onclick="switchTab('tab-analytics')">📊 Analytics</button>
         <button class="tab-btn" id="btn-tab-registry" onclick="switchTab('tab-registry')">🖨️ Driver Registry</button>
@@ -126,13 +164,14 @@
         <button class="tab-btn" id="btn-tab-settings" onclick="switchTab('tab-settings')">⚙️ System Settings</button>
     </div>
 
+    <!-- WORKSPACE -->
     <div id="tab-workspace" class="tab-content">
         <div class="card">
             <h2 id="portalTitle" style="margin-top:0; color: var(--primary-blue); font-weight: 800;">Department Action Roster</h2>
             
             <div style="background: #f8fafc; padding: 15px; border-radius: 12px; border: 1px solid #e2e8f0; margin-bottom: 20px; display: flex; gap: 15px; align-items: flex-end; flex-wrap: wrap;">
                 <div style="flex: 1; min-width: 150px;">
-                    <label style="font-size: 11px; font-weight: 800; color: #475569; display: block; margin-bottom: 4px; text-transform: uppercase;">Load Date Roster</label>
+                    <label style="font-size: 11px; font-weight: 800; color: #475569; display: block; margin-bottom: 4px;">LOAD DATE</label>
                     <input type="date" id="workspaceDate" class="modern-input" style="margin-bottom: 0;">
                 </div>
                 <button onclick="loadWorkspaceRoster()" class="btn-main" style="background: var(--primary-blue); color: white; margin-bottom: 0;">Load Roster</button>
@@ -146,520 +185,544 @@
                     <button id="btnMedicFail" class="btn-main" style="background: var(--danger); color: white; display: none;" onclick="processWorkspace('medic-fail')">❌ Register Medic Failure</button>
                 </div>
             </div>
-
             <div style="overflow-x: auto;">
                 <table class="driver-table">
-                    <thead>
-                        <tr>
-                            <th style="width: 40px; text-align: center;"><input type="checkbox" class="cb-action" id="wsSelectAll" onclick="toggleWsCheckboxes(this)" style="display:none;"></th>
-                            <th>Induction ID</th>
-                            <th>Driver Name</th>
-                            <th>D/A Medic Status</th>
-                            <th>HSE Induction Status</th>
-                        </tr>
-                    </thead>
-                    <tbody id="workspaceRosterBody">
-                        <tr><td colspan="5" style="text-align:center; color:var(--text-muted); font-weight: 600; padding: 30px;">Select a date to load the roster.</td></tr>
-                    </tbody>
+                    <thead><tr><th style="width: 40px;"><input type="checkbox" class="cb-action" id="wsSelectAll" onclick="toggleWsCheckboxes(this)" style="display:none;"></th><th>ID</th><th>Name</th><th>D/A Status</th><th>HSE Status</th></tr></thead>
+                    <tbody id="workspaceRosterBody"><tr><td colspan="5" style="text-align:center; padding:30px;">Select a date to load.</td></tr></tbody>
                 </table>
             </div>
         </div>
     </div>
 
+    <!-- REGISTRY -->
     <div id="tab-registry" class="tab-content">
         <div class="card">
-            <h2 style="margin-top:0; color: var(--primary-blue); font-weight: 800;">Induction Pass Printing Terminal</h2>
+            <h2 style="margin-top:0; color: var(--primary-blue); font-weight: 800;">Pass Printing Terminal</h2>
             <div style="background: #f8fafc; padding: 15px; border-radius: 12px; border: 1px solid #e2e8f0; margin-bottom: 20px; display: flex; gap: 15px; align-items: flex-end; flex-wrap: wrap;">
-                <div style="flex: 1; min-width: 150px;">
-                    <label style="font-size: 11px; font-weight: 700; color: #475569; display: block; margin-bottom: 4px;">Target Date</label>
-                    <input type="date" id="filterDate" class="modern-input" style="margin-bottom: 0;">
-                </div>
-                <div style="flex: 1; min-width: 150px;">
-                    <label style="font-size: 11px; font-weight: 700; color: #475569; display: block; margin-bottom: 4px;">Driver Status</label>
-                    <select id="filterStatus" class="modern-input" style="margin-bottom: 0;">
-                        <option value="Verified">Verified</option>
-                        <option value="Booked">Booked</option>
-                        <option value="Failed D/A">Failed D/A</option>
-                        <option value="Card Generated">Card Generated</option>
-                    </select>
+                <div style="flex: 1;"><label style="font-size: 11px; font-weight: 700;">DATE</label><input type="date" id="filterDate" class="modern-input" style="margin-bottom: 0;"></div>
+                <div style="flex: 1;"><label style="font-size: 11px; font-weight: 700;">STATUS</label>
+                    <select id="filterStatus" class="modern-input" style="margin-bottom: 0;"><option value="Verified">Verified</option><option value="Booked">Booked</option><option value="Failed D/A">Failed D/A</option><option value="Card Generated">Card Generated</option></select>
                 </div>
                 <button onclick="fetchFilteredDrivers()" class="btn-main" style="background: var(--primary-blue); color: white; margin-bottom: 0;">Search</button>
             </div>
-            
             <div id="batchActionControls" style="display: none; gap: 15px; margin-bottom: 25px; flex-wrap: wrap;">
-                <button type="button" class="btn-main" style="background:#16a34a; flex: 1; color: white;" onclick="openPrintBatch()">🖨️ Print Displayed</button>
-                <button type="button" class="btn-main" style="background:#0f172a; flex: 1; color: white;" onclick="reprintSelected()">🖨️ Reprint Selected</button>
-                <button type="button" class="btn-main" style="background:var(--warn); flex: 1; color: white;" onclick="markSelectedCheckboxes()">✅ Mark as Generated</button>
+                <button class="btn-main" style="background:#16a34a; flex: 1; color: white;" onclick="openPrintBatch()">🖨️ Print Displayed</button>
+                <button class="btn-main" style="background:#0f172a; flex: 1; color: white;" onclick="reprintSelected()">🖨️ Reprint Selected</button>
+                <button class="btn-main" style="background:var(--warn); flex: 1; color: white;" onclick="markSelectedCheckboxes()">✅ Mark as Generated</button>
             </div>
-            
             <div style="overflow-x: auto;">
                 <table class="driver-table">
-                    <thead>
-                        <tr>
-                            <th style="width: 40px; text-align: center;"><input type="checkbox" id="selectAllCb" class="cb-action" onclick="toggleAllCbs(this)" style="display:none;"></th>
-                            <th>Induction ID</th>
-                            <th>Driver Name</th>
-                            <th>D/A Medic Status</th>
-                            <th>HSE Induction Status</th>
-                        </tr>
-                    </thead>
-                    <tbody id="verifiedRowsContainer">
-                        <tr><td colspan="5" style="text-align:center; color:var(--text-muted); padding: 30px;">Use the filter above to load drivers.</td></tr>
-                    </tbody>
+                    <thead><tr><th style="width: 40px;"><input type="checkbox" id="selectAllCb" class="cb-action" onclick="toggleAllCbs(this)" style="display:none;"></th><th>ID</th><th>Name</th><th>D/A Status</th><th>HSE Status</th></tr></thead>
+                    <tbody id="verifiedRowsContainer"><tr><td colspan="5" style="text-align:center; padding: 30px;">Use filter to load.</td></tr></tbody>
                 </table>
             </div>
         </div>
     </div>
 
+    <!-- ANALYTICS -->
     <div id="tab-analytics" class="tab-content">
         <div class="card" style="padding: 25px;">
             <h2 style="color: #004a99; margin-top: 0; margin-bottom: 15px; font-weight: 800;">📊 Induction Analytics Overview</h2>
             <div style="display: flex; gap: 15px; align-items: flex-end; margin-bottom: 25px; flex-wrap: wrap;">
-                <div><label style="font-size: 12px; font-weight: 700; color: #64748b;">START DATE</label><input type="date" id="chartStartDate" class="modern-input" style="margin-bottom:0;"></div>
-                <div><label style="font-size: 12px; font-weight: 700; color: #64748b;">END DATE</label><input type="date" id="chartEndDate" class="modern-input" style="margin-bottom:0;"></div>
+                <div><label style="font-size: 12px; font-weight: 700;">START DATE</label><input type="date" id="chartStartDate" class="modern-input" style="margin-bottom:0;"></div>
+                <div><label style="font-size: 12px; font-weight: 700;">END DATE</label><input type="date" id="chartEndDate" class="modern-input" style="margin-bottom:0;"></div>
                 <button onclick="fetchAndDrawAnalytics()" class="btn-main" style="background: var(--primary-blue); color: white; margin-bottom:0;">Generate Report</button>
             </div>
-            
             <div id="analyticsLoading" style="display:none; color:#004a99; font-weight:bold; margin-bottom: 15px;">Sorting data...</div>
-            
             <div style="display: flex; gap: 30px; align-items: center; flex-wrap: wrap;" id="analyticsResults">
                 <div style="width: 300px; height: 300px;"><canvas id="inductionPieChart"></canvas></div>
-                
-                <div style="flex-grow: 1; display: flex; flex-direction: column; gap: 15px;">
-                    <div style="display: flex; gap: 15px;">
-                        <div style="flex: 1; background: #faf5ff; padding: 15px; border-radius: 8px; border-left: 5px solid #a855f7;">
-                            <h3 style="margin: 0; color: #9333ea; font-size: 11px;">NEW APPLICATION</h3>
-                            <p style="margin: 5px 0 0 0; font-size: 20px; font-weight: 900;" id="stat_new">0</p>
-                        </div>
-                        <div style="flex: 1; background: #fdf2f8; padding: 15px; border-radius: 8px; border-left: 5px solid #db2777;">
-                            <h3 style="margin: 0; color: #be185d; font-size: 11px;">RENEWALS</h3>
-                            <p style="margin: 5px 0 0 0; font-size: 20px; font-weight: 900;" id="stat_renew">0</p>
-                        </div>
-                    </div>
-                    <div style="background: #f8fafc; padding: 20px; border-radius: 8px; border-left: 5px solid #64748b;">
-                        <h3 style="margin: 0; color: #64748b; font-size: 14px;">TOTAL EXPECTED</h3>
-                        <p style="margin: 5px 0 0 0; font-size: 28px; font-weight: 900;" id="stat_total">0</p>
-                    </div>
-                    <div style="background: #fefce8; padding: 20px; border-radius: 8px; border-left: 5px solid #eab308;">
-                        <h3 style="margin: 0; color: #ca8a04; font-size: 14px;">PENDING (Booked)</h3>
-                        <p style="margin: 5px 0 0 0; font-size: 28px; font-weight: 900;" id="stat_booked">0</p>
-                    </div>
-                    <div style="background: #f0fdf4; padding: 20px; border-radius: 8px; border-left: 5px solid #22c55e;">
-                        <h3 style="margin: 0; color: #16a34a; font-size: 14px;">VERIFIED & PASSED</h3>
-                        <p style="margin: 5px 0 0 0; font-size: 28px; font-weight: 900;" id="stat_verified">0</p>
-                    </div>
-                    <div style="background: #eff6ff; padding: 20px; border-radius: 8px; border-left: 5px solid #3b82f6;">
-                        <h3 style="margin: 0; color: #2563eb; font-size: 14px;">CARDS GENERATED</h3>
-                        <p style="margin: 5px 0 0 0; font-size: 28px; font-weight: 900;" id="stat_generated">0</p>
-                    </div>
+                <div style="flex-grow: 1; display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                    <div style="background: #faf5ff; padding: 15px; border-radius: 8px; border-left: 5px solid #a855f7;"><h3 style="margin: 0; color: #9333ea; font-size: 11px;">NEW APPLICATION</h3><p style="margin: 5px 0 0 0; font-size: 24px; font-weight: 900;" id="stat_new">0</p></div>
+                    <div style="background: #fdf2f8; padding: 15px; border-radius: 8px; border-left: 5px solid #db2777;"><h3 style="margin: 0; color: #be185d; font-size: 11px;">RENEWALS</h3><p style="margin: 5px 0 0 0; font-size: 24px; font-weight: 900;" id="stat_renew">0</p></div>
+                    <div style="background: #f8fafc; padding: 15px; border-radius: 8px; border-left: 5px solid #64748b;"><h3 style="margin: 0; color: #64748b; font-size: 11px;">TOTAL EXPECTED</h3><p style="margin: 5px 0 0 0; font-size: 24px; font-weight: 900;" id="stat_total">0</p></div>
+                    <div style="background: #fefce8; padding: 15px; border-radius: 8px; border-left: 5px solid #eab308;"><h3 style="margin: 0; color: #ca8a04; font-size: 11px;">PENDING (Booked)</h3><p style="margin: 5px 0 0 0; font-size: 24px; font-weight: 900;" id="stat_booked">0</p></div>
+                    <div style="background: #f0fdf4; padding: 15px; border-radius: 8px; border-left: 5px solid #22c55e;"><h3 style="margin: 0; color: #16a34a; font-size: 11px;">VERIFIED</h3><p style="margin: 5px 0 0 0; font-size: 24px; font-weight: 900;" id="stat_verified">0</p></div>
+                    <div style="background: #eff6ff; padding: 15px; border-radius: 8px; border-left: 5px solid #3b82f6;"><h3 style="margin: 0; color: #2563eb; font-size: 11px;">CARDS GENERATED</h3><p style="margin: 5px 0 0 0; font-size: 24px; font-weight: 900;" id="stat_generated">0</p></div>
+                    <div style="background: #fef2f2; padding: 15px; border-radius: 8px; border-left: 5px solid #dc2626;"><h3 style="margin: 0; color: #991b1b; font-size: 11px;">FAILED D/A</h3><p style="margin: 5px 0 0 0; font-size: 24px; font-weight: 900;" id="stat_failed">0</p></div>
                 </div>
             </div>
-
-            <h3 style="margin-top: 40px; border-bottom: 2px solid #e2e8f0; padding-bottom: 10px; color: var(--danger); font-weight: 800;">❌ Specific Drug & Alcohol Infractions</h3>
-            <div id="dynamicFailuresContainer" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 15px; margin-top: 20px;">
-                <p style="color: var(--text-muted); font-size: 14px;">Run a report to view failure breakdown.</p>
-            </div>
+        </div>
+        
+        <!-- 👉 NEW: DAILY ROSTER DISPATCH CARD IN ANALYTICS -->
+        <div class="card" style="margin-top: 25px;">
+            <h2 style="color: #004a99; margin-top: 0; margin-bottom: 15px; font-weight: 800;">📋 Daily Roster Dispatch</h2>
+            <p style="font-size: 12px; color: #475569; margin-bottom: 20px;">Generate and forward the verified induction roster to port security or gate control.</p>
             
+            <div style="display: flex; gap: 15px; align-items: flex-end; margin-bottom: 15px; flex-wrap: wrap;">
+                <div style="flex: 1; min-width: 200px;">
+                    <label style="font-size: 11px; font-weight: 800; color: #475569;">ROSTER DATE</label>
+                    <input type="date" id="rosterTargetDate" class="modern-input" style="margin-bottom: 0;">
+                </div>
+                <button onclick="generateRosterText()" class="btn-main" style="background: var(--success); color: white; margin-bottom: 0; height: 44px;">Extract List</button>
+            </div>
+
+            <textarea id="rosterOutput" class="modern-input" style="height: 150px; font-family: monospace; font-size: 12px; resize: none; background: #f8fafc; white-space: pre;" readonly placeholder="Roster data will appear here..."></textarea>
+
+            <div style="display: flex; gap: 15px; align-items: flex-end; flex-wrap: wrap;">
+                <div style="flex: 1; min-width: 200px;">
+                    <label style="font-size: 11px; font-weight: 800; color: #475569;">TARGET EMAIL ADDRESS</label>
+                    <input type="email" id="rosterTargetEmail" class="modern-input" placeholder="security@apmterminals.com" style="margin-bottom: 0;">
+                </div>
+                <div style="display: flex; gap: 10px;">
+                    <button class="btn-main" style="background: #0f172a; color: white; margin-bottom: 0; height: 44px;" onclick="copyRoster()">📋 Copy Text</button>
+                    <button class="btn-main" style="background: var(--primary-blue); color: white; margin-bottom: 0; height: 44px;" onclick="sendRosterEmail()">✉️ Send Email</button>
+                </div>
+            </div>
         </div>
     </div>
 
+    <!-- SETTINGS -->
     <div id="tab-settings" class="tab-content">
         <h2 style="color: #0f172a; margin-top: 0; font-weight: 800; margin-bottom: 20px;">⚙️ Dynamic System Configuration</h2>
-        
         <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 25px;">
             
             <div class="card" style="margin-bottom: 0;">
                 <h3 style="color: #0f172a; margin-top: 0; font-size: 15px; border-bottom: 1px solid #e2e8f0; padding-bottom: 10px;">1. Global Daily Slot Limit</h3>
-                <p style="font-size: 12px; color: #64748b;">The maximum number of drivers allowed per session (9AM, 11AM, 2PM) by default.</p>
-                <div style="display: flex; gap: 10px; align-items: center;">
-                    <input type="number" id="uiGlobalLimit" class="modern-input" style="margin-bottom: 0; flex: 1;">
-                    <button onclick="saveGlobalLimit()" class="btn-main" style="background: #0f172a; color: white;">Update</button>
-                </div>
+                <div style="display: flex; gap: 10px; align-items: center;"><input type="number" id="uiGlobalLimit" class="modern-input" style="margin-bottom: 0; flex: 1;"><button onclick="saveGlobalLimit()" class="btn-main" style="background: #0f172a; color: white;">Update</button></div>
             </div>
-
+            
             <div class="card" style="margin-bottom: 0;">
                 <h3 style="color: var(--danger); margin-top: 0; font-size: 15px; border-bottom: 1px solid #fee2e2; padding-bottom: 10px;">2. Block Calendar Dates / Times</h3>
-                
-                <label style="font-size: 11px; font-weight: 800; color: #475569;">SELECT ACTION</label>
-                <select id="uiBlockAction" class="modern-input" onchange="toggleTimeDropdown()">
-                    <option value="block_date">Block Entire Date (Holiday)</option>
-                    <option value="block_time">Block Specific Time Only</option>
-                </select>
-
+                <label style="font-size: 11px; font-weight: 800;">SELECT ACTION</label>
+                <select id="uiBlockAction" class="modern-input" onchange="toggleTimeDropdown()"><option value="block_date">Block Entire Date</option><option value="block_time">Block Specific Time</option></select>
                 <div style="display: flex; gap: 10px;">
-                    <div style="flex: 1;">
-                        <label style="font-size: 11px; font-weight: 800; color: #475569;">TARGET DATE</label>
-                        <input type="date" id="uiBlockDate" class="modern-input" style="margin-bottom: 0;">
-                    </div>
-                    <div style="flex: 1; display: none;" id="uiTimeDiv">
-                        <label style="font-size: 11px; font-weight: 800; color: #475569;">TARGET TIME</label>
-                        <select id="uiBlockTime" class="modern-input" style="margin-bottom: 0;">
-                            <option value="9AM">9AM</option>
-                            <option value="11AM">11AM</option>
-                            <option value="2PM">2PM</option>
-                        </select>
-                    </div>
+                    <div style="flex: 1;"><label style="font-size: 11px; font-weight: 800;">TARGET DATE</label><input type="date" id="uiBlockDate" class="modern-input" style="margin-bottom: 0;"></div>
+                    <div style="flex: 1; display: none;" id="uiTimeDiv"><label style="font-size: 11px; font-weight: 800;">TARGET TIME</label><select id="uiBlockTime" class="modern-input" style="margin-bottom: 0;"><option value="9AM">9AM</option><option value="11AM">11AM</option><option value="2PM">2PM</option></select></div>
                 </div>
-
-                <button onclick="executeBlockAction()" class="btn-main" style="background: var(--danger); color: white; width: 100%; margin-top: 15px;">Execute Block</button>
-                
-                <h4 style="font-size: 11px; color: #64748b; margin-top: 20px; margin-bottom: 5px;">CURRENT BLOCKS (Click ✖ to Unblock)</h4>
-                <div id="uiActiveBlocks" style="background: #f8fafc; padding: 10px; border-radius: 8px; border: 1px solid #e2e8f0; min-height: 50px;">
-                    </div>
+                <button onclick="attemptBlockAction()" class="btn-main" style="background: var(--danger); color: white; width: 100%; margin-top: 15px;">Execute Block</button>
+                <h4 style="font-size: 11px; margin-top: 20px;">CURRENT BLOCKS (Click ✖ to Unblock)</h4>
+                <div id="uiActiveBlocks" style="background: #f8fafc; padding: 10px; border-radius: 8px; border: 1px solid #e2e8f0; min-height: 50px;"></div>
+            </div>
+            
+            <div class="card" style="margin-bottom: 0;">
+                <h3 style="color: var(--primary-blue); margin-top: 0; font-size: 15px; border-bottom: 1px solid #e0e7ff; padding-bottom: 10px;">3. Custom Date Capacity</h3>
+                <div style="display: flex; gap: 10px;">
+                    <div style="flex: 2;"><label style="font-size: 11px; font-weight: 800;">TARGET DATE</label><input type="date" id="uiCustomDate" class="modern-input" style="margin-bottom: 0;"></div>
+                    <div style="flex: 1;"><label style="font-size: 11px; font-weight: 800;">NEW LIMIT</label><input type="number" id="uiCustomLimit" class="modern-input" style="margin-bottom: 0;"></div>
+                </div>
+                <button onclick="executeCustomCapacity()" class="btn-main" style="background: var(--primary-blue); color: white; width: 100%; margin-top: 15px;">Set Capacity</button>
+                <h4 style="font-size: 11px; margin-top: 20px;">CURRENT OVERRIDES (Click ✖ to Remove)</h4>
+                <div id="uiActiveOverrides" style="background: #f8fafc; padding: 10px; border-radius: 8px; border: 1px solid #e2e8f0; min-height: 50px;"></div>
             </div>
 
             <div class="card" style="margin-bottom: 0;">
-                <h3 style="color: var(--primary-blue); margin-top: 0; font-size: 15px; border-bottom: 1px solid #e0e7ff; padding-bottom: 10px;">3. Set Custom Date Capacity</h3>
-                <p style="font-size: 12px; color: #64748b;">Override the global limit for a specific day to handle surges or low staff.</p>
-
-                <div style="display: flex; gap: 10px;">
-                    <div style="flex: 2;">
-                        <label style="font-size: 11px; font-weight: 800; color: #475569;">TARGET DATE</label>
-                        <input type="date" id="uiCustomDate" class="modern-input" style="margin-bottom: 0;">
-                    </div>
-                    <div style="flex: 1;">
-                        <label style="font-size: 11px; font-weight: 800; color: #475569;">NEW LIMIT</label>
-                        <input type="number" id="uiCustomLimit" class="modern-input" placeholder="e.g. 5" style="margin-bottom: 0;">
-                    </div>
-                </div>
-
-                <button onclick="executeCustomCapacity()" class="btn-main" style="background: var(--primary-blue); color: white; width: 100%; margin-top: 15px;">Set Custom Capacity</button>
+                <h3 style="color: var(--warn); margin-top: 0; font-size: 15px; border-bottom: 1px solid #ffedd5; padding-bottom: 10px;">4. Displaced Drivers Register</h3>
+                <p style="font-size: 12px; color: #64748b; margin-bottom: 15px;">List of truckers automatically moved due to calendar blocks.</p>
                 
-                <h4 style="font-size: 11px; color: #64748b; margin-top: 20px; margin-bottom: 5px;">CURRENT OVERRIDES (Click ✖ to Remove)</h4>
-                <div id="uiActiveOverrides" style="background: #f8fafc; padding: 10px; border-radius: 8px; border: 1px solid #e2e8f0; min-height: 50px;">
-                    </div>
+                <!-- 👉 NEW: THE CLEAR LIST BUTTON -->
+                <div style="display: flex; gap: 10px; margin-bottom: 15px;">
+                    <button onclick="copyHistoryPhones()" class="btn-main" style="background: #0f172a; color: white; flex: 1; font-size: 11px; padding: 10px;">📱 Copy All Phones</button>
+                    <button onclick="clearDisplacedHistory()" class="btn-main" style="background: #dc2626; color: white; flex: 1; font-size: 11px; padding: 10px;">🗑️ Clear List</button>
+                </div>
+                
+                <div style="max-height: 250px; overflow-y: auto; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px;">
+                    <table class="driver-table" style="margin-top: 0; border: none; font-size: 11px;">
+                        <thead><tr><th>Driver Name</th><th>ID / Phone</th><th>Moved To (Date & Time)</th></tr></thead>
+                        <tbody id="uiRescheduleHistory"></tbody>
+                    </table>
+                </div>
             </div>
 
         </div>
     </div>
 </div>
 
-<footer>&copy; 2026 West Africa Container Terminal | Global APM Terminals Network</footer>
-
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="code.js"></script>
 
 <script>
-    let activeSessionKey = "";
-    let currentFilteredIds = []; 
-    let myPieChart = null; 
-    let globalSettingsState = { blockedDates: [], blockedTimes: [], customCapacities: {} }; // Holds settings data locally
+    let activeSessionKey = ""; 
+    let currentAdminUid = "";
+    let currentAdminName = "";
+    let currentFilteredIds = []; let myPieChart = null; 
+    let globalSettingsState = { capacity: 10, blockedDates: [], blockedTimes: [], customCapacities: {} }; 
+    let pendingPokaYokeTruckers = []; let pendingBlockPayload = null;
+    window.currentHistoryList = []; 
 
-    // --- AUTH & TABS ---
-    function switchTab(targetTabId) {
-        document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
-        document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
-        document.getElementById(targetTabId).classList.add('active');
-        document.getElementById('btn-' + targetTabId).classList.add('active');
+    function switchTab(id) { 
+        document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active')); 
+        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active')); 
+        document.getElementById(id).classList.add('active'); 
+        document.getElementById('btn-' + id).classList.add('active'); 
     }
 
-    function unlockAdminPanel() {
+    async function unlockAdminPanel() {
+        const uidInput = document.getElementById('gateUidField').value.trim().toUpperCase();
         const passInput = document.getElementById('gatePasscodeField').value.trim();
-        activeSessionKey = passInput;
+        const btn = document.getElementById('loginBtn');
         
-        document.getElementById('authGateModal').style.display = 'none';
-        document.getElementById('protectedContent').style.display = 'block';
-        document.getElementById('adminTabs').style.display = 'flex';
-        document.querySelectorAll('.tab-btn').forEach(btn => btn.style.display = 'none');
-        
-        document.getElementById('btnHsePass').style.display = 'none';
-        document.getElementById('btnMedicPass').style.display = 'none';
-        document.getElementById('btnMedicFail').style.display = 'none';
+        if (!uidInput || !passInput) return alert("Please enter both UID and Password.");
+        btn.innerText = "Authenticating..."; btn.disabled = true;
 
-        if (passInput === "MEDIC2026") {
-            document.getElementById('portalTitle').innerText = "Medic Diagnostic Roster";
-            document.getElementById('btn-tab-workspace').style.display = 'block';
-            document.getElementById('btn-tab-workspace').innerText = "⚕️ Medic Workspace";
-            document.getElementById('btnMedicPass').style.display = 'inline-block';
-            document.getElementById('btnMedicFail').style.display = 'inline-block';
-            switchTab('tab-workspace');
-        } 
-        else if (passInput === "HSE2026") {
-            document.getElementById('portalTitle').innerText = "HSE Induction Roster";
-            document.getElementById('btn-tab-workspace').style.display = 'block';
-            document.getElementById('btn-tab-workspace').innerText = "🦺 HSE Workspace";
-            document.getElementById('btnHsePass').style.display = 'inline-block';
-            switchTab('tab-workspace');
-        }
-        else if (passInput === "MASTER2026" || passInput === "WACT2026") {
-            document.getElementById('portalTitle').innerText = "Master Action Roster";
-            document.getElementById('btn-tab-analytics').style.display = 'block';
-            document.getElementById('btn-tab-registry').style.display = 'block';
-            document.getElementById('btn-tab-workspace').style.display = 'block';
-            document.getElementById('btn-tab-settings').style.display = 'block';
-            
-            document.getElementById('btnHsePass').style.display = 'inline-block';
-            document.getElementById('btnMedicPass').style.display = 'inline-block';
-            document.getElementById('btnMedicFail').style.display = 'inline-block';
-            
-            switchTab('tab-analytics');
-            refreshSettingsUI(); // Load settings if Master
-        }
-        else { 
-            alert("Access Refused. Invalid Passcode."); 
-            document.getElementById('authGateModal').style.display = 'flex';
-            document.getElementById('protectedContent').style.display = 'none';
-        }
+        try {
+            if (typeof adminLogin !== 'function') throw new Error("Backend system disconnected. Please refresh the page.");
 
-        const localDate = new Date();
-        const offset = localDate.getTimezoneOffset() * 60000;
-        const todayStr = new Date(localDate - offset).toISOString().split('T')[0];
-        document.getElementById('workspaceDate').value = todayStr;
-        document.getElementById('filterDate').value = todayStr;
-        
-        const firstDay = new Date(localDate.getFullYear(), localDate.getMonth(), 1);
-        document.getElementById('chartStartDate').value = firstDay.toISOString().split('T')[0];
-        document.getElementById('chartEndDate').value = todayStr;
-        
-        if(passInput === "MEDIC2026" || passInput === "HSE2026") { loadWorkspaceRoster(); }
+            const res = await adminLogin(uidInput, passInput);
+            btn.innerText = "Verify Identity"; btn.disabled = false;
+
+            if (res.result !== 'success') return alert(res.message);
+
+            currentAdminUid = res.data.admin_uid;
+            currentAdminName = res.data.full_name;
+            const dept = String(res.data.department).toUpperCase();
+            
+            document.getElementById('authGateModal').style.display = 'none'; 
+            document.getElementById('protectedContent').style.display = 'block'; 
+            document.getElementById('adminTabs').style.display = 'flex';
+            
+            document.querySelectorAll('.tab-btn').forEach(b => b.style.display = 'none');
+            document.getElementById('btnHsePass').style.display = 'none'; 
+            document.getElementById('btnMedicPass').style.display = 'none'; 
+            document.getElementById('btnMedicFail').style.display = 'none';
+
+            if (dept.includes("MEDIC")) { 
+                activeSessionKey = "Medic";
+                document.getElementById('portalTitle').innerText = "Medic Diagnostic Roster";
+                document.getElementById('btn-tab-workspace').style.display = 'block'; 
+                document.getElementById('btnMedicPass').style.display = 'inline-block'; 
+                document.getElementById('btnMedicFail').style.display = 'inline-block'; 
+                switchTab('tab-workspace'); 
+            } 
+            else if (dept.includes("HSE")) { 
+                activeSessionKey = "HSE";
+                document.getElementById('portalTitle').innerText = "HSE Induction Roster";
+                document.getElementById('btn-tab-workspace').style.display = 'block'; 
+                document.getElementById('btnHsePass').style.display = 'inline-block'; 
+                switchTab('tab-workspace'); 
+            }
+            else if (dept.includes("ADMIN") || dept.includes("MASTER")) { 
+                activeSessionKey = "Master";
+                document.getElementById('portalTitle').innerText = "Master Action Roster";
+                document.getElementById('btn-tab-analytics').style.display = 'block'; 
+                document.getElementById('btn-tab-registry').style.display = 'block'; 
+                document.getElementById('btn-tab-workspace').style.display = 'block'; 
+                document.getElementById('btn-tab-settings').style.display = 'block'; 
+                document.getElementById('btnHsePass').style.display = 'inline-block'; 
+                document.getElementById('btnMedicPass').style.display = 'inline-block'; 
+                document.getElementById('btnMedicFail').style.display = 'inline-block'; 
+                switchTab('tab-analytics'); 
+                refreshSettingsUI(); 
+            } else {
+                throw new Error("Your assigned department does not match an active portal.");
+            }
+
+            const offset = new Date().getTimezoneOffset() * 60000; 
+            const todayStr = new Date(new Date() - offset).toISOString().split('T')[0];
+            document.getElementById('workspaceDate').value = todayStr; 
+            document.getElementById('filterDate').value = todayStr;
+            document.getElementById('rosterTargetDate').value = todayStr;
+            
+            const firstDay = new Date(new Date().getFullYear(), new Date().getMonth(), 1); 
+            document.getElementById('chartStartDate').value = firstDay.toISOString().split('T')[0]; 
+            document.getElementById('chartEndDate').value = todayStr;
+            
+            if(activeSessionKey === "Medic" || activeSessionKey === "HSE") loadWorkspaceRoster();
+
+        } catch (error) {
+            btn.innerText = "Verify Identity"; btn.disabled = false;
+            alert("System Alert: " + error.message);
+        }
     }
 
-    // --- WORKSPACE (ROSTER) ---
-    function toggleWsCheckboxes(masterCb) { document.querySelectorAll('.ws-cb').forEach(cb => cb.checked = masterCb.checked); }
+    // 👉 EMAIL DISPATCH UI LOGIC (Now safely integrated into Analytics Tab)
+    async function generateRosterText() {
+        const date = document.getElementById('rosterTargetDate').value;
+        if(!date) return alert("Select a date.");
 
+        document.getElementById('rosterOutput').value = "Extracting data from secure vault...";
+
+        const res = await fetchDailyRoster(date);
+        if(res.result !== 'success') {
+            document.getElementById('rosterOutput').value = "Error: " + res.message;
+            return;
+        }
+
+        if(res.data.length === 0) {
+            document.getElementById('rosterOutput').value = "No truckers scheduled for this date.";
+            return;
+        }
+
+        let text = `WACT INDUCTION ROSTER\nDate: ${date}\nTotal Truckers: ${res.data.length}\n\n`;
+        text += `TIME   | APPT ID      | INDUCTION NUMBER     | DRIVER NAME\n`;
+        text += `=========================================================================\n`;
+
+        res.data.forEach(t => { text += `${t.time.padEnd(6)} | ${t.aptId.padEnd(12)} | ${t.id.padEnd(20)} | ${t.name}\n`; });
+
+        document.getElementById('rosterOutput').value = text;
+    }
+
+    function copyRoster() {
+        const txt = document.getElementById('rosterOutput').value;
+        if(!txt || txt.includes('Extracting')) return alert("Generate the roster first.");
+        navigator.clipboard.writeText(txt);
+        alert("Roster securely copied to your clipboard!");
+    }
+
+    function sendRosterEmail() {
+        const email = document.getElementById('rosterTargetEmail').value;
+        const txt = document.getElementById('rosterOutput').value;
+        const date = document.getElementById('rosterTargetDate').value;
+
+        if(!txt || txt.includes('Extracting') || txt.includes('No truckers')) return alert("Generate a valid roster first.");
+        if(!email) return alert("Please enter the email address of the recipient.");
+
+        const subject = encodeURIComponent(`WACT Daily Induction Roster: ${date}`);
+        const body = encodeURIComponent(txt);
+        window.location.href = `mailto:${email}?subject=${subject}&body=${body}`;
+    }
+
+    // 👉 CLEAR DISPLACED HISTORY LOGIC
+    async function clearDisplacedHistory() {
+        if(!confirm("Are you sure you want to clear the displaced drivers register? This action is permanent and will be logged.")) return;
+        
+        const btn = document.querySelector('button[onclick="clearDisplacedHistory()"]');
+        const oldText = btn.innerText; btn.innerText = "Clearing..."; btn.disabled = true;
+        
+        try {
+            await safeUpsertSetting('reschedule_list', '[]');
+            await logAuditAction(currentAdminUid, 'CLEARED_HISTORY', 'Reschedule Log', 'Admin wiped the displaced drivers list.');
+            await refreshSettingsUI();
+            alert("History successfully cleared.");
+        } catch(e) {
+            alert("Error: " + e.message);
+        }
+        btn.innerText = oldText; btn.disabled = false;
+    }
+
+    // Existing Functions
+    function toggleWsCheckboxes(mCb) { document.querySelectorAll('.ws-cb').forEach(cb => cb.checked = mCb.checked); }
+    
     async function loadWorkspaceRoster() {
-        const date = document.getElementById('workspaceDate').value;
-        const container = document.getElementById('workspaceRosterBody');
-        container.innerHTML = "<tr><td colspan='5' style='text-align:center; padding:30px; font-weight:600;'>Querying live database...</td></tr>";
+        const date = document.getElementById('workspaceDate').value; 
+        const cont = document.getElementById('workspaceRosterBody');
+        cont.innerHTML = "<tr><td colspan='5' style='text-align:center;'>Querying Database...</td></tr>"; 
         document.getElementById('workspaceControls').style.display = 'none'; 
         
         try {
-            const { data, error } = await window.supabaseClient.from('appointments')
-                .select('induction_number, appointment_status, medic_status, hse_status, drivers (full_name, company_name)')
-                .eq('appointment_date', date);
-
-            if (error) throw error;
-
-            let pendingHTML = ""; let processedHTML = "";
-            let pendingCount = 0; let processedCount = 0;
-
-            data.forEach(row => {
-                const status = row.appointment_status;
-                const dbMedic = row.medic_status || 'Pending';
-                const dbHse = row.hse_status || 'Pending';
+            const list = await getFilteredList(date, 'ALL');
+            let pHTML = ""; let pCount = 0; let procHTML = ""; let procCount = 0;
+            
+            list.forEach(row => {
+                if (row.rawStatus === 'Card Generated') return; 
+                let isProc = false; const dbM = row.rawMedic || 'Pending'; const dbH = row.rawHse || 'Pending';
                 
-                if (status === 'Card Generated') return; 
-
-                let isProcessed = false;
-                if (activeSessionKey === "MEDIC2026" && (dbMedic === "Passed" || dbMedic.startsWith("Failed"))) isProcessed = true;
-                if (activeSessionKey === "HSE2026" && dbHse === "Attended") isProcessed = true;
-                if ((activeSessionKey === "MASTER2026" || activeSessionKey === "WACT2026") && status === "Verified") isProcessed = true;
-
-                let hseUI = dbHse === 'Attended' ? `<span class="status-pill pill-pass">Yes</span>` : `<span class="status-pill pill-pending">No</span>`;
-                let medicUI = dbMedic === 'Passed' ? `<span class="status-pill pill-pass">Passed</span>` : 
-                              (dbMedic.startsWith('Failed') ? `<span class="status-pill pill-fail">${dbMedic.replace('Failed: ', '')}</span>` : `<span class="status-pill pill-pending">Pending</span>`);
-
-                const rowHTML = `
-                    <tr id="row-${row.induction_number.replace(/\//g, '-')}">
-                        <td style="text-align:center;"><input type="checkbox" class="cb-action ws-cb" value="${row.induction_number}"></td>
-                        <td style="font-family:monospace; font-weight:800; color:var(--primary-blue);">${row.induction_number}</td>
-                        <td style="font-weight: 700;">${row.drivers ? row.drivers.full_name : 'Unknown'}</td>
-                        <td>${medicUI}</td>
-                        <td>${hseUI}</td>
-                    </tr>
-                `;
-
-                if (isProcessed) { processedHTML += rowHTML; processedCount++; } 
-                else { pendingHTML += rowHTML; pendingCount++; }
+                if (activeSessionKey === "Medic" && (dbM === "Passed" || dbM.startsWith("Failed"))) isProc = true;
+                if (activeSessionKey === "HSE" && dbH === "Attended") isProc = true;
+                if (activeSessionKey === "Master" && row.rawStatus === "Verified") isProc = true;
+                
+                let hUI = dbH === 'Attended' ? `<span class="status-pill pill-pass">Yes</span>` : `<span class="status-pill pill-pending">No</span>`;
+                let mUI = dbM === 'Passed' ? `<span class="status-pill pill-pass">Passed</span>` : (dbM.startsWith('Failed') ? `<span class="status-pill pill-fail">${dbM.replace('Failed: ', '')}</span>` : `<span class="status-pill pill-pending">Pending</span>`);
+                
+                const rHTML = `<tr><td style="text-align:center;"><input type="checkbox" class="ws-cb cb-action" value="${row.id}"></td><td style="font-family:monospace; font-weight:800; color:var(--primary-blue);">${row.id}</td><td>${row.name}</td><td>${mUI}</td><td>${hUI}</td></tr>`;
+                if (isProc) { procHTML += rHTML; procCount++; } else { pHTML += rHTML; pCount++; }
             });
 
-            let finalHTML = "";
-            if (pendingCount > 0) finalHTML += `<tr><td colspan='5' style='background:#fef3c7; color:#b45309; font-weight:800; font-size:12px; text-transform:uppercase;'>⏳ Pending Action (${pendingCount})</td></tr>` + pendingHTML;
-            else finalHTML += `<tr><td colspan='5' style='text-align:center; padding:20px; color:var(--success); font-weight:800;'>✅ Inbox Zero! No pending actions.</td></tr>`;
-
-            if (processedCount > 0) finalHTML += `<tr><td colspan='5' style='background:#f0fdf4; color:#166534; font-weight:800; font-size:12px; text-transform:uppercase;'>✅ Processed Today - Select to Edit/Correct (${processedCount})</td></tr>` + processedHTML;
-
-            container.innerHTML = finalHTML;
-            if (pendingCount > 0 || processedCount > 0) document.getElementById('workspaceControls').style.display = 'flex';
+            let fHTML = "";
+            if (pCount > 0) fHTML += `<tr><td colspan='5' style='background:#fef3c7; color:#b45309; font-weight:800; font-size:12px;'>⏳ PENDING ACTION (${pCount})</td></tr>` + pHTML; 
+            else fHTML += `<tr><td colspan='5' style='text-align:center; color:var(--success); font-weight:800;'>✅ Inbox Zero!</td></tr>`;
             
-        } catch(e) { container.innerHTML = `<tr><td colspan='5' style='text-align:center; color:red; padding:30px;'>Error: ${e.message}</td></tr>`; }
+            if (procCount > 0) fHTML += `<tr><td colspan='5' style='background:#f0fdf4; color:#166534; font-weight:800; font-size:12px;'>✅ PROCESSED TODAY (Select to edit) (${procCount})</td></tr>` + procHTML;
+            
+            cont.innerHTML = fHTML; 
+            if (pCount > 0 || procCount > 0) document.getElementById('workspaceControls').style.display = 'flex';
+        } catch(e) { cont.innerHTML = `<tr><td colspan='5' style='text-align:center; color:red;'>Error</td></tr>`; }
     }
 
     let pendingBanIds = [];
-    function processWorkspace(actionType) {
-        const checkedBoxes = document.querySelectorAll('.ws-cb:checked');
-        if (checkedBoxes.length === 0) return alert("Please select at least one driver.");
-        const selectedIds = Array.from(checkedBoxes).map(cb => cb.value);
-        
-        if (actionType === 'medic-fail') { pendingBanIds = selectedIds; document.getElementById('dynamicBanModal').style.display = 'flex'; } 
-        else if (actionType === 'medic-pass') { if(confirm(`Pass ${selectedIds.length} drivers?`)) executeDatabaseUpdate(selectedIds, "MEDIC2026", true, true, ""); } 
-        else if (actionType === 'hse-pass') { if(confirm(`Mark ${selectedIds.length} drivers Attended?`)) executeDatabaseUpdate(selectedIds, "HSE2026", true, true, ""); }
-    }
-
-    function executeDynamicBan() {
-        const substance = document.getElementById('dynBanSubstance').value; const durVal = document.getElementById('dynBanValue').value; const durUnit = document.getElementById('dynBanUnit').value;
-        if (!durVal && durUnit !== 'Indefinite') return alert("Enter ban duration.");
-        let dynamicReason = durUnit === 'Indefinite' ? `Positive to ${substance} (Permanent Ban)` : `Positive to ${substance} (${durVal} ${durUnit} Ban)`;
-        document.getElementById('dynamicBanModal').style.display = 'none';
-        executeDatabaseUpdate(pendingBanIds, "MEDIC2026", true, false, dynamicReason);
-    }
-
-    async function executeDatabaseUpdate(idsArray, passcode, attended, daPassed, reason) {
-        try {
-            const res = await adminBulkVerify(idsArray.join(','), passcode, attended, daPassed, reason);
-            if (res.result === 'success') loadWorkspaceRoster(); else alert("Error: " + res.message);
-        } catch(e) { alert("Communication Failure."); }
-    }
-
-    // --- REGISTRY --- (Unchanged logic, compact form)
-    function toggleAllCbs(masterCb) { document.querySelectorAll('.row-cb').forEach(cb => cb.checked = masterCb.checked); }
-    async function fetchFilteredDrivers() {
-        const container = document.getElementById('verifiedRowsContainer'); const controls = document.getElementById('batchActionControls');
-        const fDate = document.getElementById('filterDate').value; const fStatus = document.getElementById('filterStatus').value;
-        container.innerHTML = "<tr><td colspan='5' style='text-align:center;'>Querying...</td></tr>"; controls.style.display = 'none'; currentFilteredIds = [];
-        try {
-            const list = await getFilteredList(fDate, fStatus); container.innerHTML = "";
-            if(list.length === 0) return container.innerHTML = `<tr><td colspan='5' style='text-align:center;'>No drivers found.</td></tr>`;
-            list.forEach(d => {
-                currentFilteredIds.push(d.id);
-                let hse = fStatus === 'Verified' || fStatus === 'Card Generated' ? `<span class="status-pill pill-pass">Yes</span>` : `<span class="status-pill pill-pending">No</span>`;
-                let med = fStatus === 'Failed D/A' ? `<span class="status-pill pill-fail">Failed</span>` : (fStatus === 'Verified' || fStatus === 'Card Generated' ? `<span class="status-pill pill-pass">Passed</span>` : `<span class="status-pill pill-pending">Pending</span>`);
-                container.innerHTML += `<tr><td style="text-align:center;"><input type="checkbox" class="cb-action row-cb" value="${d.id}"></td><td style="font-family:monospace; font-weight:800; color:var(--primary-blue);">${d.id}</td><td style="font-weight:700;">${d.name}</td><td>${med}</td><td>${hse}</td></tr>`;
-            });
-            controls.style.display = 'flex';
-        } catch(e) { container.innerHTML = "<tr><td colspan='5' style='text-align:center; color:red;'>Error loading registry.</td></tr>"; }
-    }
-    function reprintSelected() { const cbs = document.querySelectorAll('.row-cb:checked'); if (cbs.length === 0) return alert("Select a driver."); window.open("print.html?ids=" + encodeURIComponent(Array.from(cbs).map(cb => cb.value).join(",")), "_blank"); }
-    function openPrintBatch() { if (currentFilteredIds.length > 0) window.open("print.html?ids=" + encodeURIComponent(currentFilteredIds.join(",")), "_blank"); }
-    async function markSelectedCheckboxes() {
-        const cbs = document.querySelectorAll('.row-cb:checked'); if (cbs.length === 0) return alert("Select a driver.");
+    function processWorkspace(type) {
+        const cbs = document.querySelectorAll('.ws-cb:checked'); 
+        if (cbs.length === 0) return alert("Select driver."); 
         const ids = Array.from(cbs).map(cb => cb.value);
-        if (confirm(`Mark ${ids.length} as 'Card Generated'?`)) {
-            const res = await markCardsGenerated(ids);
-            if (res.result === 'success') { alert(`Success!`); fetchFilteredDrivers(); } else alert("Failed: " + res.message);
+        
+        if (type === 'medic-fail') { 
+            pendingBanIds = ids; document.getElementById('dynamicBanModal').style.display = 'flex'; 
+        } else if (type === 'medic-pass') { 
+            if(confirm(`Pass ${ids.length}?`)) executeDbUpdate(ids, activeSessionKey, true, true, ""); 
+        } else if (type === 'hse-pass') { 
+            if(confirm(`Mark ${ids.length} Attended?`)) executeDbUpdate(ids, activeSessionKey, true, true, ""); 
         }
     }
 
-    // --- ANALYTICS (FIXED RENDERER) ---
+    function executeDynamicBan() {
+        const s = document.getElementById('dynBanSubstance').value; const v = document.getElementById('dynBanValue').value; const u = document.getElementById('dynBanUnit').value;
+        if (!v && u !== 'Indefinite') return alert("Enter duration."); 
+        let res = u === 'Indefinite' ? `Positive to ${s} (Permanent Ban)` : `Positive to ${s} (${v} ${u} Ban)`;
+        document.getElementById('dynamicBanModal').style.display = 'none'; 
+        executeDbUpdate(pendingBanIds, activeSessionKey, true, false, res);
+    }
+
+    async function executeDbUpdate(ids, department, att, daP, res) { 
+        try { 
+            const r = await adminBulkVerify(ids.join(','), department, att, daP, res, currentAdminUid); 
+            if (r.result === 'success') { document.getElementById('wsSelectAll').checked = false; loadWorkspaceRoster(); } 
+            else { alert("Error: " + r.message); }
+        } catch(e) { alert("Fail."); } 
+    }
+
+    function toggleAllCbs(mCb) { document.querySelectorAll('.row-cb').forEach(cb => cb.checked = mCb.checked); }
+    async function fetchFilteredDrivers() {
+        const cont = document.getElementById('verifiedRowsContainer'); const ctrls = document.getElementById('batchActionControls');
+        const d = document.getElementById('filterDate').value; const s = document.getElementById('filterStatus').value;
+        cont.innerHTML = "<tr><td colspan='5' style='text-align:center;'>Querying...</td></tr>"; ctrls.style.display = 'none'; currentFilteredIds = [];
+        try {
+            const list = await getFilteredList(d, s); cont.innerHTML = "";
+            if(list.length === 0) return cont.innerHTML = `<tr><td colspan='5' style='text-align:center;'>None found.</td></tr>`;
+            
+            list.forEach(dr => { 
+                currentFilteredIds.push(dr.id); 
+                let h = s === 'Verified' || s === 'Card Generated' ? `<span class="status-pill pill-pass">Yes</span>` : `<span class="status-pill pill-pending">No</span>`; 
+                let m = s === 'Failed D/A' ? `<span class="status-pill pill-fail">Failed</span>` : (s === 'Verified' || s === 'Card Generated' ? `<span class="status-pill pill-pass">Passed</span>` : `<span class="status-pill pill-pending">Pending</span>`); 
+                cont.innerHTML += `<tr><td style="text-align:center;"><input type="checkbox" class="cb-action row-cb" value="${dr.id}"></td><td style="font-family:monospace; font-weight:800; color:var(--primary-blue);">${dr.id}</td><td style="font-weight:700;">${dr.name}</td><td>${m}</td><td>${h}</td></tr>`; 
+            });
+            ctrls.style.display = 'flex';
+        } catch(e) { cont.innerHTML = "<tr><td colspan='5' style='text-align:center; color:red;'>Error.</td></tr>"; }
+    }
+
+    function reprintSelected() { 
+        const cbs = document.querySelectorAll('.row-cb:checked'); 
+        if(cbs.length===0) return; 
+        window.open(`print.html?ids=${encodeURIComponent(Array.from(cbs).map(cb=>cb.value).join(","))}&role=admin&uid=${currentAdminUid}`, "_blank"); 
+    }
+    function openPrintBatch() { 
+        if(currentFilteredIds.length>0) window.open(`print.html?ids=${encodeURIComponent(currentFilteredIds.join(","))}&role=admin&uid=${currentAdminUid}`, "_blank"); 
+    }
+    
+    async function markSelectedCheckboxes() { 
+        const cbs = document.querySelectorAll('.row-cb:checked'); if(cbs.length===0) return; 
+        const ids = Array.from(cbs).map(cb=>cb.value); 
+        if(confirm(`Mark ${ids.length} Generated?`)) { 
+            const r = await markCardsGenerated(ids, currentAdminUid); 
+            if(r.result==='success') fetchFilteredDrivers(); 
+        } 
+    }
+
     async function fetchAndDrawAnalytics() {
-        const start = document.getElementById('chartStartDate').value; const end = document.getElementById('chartEndDate').value;
-        const loader = document.getElementById('analyticsLoading'); const failContainer = document.getElementById('dynamicFailuresContainer');
-        if(!start || !end) return alert("Select both dates."); loader.style.display = "block";
-        failContainer.innerHTML = ""; // Clear old boxes
-        
+        const start = document.getElementById('chartStartDate').value; const end = document.getElementById('chartEndDate').value; const loader = document.getElementById('analyticsLoading');
+        if(!start || !end) return alert("Select dates."); loader.style.display = "block";
         try {
             const res = await getAnalytics(start, end); loader.style.display = "none";
             if (res.result === 'success') {
-                const data = res.data;
-                document.getElementById('stat_total').innerText = data.total; document.getElementById('stat_new').innerText = data.newCount;
-                document.getElementById('stat_renew').innerText = data.renewalCount; document.getElementById('stat_booked').innerText = data.booked;
-                document.getElementById('stat_verified').innerText = data.verified; document.getElementById('stat_generated').innerText = data.generated;
-                
-                // Draw Dynamic Failure Boxes Safely
-                if (Object.keys(res.failures).length === 0) {
-                    failContainer.innerHTML = "<p style='color: var(--success); font-weight: 800;'>✅ Zero D/A failures in this period.</p>";
-                } else {
-                    for (const [reason, count] of Object.entries(res.failures)) {
-                        const box = document.createElement('div');
-                        box.style.cssText = "background: #fef2f2; padding: 20px; border-radius: 8px; border-left: 5px solid #ef4444;";
-                        box.innerHTML = `<h3 style="margin: 0; color: #b91c1c; font-size: 14px;">${reason.toUpperCase()}</h3><p style="margin: 5px 0 0 0; font-size: 28px; font-weight: 900;">${count}</p>`;
-                        failContainer.appendChild(box);
-                    }
-                }
-
-                const ctx = document.getElementById('inductionPieChart').getContext('2d');
-                if (myPieChart !== null) { myPieChart.destroy(); }
-                myPieChart = new Chart(ctx, { type: 'doughnut', data: { labels: ['Pending', 'Verified', 'Generated'], datasets: [{ data: [data.booked, data.verified, data.generated], backgroundColor: ['#facc15', '#22c55e', '#3b82f6'], borderWidth: 2, borderColor: '#ffffff' }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom' } } } });
-            } else { alert("Analytics failed."); }
-        } catch (error) { loader.style.display = "none"; alert("Connection error."); }
+                const d = res.data;
+                document.getElementById('stat_total').innerText = d.total; document.getElementById('stat_new').innerText = d.newCount; document.getElementById('stat_renew').innerText = d.renewalCount; document.getElementById('stat_booked').innerText = d.booked; document.getElementById('stat_verified').innerText = d.verified; document.getElementById('stat_generated').innerText = d.generated; document.getElementById('stat_failed').innerText = d.failedCount;
+                const ctx = document.getElementById('inductionPieChart').getContext('2d'); if (myPieChart) myPieChart.destroy();
+                myPieChart = new Chart(ctx, { type: 'doughnut', data: { labels: ['Pending', 'Verified', 'Generated', 'Failed'], datasets: [{ data: [d.booked, d.verified, d.generated, d.failedCount], backgroundColor: ['#facc15', '#22c55e', '#3b82f6', '#dc2626'], borderWidth: 2, borderColor: '#ffffff' }] }, options: { responsive: true, maintainAspectRatio: false } });
+            } else alert("Failed.");
+        } catch (e) { loader.style.display = "none"; alert("Error."); }
     }
 
-    // --- THE NEW MODULAR SETTINGS MANAGER ---
-    function toggleTimeDropdown() {
-        const action = document.getElementById('uiBlockAction').value;
-        document.getElementById('uiTimeDiv').style.display = action === 'block_time' ? 'block' : 'none';
-    }
-
-    async function dbUpsert(key, value) {
-        const { error } = await window.supabaseClient.from('system_settings').upsert({ setting_key: key, setting_value: value }, { onConflict: 'setting_key' });
-        if (error) throw error;
-    }
-
+    function toggleTimeDropdown() { document.getElementById('uiTimeDiv').style.display = document.getElementById('uiBlockAction').value === 'block_time' ? 'block' : 'none'; }
+    
     async function refreshSettingsUI() {
         try {
             globalSettingsState = await getSystemSettings();
             document.getElementById('uiGlobalLimit').value = globalSettingsState.capacity;
             
-            // Render Block Chips
-            const blocksDiv = document.getElementById('uiActiveBlocks');
-            blocksDiv.innerHTML = "";
-            let blockData = [...globalSettingsState.blockedDates, ...globalSettingsState.blockedTimes];
-            if (blockData.length === 0) blocksDiv.innerHTML = "<span style='font-size:12px; color:#94a3b8;'>No active blocks.</span>";
-            blockData.forEach(item => {
-                blocksDiv.innerHTML += `<div class="setting-chip">🛑 ${item} <span class="chip-delete" onclick="removeSetting('block', '${item}')">✖</span></div>`;
-            });
-
-            // Render Override Chips
-            const overDiv = document.getElementById('uiActiveOverrides');
-            overDiv.innerHTML = "";
+            const bDiv = document.getElementById('uiActiveBlocks'); bDiv.innerHTML = "";
+            let bData = [...globalSettingsState.blockedDates, ...globalSettingsState.blockedTimes];
+            if (bData.length === 0) bDiv.innerHTML = "<span style='font-size:12px; color:#94a3b8;'>No blocks.</span>";
+            else {
+                bData.forEach(i => {
+                    if(i.includes('|')) bDiv.innerHTML += `<div class="setting-chip">🛑 ${i} <span class="chip-delete" onclick="removeSystemSetting('block_time', '${i}', '${currentAdminUid}').then(refreshSettingsUI)">✖</span></div>`;
+                    else bDiv.innerHTML += `<div class="setting-chip">🛑 ${i} <span class="chip-delete" onclick="removeSystemSetting('block_date', '${i}', '${currentAdminUid}').then(refreshSettingsUI)">✖</span></div>`;
+                });
+            }
+            
+            const oDiv = document.getElementById('uiActiveOverrides'); oDiv.innerHTML = "";
             const keys = Object.keys(globalSettingsState.customCapacities);
-            if (keys.length === 0) overDiv.innerHTML = "<span style='font-size:12px; color:#94a3b8;'>No active overrides.</span>";
-            keys.forEach(date => {
-                const limit = globalSettingsState.customCapacities[date];
-                overDiv.innerHTML += `<div class="setting-chip" style="background:#e0e7ff; border-color:#c7d2fe;">🗓️ ${date} (Limit: ${limit}) <span class="chip-delete" onclick="removeSetting('custom', '${date}')">✖</span></div>`;
-            });
-        } catch(e) { console.error("Error loading settings UI"); }
-    }
-
-    async function saveGlobalLimit() {
-        const val = document.getElementById('uiGlobalLimit').value;
-        if(!val) return alert("Enter a limit.");
-        await dbUpsert('global_capacity', val);
-        refreshSettingsUI(); alert("Global Capacity Updated!");
-    }
-
-    async function executeBlockAction() {
-        const action = document.getElementById('uiBlockAction').value;
-        const date = document.getElementById('uiBlockDate').value;
-        const time = document.getElementById('uiBlockTime').value;
-        if(!date) return alert("Select a date.");
-
-        if (action === 'block_date') {
-            if (!globalSettingsState.blockedDates.includes(date)) {
-                globalSettingsState.blockedDates.push(date);
-                await dbUpsert('blocked_dates', globalSettingsState.blockedDates.join(','));
+            if (keys.length === 0) oDiv.innerHTML = "<span style='font-size:12px; color:#94a3b8;'>No overrides.</span>";
+            else {
+                keys.forEach(k => oDiv.innerHTML += `<div class="setting-chip" style="background:#e0e7ff; border-color:#c7d2fe;">🗓️ ${k} (${globalSettingsState.customCapacities[k]}) <span class="chip-delete" onclick="removeSystemSetting('custom_cap', '${k}', '${currentAdminUid}').then(refreshSettingsUI)">✖</span></div>`);
             }
-        } else if (action === 'block_time') {
-            const timeStr = `${date}|${time}`;
-            if (!globalSettingsState.blockedTimes.includes(timeStr)) {
-                globalSettingsState.blockedTimes.push(timeStr);
-                await dbUpsert('blocked_times', globalSettingsState.blockedTimes.join(','));
+
+            const { data: logData } = await window.supabaseClient.from('system_settings').select('setting_value').eq('setting_key', 'reschedule_list');
+            const logDiv = document.getElementById('uiRescheduleHistory');
+            logDiv.innerHTML = ""; window.currentHistoryList = [];
+            
+            if (logData && logData.length > 0 && logData[0].setting_value) {
+                const list = JSON.parse(logData[0].setting_value);
+                window.currentHistoryList = list;
+                list.forEach(item => {
+                    logDiv.innerHTML += `<tr>
+                        <td style="font-weight:700;">${item.name}</td>
+                        <td><span style="font-family:monospace; color:var(--primary-blue); font-weight:800;">${item.id}</span><br>${item.phone}</td>
+                        <td><span style="background:#fef3c7; color:#b45309; padding:4px 8px; border-radius:6px; font-weight:800; font-size:10px;">${item.newDate} | ${item.newTime || '9AM'}</span></td>
+                    </tr>`;
+                });
+            } else {
+                logDiv.innerHTML = `<tr><td colspan='3' style='text-align:center; color:#94a3b8; padding:20px;'>No displaced drivers on record.</td></tr>`;
             }
+        } catch(e) {}
+    }
+    
+    async function saveGlobalLimit() { 
+        const v = document.getElementById('uiGlobalLimit').value; 
+        if(v) { 
+            const btn = document.querySelector('button[onclick="saveGlobalLimit()"]');
+            btn.innerText = "..."; btn.disabled = true;
+            await safeUpsertSetting('global_capacity', v); 
+            await refreshSettingsUI(); 
+            btn.innerText = "Update"; btn.disabled = false;
+        } 
+    }
+    
+    async function attemptBlockAction() {
+        const action = document.getElementById('uiBlockAction').value; const date = document.getElementById('uiBlockDate').value; const time = document.getElementById('uiBlockTime').value;
+        if(!date) return alert("Select a date first.");
+        
+        const btn = document.querySelector('button[onclick="attemptBlockAction()"]');
+        const oldText = btn.innerText; btn.innerText = "Scanning Date..."; btn.disabled = true;
+
+        const res = await checkAffectedDrivers(action, date, time);
+        btn.innerText = oldText; btn.disabled = false;
+
+        if (res.result === 'error') return alert("Failed to scan date. Check your internet connection.");
+
+        if (res.data.length > 0) {
+            pendingPokaYokeTruckers = res.data; pendingBlockPayload = { action, date, time };
+            let tBody = document.getElementById('affectedTruckersBody'); tBody.innerHTML = "";
+            res.data.forEach(t => tBody.innerHTML += `<tr><td style="font-weight:700;">${t.name}</td><td style="font-family:monospace;">${t.id}</td><td style="color:var(--primary-blue); font-weight:800;">${t.phone}</td></tr>`);
+            document.getElementById('pokaYokeModal').style.display = 'flex';
+        } else {
+            await applyBlockOnly(action, date, time, currentAdminUid); refreshSettingsUI();
         }
-        refreshSettingsUI();
+    }
+    
+    function cancelPokaYoke() { document.getElementById('pokaYokeModal').style.display = 'none'; pendingPokaYokeTruckers = []; }
+    function copyPokaYokePhones() { navigator.clipboard.writeText(pendingPokaYokeTruckers.map(t => t.phone).filter(p => p && p !== 'No Phone').join(', ')); alert("Phones copied!"); }
+    function copyHistoryPhones() { if(window.currentHistoryList.length === 0) return; navigator.clipboard.writeText(window.currentHistoryList.map(t => t.phone).filter(p => p && p !== 'No Phone').join(', ')); alert("Phones copied!"); }
+
+    async function executeMassReschedule(force = false) {
+        const newD = document.getElementById('massRescheduleDate').value; 
+        if(!newD) return alert("Select a new date to move them to.");
+        
+        const today = new Date().toISOString().split('T')[0];
+        if (newD < today) return alert("Error: Cannot reschedule to a past date.");
+
+        const btn = document.querySelector('button[onclick="executeMassReschedule()"]');
+        btn.innerText = "Moving..."; btn.disabled = true;
+
+        const res = await executeBlockAndReschedule(pendingBlockPayload.action, pendingBlockPayload.date, pendingBlockPayload.time, newD, pendingPokaYokeTruckers, force, currentAdminUid);
+        btn.innerText = "Move Drivers"; btn.disabled = false;
+
+        if (res.result === 'overload') {
+            if (confirm(`⚠️ OVERLOAD WARNING: The target date (${newD}) has a limit of ${res.maxDaily} drivers.\n\nCurrently Booked: ${res.currentBooked}\nIncoming Shift: ${res.incoming}\n\nForce override the limit and push them in anyway?`)) { executeMassReschedule(true); }
+        } else if (res.result === 'error') { alert("Error: " + res.message);
+        } else {
+            document.getElementById('pokaYokeModal').style.display = 'none';
+            refreshSettingsUI(); alert(`Success! Relocated ${pendingPokaYokeTruckers.length} drivers.`);
+        }
     }
 
     async function executeCustomCapacity() {
-        const date = document.getElementById('uiCustomDate').value;
-        const limit = document.getElementById('uiCustomLimit').value;
-        if(!date || !limit) return alert("Provide both date and limit.");
-
-        globalSettingsState.customCapacities[date] = parseInt(limit);
+        const d = document.getElementById('uiCustomDate').value; const l = document.getElementById('uiCustomLimit').value; if(!d || !l) return;
+        const btn = document.querySelector('button[onclick="executeCustomCapacity()"]');
+        btn.innerText = "..."; btn.disabled = true;
         
-        let stringArray = [];
-        for (const [key, value] of Object.entries(globalSettingsState.customCapacities)) {
-            stringArray.push(`${key}:${value}`);
-        }
-        await dbUpsert('custom_capacities', stringArray.join(','));
-        refreshSettingsUI();
-    }
-
-    async function removeSetting(type, target) {
-        if (type === 'block') {
-            if (target.includes('|')) {
-                globalSettingsState.blockedTimes = globalSettingsState.blockedTimes.filter(t => t !== target);
-                await dbUpsert('blocked_times', globalSettingsState.blockedTimes.join(','));
-            } else {
-                globalSettingsState.blockedDates = globalSettingsState.blockedDates.filter(d => d !== target);
-                await dbUpsert('blocked_dates', globalSettingsState.blockedDates.join(','));
-            }
-        } else if (type === 'custom') {
-            delete globalSettingsState.customCapacities[target];
-            let stringArray = [];
-            for (const [key, value] of Object.entries(globalSettingsState.customCapacities)) { stringArray.push(`${key}:${value}`); }
-            await dbUpsert('custom_capacities', stringArray.join(','));
-        }
-        refreshSettingsUI();
+        globalSettingsState.customCapacities[d] = parseInt(l); let arr = []; 
+        for (const [k, v] of Object.entries(globalSettingsState.customCapacities)) { arr.push(`${k}:${v}`); }
+        
+        await safeUpsertSetting('custom_capacities', arr.join(',')); await refreshSettingsUI();
+        btn.innerText = "Set Capacity"; btn.disabled = false;
     }
 </script>
 </body>

@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WACT Pass Generator</title>
+    <style>
+        /* APM TERMINALS OFFICIAL BRAND COLOR PALETTE */
+        :root { 
+            --apmt-orange: #ff6441; /* RGB: 255/100/65 */
+            --apmt-dark-grey: #3c3c46; /* RGB: 60/60/70 */
+            --apmt-medium-grey: #5a6e7d; 
+            --apmt-neutral-grey: #aab4c3;
+            --apmt-light-grey: #e6ebf2; /* RGB: 230/235/242 */
+            --apmt-aqua-green: #0a6e82;
+            --apmt-soft-yellow: #f0be78;
+            --apmt-accent-blue: #42b0d5; /* Maersk blue */
+
+            /* Mapping your structure to the new brand colors */
+            --wact-navy: var(--apmt-dark-grey); 
+            --wact-orange: var(--apmt-orange); 
+            --wact-cream: var(--apmt-light-grey);
+            --text-dark: var(--apmt-dark-grey);
+
+            /* APMT Official Fonts */
+            --font-main: 'Maersk Text light', Arial, sans-serif;
+            --font-highlight: 'Maersk Text light Italics', Arial, sans-serif;
+        }
+        
+        /* UNTOUCHED: Page Structure & UI */
+        body { font-family: var(--font-main); background: #cbd5e1; margin: 0; padding: 20px; }
+        .no-print { background: white; padding: 15px 30px; border-radius: 12px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); margin-bottom: 30px; max-width: 1000px; margin-left: auto; margin-right: auto;}
+        
+        .action-buttons { display: flex; gap: 10px; }
+        .btn-print { background: var(--wact-navy); color: white; border: none; padding: 12px 24px; border-radius: 8px; font-weight: 800; cursor: pointer; text-transform: uppercase; font-size: 14px; }
+        .btn-success { background: #16a34a; color: white; border: none; padding: 12px 24px; border-radius: 8px; font-weight: 800; cursor: pointer; text-transform: uppercase; font-size: 14px; display: none; }
+        
+        #print-container { display: flex; flex-wrap: wrap; gap: 20px; max-width: 1000px; margin: 0 auto; justify-content: center;}
+        .card-pair { display: flex; gap: 15px; page-break-inside: avoid; }
+        
+        /* THE NEW CR80 ID CARD CSS */
+        .id-card { 
+            width: 2.125in; height: 3.375in; 
+            min-width: 2.125in; min-height: 3.375in;
+            background-color: var(--wact-cream); 
+            border: 1px solid #d1d5db; border-radius: 10px; 
+            overflow: hidden; position: relative; box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            box-sizing: border-box;
+            display: flex; flex-direction: column;
+        }
+
+        /* --- FRONT CARD SPECIFICS --- */
+        
+        /* The 3 Watermarks Container */
+        .front-watermarks-container {
+            position: absolute;
+            top: 45%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 4px;
+            width: 90%;
+            opacity: 0.15;
+            z-index: 1;
+            pointer-events: none;
+        }
+        .front-watermarks-container img {
+            width: 60px; /* Sized to fit 3 perfectly across a 2-inch card */
+            height: auto;
+            object-fit: contain;
+        }
+
+        .front-top { display: flex; align-items: flex-start; justify-content: space-between; padding: 12px 12px 0px; position: relative; z-index: 2; }
+        .top-left-group { display: flex; align-items: center; gap: 8px; }
+        
+        /* Ensures both APMT and WACT logos remain exactly equal in size */
+        
+        .front-logo { width: 70px; height: 70px; flex-shrink: 0; object-fit: contain; margin-top: -25px; }
+
+        .back-logo { width: 37px; height: 37px; flex-shrink: 0; object-fit: contain; margin-top: 0px; margin-left: -10px }
+        
+        .front-top-text { display: flex; flex-direction: column; text-align: left; }
+        .front-title { color: var(--wact-navy); font-size: 9px; font-weight: 800; text-align: center; margin: 4px 0 0 0; line-height: 1.1; letter-spacing: 0.5px; white-space: nowrap; position: relative}
+        .front-subtitle { color: var(--wact-orange); font-family: var(--font-highlight); font-style: italic; font-size: 7px; font-weight: 800; margin: 2px 0 0 0; text-transform: uppercase; }
+
+        .profile-container { text-align: center; position: relative; z-index: 2; margin-top: -15px; }
+        .profile-pic { width: 85px; height: 85px; border-radius: 50%; border: 2.5px solid var(--wact-orange); object-fit: cover; background-color: #ccc; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+
+        .personal-info { text-align: center; padding: 0px 10px; margin-top: 5px; position: relative; z-index: 2; }
+        .personal-info h2 { color: var(--wact-navy); font-size: 13px; font-weight: 900; margin: 3px 0 1px 0; text-transform: uppercase; }
+        .personal-info h3 { color: var(--wact-orange); font-size: 8.5px; margin: 0; text-transform: uppercase; }
+        .personal-info p { color: var(--wact-navy); font-size: 7.5px; font-weight: 800; margin: 1px 0 0 0; }
+
+        .front-bottom { background-color: var(--wact-orange); height: 90px; min-height: 90px; max-height: 90px; position: relative; display: flex; flex-direction: column; justify-content: flex-end; padding: 5px 12px 10px; margin-top: auto; z-index: 2;}
+        .wave-svg { position: absolute; top: -25px; left: 0; width: 100%; height: 38px; z-index: 1; }
+
+        .id-details { position: relative; z-index: 2; color: var(--wact-navy); font-weight: 700; font-size: 7px; display: flex; flex-direction: column; gap: 6px; margin-bottom: 10px; }
+        .detail-row { display: flex; align-items: center; border-bottom: 0.5px solid rgba(60, 60, 70, 0.2); padding-bottom: 3px; }
+        .detail-row:last-child { border-bottom: none; }
+        .detail-icon { width: 12px; height: 12px; background-color: var(--wact-navy); color: var(--wact-orange); display: flex; justify-content: center; align-items: center; border-radius: 2px; margin-right: 8px; }
+        .detail-icon svg { width: 8px; height: 8px; fill: currentColor; }
+        .detail-label { width: 45px; white-space: nowrap; }
+        .detail-value { color: white; font-weight: 700; letter-spacing: 0.5px; white-space: nowrap; }
+
+        .footer-text { text-align: center; color: white; font-size: 6px; font-weight: 700; letter-spacing: 0.5px; position: relative; z-index: 2; }
+
+        /* --- BACK CARD SPECIFICS --- */
+
+        .back-top { background-color: var(--wact-orange); padding: 12px; display: flex; align-items: flex-start; justify-content: space-between; color: white; height: 55px; box-sizing: border-box; overflow: hidden; }
+        .back-top-text { text-align: right; flex-grow: 1; padding: 0 5px; margin-left: -62px; margin-top: 8px; margin-right: -15px;}
+        .back-top-text h2 { margin: 0 0 3px 0; font-size: 9px; font-weight: 800; line-height: 1.1; letter-spacing: 0.2px; }
+        .back-top-text p { margin: 0; font-size: 5.5px; font-weight: 600; }
+
+        .back-middle { padding: 10px; flex-grow: 1; font-size: 6.5px; color: var(--text-dark); line-height: 1.6; position: relative; display: flex; flex-direction: column; justify-content: center; margin-top:-15px;}
+        
+        .watermark-img { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 130px; height: 130px; border-radius: 50%; object-fit: cover; opacity: 0.07; filter: grayscale(100%); z-index: 0; pointer-events: none; }
+        .back-middle-content { position: relative; z-index: 1; }
+        .back-middle-content > p { margin-top: 0; font-weight: 600; margin-bottom: 10px; text-align: justify;}
+
+        .contacts-box, .reward-box { border: 1px solid var(--wact-orange); border-radius: 4px; padding: 6px; margin-bottom: 8px; background-color: rgba(255, 100, 65, 0.05); }
+        .contacts-box h4 { color: var(--wact-orange); margin: 0 0 4px 0; text-align: center; font-size: 7px; }
+        .contact-grid { display: grid; grid-template-columns: 55px 1fr; gap: 3px; font-weight: 700; }
+        .reward-box { font-family: var(--font-highlight); font-style: italic; text-align: center; font-weight: 800; color: var(--wact-navy); background-color: var(--apmt-soft-yellow); border-color: var(--wact-orange); font-size: 6px;}
+
+        /* --- SPLIT BOTTOM FOOTER --- */
+        .back-bottom { background-color: var(--wact-navy); padding: 8px; color: white; position: relative; z-index: 2; height: 60px; min-height: 80px; max-height: 60px; display: flex; align-items: center; box-sizing: border-box; overflow: hidden; }
+
+        .scan-area-split { display: flex; align-items: center; width: 100%; height: 100%; }
+        
+        .left-col { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+        .divider { width: 1px; height: 45px; background-color: rgba(255, 255, 255, 0.15); margin: 0 8px; }
+        .right-col { flex: 1.3; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+
+        .qr-bg { background: white; padding: 2px; border-radius: 4px; display: inline-block; line-height: 0; }
+        .qr-code { width: 30px; height: 30px; display: block; object-fit: contain; }
+        .qr-label { font-size: 5px; font-weight: 700; color: #ddd; margin-top: 3px; letter-spacing: 0.5px; }
+        .user-name { font-size: 6.5px; font-weight: 800; color: white; text-align: center; line-height: 1.1; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; white-space: normal; overflow: hidden; width: 100%; }
+        .name-wrapper { width: 100%; display: flex; justify-content: center; height: 15px; overflow: hidden; margin-top: 2px; align-items: center;}
+        .user-phone { font-size: 5.5px; color: #aaa; margin-top: 2px; font-weight: 600; }
+
+        .serial-label { font-size: 5.5px; font-weight: 700; color: #ddd; letter-spacing: 0.5px; margin-bottom: 4px; }
+        .barcode { width: 100%; background: white; border-radius: 4px; padding: 3px; box-sizing: border-box; text-align: center; height: 26px; overflow: hidden; display: flex; flex-direction: column; justify-content: center; }
+        .barcode-img-dyn { width: 100%; height: 11px; display: block; object-fit: fill; flex-shrink: 0; }
+        .barcode-text { color: var(--wact-navy); font-size: 5.5px; font-weight: 800; margin-top: 2px; letter-spacing: 0.2px; font-family: monospace; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+        .expiry-block { display: flex; align-items: center; margin-top: 5px; gap: 4px; width: 100%; justify-content: center;}
+        .expiry-icon svg { width: 12px; height: 12px; fill: var(--wact-orange); }
+        .expiry-text { font-size: 6px; color: #ccc; font-weight: 600; display: flex; gap: 2px; align-items: center; }
+        .expiry-date { color: var(--wact-orange); font-weight: 800; font-size: 5.5px; }
+
+        /* Printer Rules */
+        @media print {
+            body { background: white; padding: 0; }
+            .no-print { display: none !important; }
+            .id-card { box-shadow: none !important; border: 1px dashed #94a3b8 !important; border-radius: 0 !important; }
+            #print-container { display: flex; flex-wrap: wrap; gap: 10px; max-width: 100%; justify-content: flex-start;}
+            * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="no-print">
+        <div>
+            <h2 style="margin: 0; color: var(--wact-navy);" id="status-text">🖨️ Generating Induction Cards...</h2>
+            <p style="margin: 4px 0 0 0; color: #64748b; font-size: 13px; font-weight: 600;"><b>PRINT INSTRUCTIONS:</b> Set Layout to <b>Portrait</b>. Ensure <b>Scale</b> is set to <b>Default</b>.</p>
+        </div>
+        <div class="action-buttons">
+            <button id="btnFinish" class="btn-success" onclick="executeDatabaseUpdate()">✅ Mark as Generated</button>
+            <button class="btn-print" onclick="window.print()">Print Batch</button>
+        </div>
+    </div>
+
+    <div id="print-container"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="code.js"></script>
+<script>
+    let globalPrintIds = [];
+    let globalAdminUid = "";
+
+    async function initializePrinter() {
+        const urlParams = new URLSearchParams(window.location.search);
+        const idsString = urlParams.get('ids');
+        const role = urlParams.get('role');
+        globalAdminUid = urlParams.get('uid') || "UNKNOWN";
+        
+        if (!idsString) return document.getElementById('status-text').innerText = "Error: No Induction IDs provided in URL.";
+        
+        globalPrintIds = idsString.split(',').map(id => id.trim());
+        document.getElementById('status-text').innerText = `Spooling ${globalPrintIds.length} cards...`;
+
+        if (role !== 'driver') {
+            document.getElementById('btnFinish').style.display = 'inline-block';
+        }
+
+        try {
+            const { data, error } = await window.supabaseClient.from('drivers').select('*').in('induction_number', globalPrintIds);
+            if (error) throw error;
+
+            const container = document.getElementById('print-container');
+            container.innerHTML = "";
+            const portalUrl = "https://wactexternaltruckersinduction.github.io/homepage";
+
+            data.forEach(driver => {
+                let expStr = "Pending";
+                if (driver.induction_expiration) {
+                    expStr = new Date(driver.induction_expiration).toLocaleDateString('en-GB');
+                }
+
+                const rawId = driver.induction_number || 'UNKNOWN';
+                const fName = driver.full_name || 'UNKNOWN';
+                const fCompany = driver.company_name || 'UNKNOWN COMPANY';
+                const fPhone = driver.mobile_number || 'N/A';
+                const base64Photo = driver.passport_photo || 'https://via.placeholder.com/80x80?text=NO+PHOTO';
+                
+                // Dynamic API Calls for Barcode and QR Code
+                const qrImageUrl = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&margin=0&data=${encodeURIComponent(portalUrl)}`;
+                const barcodeUrl = `https://bwipjs-api.metafloor.com/?bcid=code128&text=${encodeURIComponent(rawId.replace(/\//g, ''))}&scale=2&height=10&includetext=false`;
+
+                container.innerHTML += `
+                    <div class="card-pair">
+                        
+                        <!-- FRONT CARD -->
+                        <div class="id-card">
+                            
+                            <!-- The 3 Watermarks Container -->
+                            <div class="front-watermarks-container">
+                                <img src="https://vokpqpwwdpclxnqkhsry.supabase.co/storage/v1/object/public/Logo's/MHC%20Crane.jpeg" alt="Crane">
+                                <img src="https://vokpqpwwdpclxnqkhsry.supabase.co/storage/v1/object/public/Logo's/Truck.jpeg" alt="Truck">
+                                <img src="https://vokpqpwwdpclxnqkhsry.supabase.co/storage/v1/object/public/Logo's/Vessel.jpeg" alt="Vessel">
+                            </div>
+
+                            <div class="front-top">
+                                <!-- Top Left: APMT Logo & Text -->
+                                <div class="top-left-group">
+                                    <img class="front-logo" src="https://gatepass.bahrain.apmterminals.com/theme/img/logo.png?ver=2022.11.12" alt="APMT Logo">
+                                    <div class="front-top-text">
+                                        
+                                        
+                                    </div>
+                                </div>
+                                <!-- Top Right: WACT Logo -->
+                                <img class="front-logo" src="https://vokpqpwwdpclxnqkhsry.supabase.co/storage/v1/object/public/Logo's/2309_Logo%20WACT_Positive_opt1.svg" alt="WACT Logo">
+                            </div>
+
+                            <div class="profile-container">
+                                <img class="profile-pic" src="${base64Photo}" alt="Profile Picture">
+                            </div>
+
+                            <div class="personal-info">
+                                <h2>${fName}</h2>
+                                <h3>${fCompany}</h3>
+                                <p>EXTERNAL TRUCK DRIVER</p>
+                            </div>
+
+                            <div class="front-bottom">
+                                <svg class="wave-svg" viewBox="0 0 380 80" preserveAspectRatio="none">
+                                    <path d="M0,40 C100,80 250,15 380,55 L380,80 L0,80 Z" fill="var(--wact-orange)" />
+                                    <path d="M0,30 C120,75 260,0 380,30 L380,55 C250,15 100,80 0,40 Z" fill="var(--wact-navy)" />
+                                    <path d="M0,23 C130,65 270,-10 380,23 L380,30 C260,0 120,75 0,30 Z" fill="rgba(60, 60, 70, 0.1)" />
+                                </svg>
+                                
+                                <div class="id-details">
+                                    <div class="detail-row">
+                                        <div class="detail-icon">
+                                            <svg viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-7 3c1.93 0 3.5 1.57 3.5 3.5S13.93 13 12 13s-3.5-1.57-3.5-3.5S10.07 6 12 6zm5 11H7v-1.5c0-1.67 3.33-2.5 5-2.5s5 .83 5 2.5V17z"/></svg>
+                                        </div>
+                                        <span class="detail-label">ID NO:</span>
+                                        <span class="detail-value">${rawId}</span>
+                                    </div>
+                                    <div class="detail-row">
+                                        <div class="detail-icon">
+                                            <svg viewBox="0 0 24 24"><path d="M3 5v14h18V5H3zm16 12H5V7h14v10zm-2-2.5l-4-3-4 3V9h8v5.5z"/></svg>
+                                        </div>
+                                        <span class="detail-label">LICENSE:</span>
+                                        <span class="detail-value">${driver.license_number || 'N/A'}</span>
+                                    </div>
+                                    <div class="detail-row">
+                                        <div class="detail-icon">
+                                            <svg viewBox="0 0 24 24"><path d="M19 3h-1V1h-2v2H8V1H6v2H5c-1.11 0-1.99.9-1.99 2L3 19c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V8h14v11zM7 10h5v5H7z"/></svg>
+                                        </div>
+                                        <span class="detail-label" style="white-space: normal; line-height: 1.1;">VALID<br>THRU:</span>
+
+                                        <span class="detail-value">${expStr}</span>
+                                    </div>
+                                </div>
+                                <div class="footer-text">PROPERTY OF APM TERMINALS</div>
+                            </div>
+                        </div>
+
+                        <!-- BACK CARD -->
+                        <div class="id-card">
+                            <div class="back-top">
+                                <!-- Top Left: APMT Logo -->
+                                <img class="back-logo" src="https://vokpqpwwdpclxnqkhsry.supabase.co/storage/v1/object/public/Logo's/wact-logo-square-400-ext.png-2.avif" alt="APMT Logo">
+                                <!-- Center: Text -->
+                                <div class="back-top-text">
+                                    <h2 style="margin: 0; font-size: 8.5px; font-weight: 800; line-height: 1.2; letter-spacing: 0.3px;">WEST AFRICA CONTAINER TERMINAL</h2>
+                                    <p style="margin: 2px 0 0 0; font-size: 7px; font-weight: 600; opacity: 0.95; ">Onne Port Complex, FOT, Onne, Rivers</p>
+                                </div>
+                                
+                            </div>
+
+                            <div class="back-middle">
+                                <!-- Dynamic Back Watermark -->
+                                <img class="watermark-img" src="${base64Photo}" alt="Watermark">
+
+                                <div class="back-middle-content">
+                                    <p>This card is a property of the company. If found, please return to the Security Department, West Africa Container Terminal, Onne Port Complex, Federal Ocean Terminal, Onne, Rivers State.</p>
+                                    
+                                    <div class="contacts-box">
+                                        <h4>CONTACTS</h4>
+                                        <div class="contact-grid">
+                                            <span>Operations:</span> <span>09120399575</span>
+                                            <span>Safety:</span> <span>08129915418</span>
+                                            <span>Security:</span> <span>08129915428</span>
+                                        </div>
+                                    </div>
+
+                                    <div class="reward-box">
+                                        TOMORROW IS YOUR REWARD FOR<br>WORKING SAFE TODAY...!!!
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="back-bottom">
+                                <div class="scan-area-split">
+                                    <div class="left-col">
+                                        <div class="qr-bg">
+                                            <img class="qr-code" src="${qrImageUrl}" alt="QR Code">
+                                        </div>
+                                        <div class="qr-label">SCAN TO RENEW</div>
+                                        <div class="name-wrapper">
+                                        <div class="user-name">${fName}</div>
+                                        </div>
+                                        <div class="user-phone">Phone: ${fPhone}</div>
+                                    </div>
+
+                                    <div class="divider"></div>
+
+                                    <div class="right-col">
+                                        <div class="serial-label">SERIAL / UNIQUE NO.</div>
+                                        <div class="barcode">
+                                            <img class="barcode-img-dyn" src="${barcodeUrl}" alt="Barcode">
+                                            <div class="barcode-text">WACT${rawId.replace(/[^0-9]/g, '')}EXT2026</div>
+                                        </div>
+                                        <div class="expiry-block">
+                                            <div class="expiry-icon">
+                                                <svg viewBox="0 0 24 24"><path d="M19 3h-1V1h-2v2H8V1H6v2H5c-1.11 0-1.99.9-1.99 2L3 19c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V8h14v11zM7 10h5v5H7z"/></svg>
+                                            </div>
+                                            <div class="expiry-text">
+                                                This card expires on:
+                                                <span class="expiry-date">${expStr}</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+
+            document.getElementById('status-text').innerText = `Ready to print ${data.length} passes.`;
+
+        } catch (e) {
+            document.getElementById('status-text').innerText = `Database Error: ${e.message}`;
+        }
+    }
+
+    async function executeDatabaseUpdate() {
+        if(confirm("Are you sure you want to mark these cards as Generated? They will be removed from the active print queue.")) {
+            const btn = document.getElementById('btnFinish');
+            btn.innerText = "Updating..."; btn.disabled = true;
+
+            try {
+                const res = await window.markCardsGenerated(globalPrintIds, globalAdminUid);
+                
+                if(res.result === 'success') {
+                    alert("Success! Cards marked as generated.");
+                    btn.innerText = "Database Updated";
+                } else {
+                    throw new Error(res.message);
+                }
+            } catch (e) {
+                alert("Error updating database: " + e.message);
+                btn.innerText = "✅ Mark as Generated"; btn.disabled = false;
+            }
+        }
+    }
+
+    window.onload = initializePrinter;
+</script>
+</body>
+</html>

@@ -4,34 +4,30 @@
 const SUPABASE_URL = 'https://vokpqpwwdpclxnqkhsry.supabase.co'; 
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZva3BxcHd3ZHBjbHhucWtoc3J5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE4NDMxMTAsImV4cCI6MjA5NzQxOTExMH0.ZEPAUHGuWoKOUSPyPcMpAlydRgDQ0bf3-p6yKZvg8_8';
 
-// Safely bind to the window object to ensure global availability
 window.supabaseClient = null;
 if (typeof supabase !== 'undefined') {
     window.supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+}
+
+// Helper to guarantee connection
+function getDb() {
+    if (!window.supabaseClient) window.supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    return window.supabaseClient;
 }
 
 // ==========================================
 // 2. SYSTEM SETTINGS MANAGER
 // ==========================================
 async function getSystemSettings() {
-    const { data, error } = await supabaseClient.from('system_settings').select('*');
+    const { data, error } = await getDb().from('system_settings').select('*');
     if (error) return { capacity: 10, blockedDates: [], blockedTimes: [], customCapacities: {} };
 
     let settings = { capacity: 10, blockedDates: [], blockedTimes: [], customCapacities: {} };
     
     data.forEach(row => {
         if (row.setting_key === 'global_capacity') settings.capacity = parseInt(row.setting_value) || 10;
-        
-        if (row.setting_key === 'blocked_dates' && row.setting_value) {
-            settings.blockedDates = row.setting_value.split(',').map(d => d.trim());
-        }
-        
-        // NEW: Block specific times on specific dates (e.g., "2026-10-05|9AM")
-        if (row.setting_key === 'blocked_times' && row.setting_value) {
-            settings.blockedTimes = row.setting_value.split(',').map(d => d.trim());
-        }
-        
-        // FIXED: Granular custom capacities (e.g., "2026-10-05:15" or "2026-10-06|9AM:5")
+        if (row.setting_key === 'blocked_dates' && row.setting_value) settings.blockedDates = row.setting_value.split(',').map(d => d.trim());
+        if (row.setting_key === 'blocked_times' && row.setting_value) settings.blockedTimes = row.setting_value.split(',').map(d => d.trim());
         if (row.setting_key === 'custom_capacities' && row.setting_value) {
             row.setting_value.split(',').forEach(pair => {
                 let parts = pair.split(':');
@@ -40,6 +36,34 @@ async function getSystemSettings() {
         }
     });
     return settings;
+}
+
+async function safeUpsertSetting(key, val) {
+    const { data } = await getDb().from('system_settings').select('*').eq('setting_key', key);
+    if (data && data.length > 0) { await getDb().from('system_settings').update({ setting_value: val }).eq('setting_key', key); } 
+    else { await getDb().from('system_settings').insert([{ setting_key: key, setting_value: val }]); }
+}
+
+async function removeSystemSetting(type, target, adminUid) {
+    try {
+        const settings = await getSystemSettings();
+        if (type === 'block_time') {
+            const newArr = settings.blockedTimes.filter(t => t !== target);
+            await safeUpsertSetting('blocked_times', newArr.join(','));
+        } else if (type === 'block_date') {
+            const newArr = settings.blockedDates.filter(d => d !== target);
+            await safeUpsertSetting('blocked_dates', newArr.join(','));
+        } else if (type === 'custom_cap') {
+            delete settings.customCapacities[target];
+            let arr = [];
+            for (const [k, v] of Object.entries(settings.customCapacities)) { arr.push(`${k}:${v}`); }
+            await safeUpsertSetting('custom_capacities', arr.join(','));
+        }
+        await logAuditAction(adminUid, 'SETTINGS_REMOVED', target, `Removed ${type}`);
+        return { result: 'success' };
+    } catch (e) {
+        return { result: 'error', message: e.message };
+    }
 }
 
 // ==========================================
@@ -53,23 +77,14 @@ async function uploadToStorage(fileObj, inductionId, driverName, documentType) {
         for (let i = 0; i < byteCharacters.length; i++) byteNumbers[i] = byteCharacters.charCodeAt(i);
         const byteArray = new Uint8Array(byteNumbers);
         const blob = new Blob([byteArray], { type: fileObj.type });
-        
         const safeId = String(inductionId).replace(/\//g, '-');
         const safeName = String(driverName).replace(/[^a-zA-Z0-9]/g, '_');
-        
         const fileName = `${safeName}_${documentType}_${safeId}`;
-        
-        const { data, error } = await supabaseClient.storage.from('driver-documents')
-            .upload(fileName, blob, { upsert: true, contentType: fileObj.type });
-        
+        const { data, error } = await getDb().storage.from('driver-documents').upload(fileName, blob, { upsert: true, contentType: fileObj.type });
         if (error) throw error;
-        
-        const { data: publicUrlData } = supabaseClient.storage.from('driver-documents').getPublicUrl(data.path);
+        const { data: publicUrlData } = getDb().storage.from('driver-documents').getPublicUrl(data.path);
         return publicUrlData.publicUrl + "?t=" + Date.now(); 
-    } catch (err) {
-        console.error("Upload failed:", err.message);
-        return null;
-    }
+    } catch (err) { return null; }
 }
 
 // ==========================================
@@ -81,8 +96,8 @@ async function driverLogin(inductionNumber, password) {
         const inputPass = String(password).trim().toLowerCase();
 
         const [idSearch, licSearch] = await Promise.all([
-            supabaseClient.from('drivers').select('*').ilike('induction_number', `%${inputId}%`),
-            supabaseClient.from('drivers').select('*').ilike('license_number', `%${inputId}%`)
+            getDb().from('drivers').select('*').ilike('induction_number', `%${inputId}%`),
+            getDb().from('drivers').select('*').ilike('license_number', `%${inputId}%`)
         ]);
 
         if (idSearch.error) throw idSearch.error;
@@ -102,13 +117,7 @@ async function driverLogin(inductionNumber, password) {
 
         if (!validDriver) return { result: 'error', message: 'Incorrect License Password.' };
 
-        const { data: appts } = await supabaseClient
-            .from('appointments')
-            .select('*')
-            .eq('induction_number', validDriver.induction_number)
-            .order('created_at', { ascending: false })
-            .limit(1);
-            
+        const { data: appts } = await getDb().from('appointments').select('*').eq('induction_number', validDriver.induction_number).order('created_at', { ascending: false }).limit(1);
         const appt = (appts && appts.length > 0) ? appts[0] : null;
 
         let isSuspended = false;
@@ -124,53 +133,28 @@ async function driverLogin(inductionNumber, password) {
             const isPerm = activeBanReason.toLowerCase().includes('permanent');
 
             if (isPerm) {
-                isSuspended = true;
-                banEndDate.setFullYear(banEndDate.getFullYear() + 99); 
+                isSuspended = true; banEndDate.setFullYear(banEndDate.getFullYear() + 99); 
             } else if (match) {
-                const amount = parseInt(match[1]);
-                const unit = match[2].toLowerCase();
+                const amount = parseInt(match[1]); const unit = match[2].toLowerCase();
                 if (unit === 'week') banEndDate.setDate(banEndDate.getDate() + (amount * 7));
                 if (unit === 'month') banEndDate.setMonth(banEndDate.getMonth() + amount);
                 if (unit === 'year') banEndDate.setFullYear(banEndDate.getFullYear() + amount);
 
                 if (new Date() < banEndDate) {
-                    isSuspended = true;
-                    suspensionEnd = banEndDate.toISOString().split('T')[0];
+                    isSuspended = true; suspensionEnd = banEndDate.toISOString().split('T')[0];
                 } else {
-                    // 👉 CORRECTION 1: THE BAN HAS EXPIRED! AUTO-CLEAN THE DATABASE
-                    supabaseClient.from('appointments').update({
-                        medic_status: 'Pending', hse_status: 'Pending', appointment_status: 'Booked', reschedule_count: 0
-                    }).eq('induction_number', validDriver.induction_number).then();
-                    
-                    supabaseClient.from('drivers').update({ da_reason: "" })
-                    .eq('induction_number', validDriver.induction_number).then();
-                    
-                    activeBanReason = "";
-                    appt.appointment_status = "Booked"; // Update local memory so UI sees them as clean today
+                    await getDb().from('appointments').update({ medic_status: 'Pending', hse_status: 'Pending', appointment_status: 'Booked', reschedule_count: 0 }).eq('induction_number', validDriver.induction_number);
+                    activeBanReason = ""; appt.appointment_status = "Booked";
                 }
             }
         }
 
         const formattedProfile = {
-            fullName: validDriver.full_name, inductionNumber: validDriver.induction_number, licenseNumber: validDriver.license_number,
-            dob: validDriver.dob, passportPhoto: validDriver.passport_photo, mobileNumber: validDriver.mobile_number,
-            companyName: validDriver.company_name, address: validDriver.address, inductionExpiration: validDriver.induction_expiration,
-            licenseExpiration: validDriver.license_expiration, docLicense: validDriver.drivers_license,
-            docOther: validDriver.other_documents || validDriver.recommendation_letter 
+            fullName: validDriver.full_name, inductionNumber: validDriver.induction_number, licenseNumber: validDriver.license_number, dob: validDriver.dob, passportPhoto: validDriver.passport_photo, mobileNumber: validDriver.mobile_number, companyName: validDriver.company_name, address: validDriver.address, inductionExpiration: validDriver.induction_expiration, licenseExpiration: validDriver.license_expiration, docLicense: validDriver.drivers_license, docOther: validDriver.other_documents || validDriver.recommendation_letter 
         };
-
         const managementData = {
-            status: appt ? appt.appointment_status : "Booked", 
-            daReason: activeBanReason, 
-            currentAppointment: appt ? appt.appointment_date : "",
-            appointmentTime: appt ? appt.appointment_time : "",
-            appointmentId: appt ? appt.appointment_id : "",
-            hseDate: appt ? appt.hse_date : "", // 👉 CORRECTION 3: Pulling the HSE Date for the portal
-            rescheduleCount: appt ? appt.reschedule_count : 0,
-            isSuspended: isSuspended,
-            suspensionEnd: suspensionEnd
+            status: appt ? appt.appointment_status : "Booked", daReason: activeBanReason, currentAppointment: appt ? appt.appointment_date : "", appointmentTime: appt ? appt.appointment_time : "", appointmentId: appt ? appt.appointment_id : "", hseDate: appt ? appt.hse_date : "", rescheduleCount: appt ? appt.reschedule_count : 0, isSuspended: isSuspended, suspensionEnd: suspensionEnd
         };
-
         return { result: 'success', profile: formattedProfile, apptData: managementData };
     } catch (err) { return { result: 'error', message: 'Database connection failed.' }; }
 }
@@ -180,129 +164,61 @@ async function driverLogin(inductionNumber, password) {
 // ==========================================
 async function submitNew(payload) {
     try {
-        const expDate = new Date(payload.licenseExpDate);
-        const minValidDate = new Date();
-        minValidDate.setMonth(minValidDate.getMonth() + 3);
+        const expDate = new Date(payload.licenseExpDate); const minValidDate = new Date(); minValidDate.setMonth(minValidDate.getMonth() + 3);
         if (expDate < minValidDate) return { result: 'error', message: "Application Rejected: Driver's license must be valid for at least 3 months." };
 
         const cleanLicense = String(payload.licenseDetails).trim();
-        const { data: existingDriver, error: licErr } = await supabaseClient
-            .from('drivers')
-            .select('full_name, induction_number')
-            .ilike('license_number', cleanLicense)
-            .limit(1);
-
+        const { data: existingDriver, error: licErr } = await getDb().from('drivers').select('full_name, induction_number').ilike('license_number', cleanLicense).limit(1);
         if (licErr) throw licErr;
-        
-        if (existingDriver && existingDriver.length > 0) {
-            const recoveredName = existingDriver[0].full_name || "Unknown";
-            const recoveredId = existingDriver[0].induction_number || "Unknown";
-            return { 
-                result: 'error', 
-                message: `Driver already exists! Please login using the Renewal Portal to access details.\n\n👤 Name: ${recoveredName}\n🆔 Induction Number: ${recoveredId}` 
-            };
-        }
+        if (existingDriver && existingDriver.length > 0) return { result: 'error', message: `Driver already exists! Please login using the Renewal Portal.` };
 
         const currentYear = new Date().getFullYear();
-        let allDrivers = [];
-        let fetchMore = true;
-        let rangeStart = 0;
-        const step = 1000; 
+        let allDrivers = []; let fetchMore = true; let rangeStart = 0; const step = 1000; 
 
         while (fetchMore) {
-            const { data, error: numErr } = await supabaseClient
-                .from('drivers')
-                .select('induction_number')
-                .range(rangeStart, rangeStart + step - 1);
-                
+            const { data, error: numErr } = await getDb().from('drivers').select('induction_number').range(rangeStart, rangeStart + step - 1);
             if (numErr) throw numErr;
-            
-            if (data && data.length > 0) {
-                allDrivers.push(...data);
-                rangeStart += step;
-                if (data.length < step) fetchMore = false; 
-            } else {
-                fetchMore = false;
-            }
+            if (data && data.length > 0) { allDrivers.push(...data); rangeStart += step; if (data.length < step) fetchMore = false; } else { fetchMore = false; }
         }
 
         let highestNum = 1000; 
         if (allDrivers.length > 0) {
             for (let d of allDrivers) {
                 if (d.induction_number) {
-                    const parts = d.induction_number.split('/');
-                    const lastDigit = parseInt(parts[parts.length - 1]);
+                    const parts = d.induction_number.split('/'); const lastDigit = parseInt(parts[parts.length - 1]);
                     if (!isNaN(lastDigit) && lastDigit > highestNum) highestNum = lastDigit;
                 }
             }
         }
         
-        const nextNum = highestNum + 1;
-        const newID = `SI/EXT/${currentYear}/${nextNum.toString().padStart(4, '0')}`;
-
+        const nextNum = highestNum + 1; const newID = `SI/EXT/${currentYear}/${nextNum.toString().padStart(4, '0')}`;
         const passportUrl = await uploadToStorage(payload.passportPhoto, newID, payload.fullName, "Passport");
         const licenseUrl = await uploadToStorage(payload.driversLicense, newID, payload.fullName, "License");
         const otherUrl = await uploadToStorage(payload.otherDocuments || payload.recLetter, newID, payload.fullName, "OtherDoc");
 
-        const { error } = await supabaseClient.from('drivers').insert([{
-            induction_number: newID, full_name: payload.fullName, address: payload.address, state: payload.state,
-            lga: payload.lga, religion: payload.religion, mobile_number: payload.mobile, dob: payload.dob,
-            marital_status: payload.maritalStatus, license_number: cleanLicense, license_expiration: payload.licenseExpDate,
-            company_name: payload.companyName, ref1_name: payload.ref1Name, ref1_address: payload.ref1Address,
-            ref1_position: payload.ref1Position, ref1_duration: payload.ref1Duration, ref1_contact: payload.ref1Contact,
-            ref2_name: payload.ref2Name, passport_photo: passportUrl, drivers_license: licenseUrl, other_documents: otherUrl,
-            induction_status: 'Pending'
+        const { error } = await getDb().from('drivers').insert([{
+            induction_number: newID, full_name: payload.fullName, address: payload.address, state: payload.state, lga: payload.lga, religion: payload.religion, mobile_number: payload.mobile, dob: payload.dob, marital_status: payload.maritalStatus, license_number: cleanLicense, license_expiration: payload.licenseExpDate, company_name: payload.companyName, ref1_name: payload.ref1Name, ref1_address: payload.ref1Address, ref1_position: payload.ref1Position, ref1_duration: payload.ref1Duration, ref1_contact: payload.ref1Contact, ref2_name: payload.ref2Name, passport_photo: passportUrl, drivers_license: licenseUrl, other_documents: otherUrl, induction_status: 'Pending'
         }]);
 
         if (error) throw error;
-        
         return { result: 'success', inductionNumber: newID };
-    } catch (err) { 
-        if (err.message && err.message.includes('unique constraint')) {
-            return { result: 'error', message: 'System generated a duplicate ID. Please try submitting again.' };
-        }
-        return { result: 'error', message: err.message }; 
-    }
+    } catch (err) { return { result: 'error', message: err.message }; }
 }
 
 async function submitRenewal(payload) {
     try {
-        const expDate = new Date(payload.licenseExpiration);
-        const minValidDate = new Date();
-        minValidDate.setMonth(minValidDate.getMonth() + 3);
-        if (expDate < minValidDate) return { result: 'error', message: "Application Rejected: Driver's license must be valid for at least 3 months." };
+        const expDate = new Date(payload.licenseExpiration); const minValidDate = new Date(); minValidDate.setMonth(minValidDate.getMonth() + 3);
+        if (expDate < minValidDate) return { result: 'error', message: "Application Rejected: License must be valid for at least 3 months." };
 
-        let updates = { 
-            address: payload.address, mobile_number: payload.mobileNumber, company_name: payload.companyName, 
-            license_expiration: payload.licenseExpiration, seizure_reason: payload.seizedBanReason, induction_status: 'Pending'
-        };
-
+        let updates = { address: payload.address, mobile_number: payload.mobileNumber, company_name: payload.companyName, license_expiration: payload.licenseExpiration, seizure_reason: payload.seizedBanReason, induction_status: 'Pending' };
         if (payload.passportPhoto) updates.passport_photo = await uploadToStorage(payload.passportPhoto, payload.inductionNumber, payload.fullName, "Passport");
         if (payload.driversLicense) updates.drivers_license = await uploadToStorage(payload.driversLicense, payload.inductionNumber, payload.fullName, "License");
         if (payload.otherDocuments) updates.other_documents = await uploadToStorage(payload.otherDocuments, payload.inductionNumber, payload.fullName, "OtherDoc");
         
-        const { error: drvErr } = await supabaseClient.from('drivers').update(updates).eq('induction_number', payload.inductionNumber);
+        const { error: drvErr } = await getDb().from('drivers').update(updates).eq('induction_number', payload.inductionNumber);
         if (drvErr) throw drvErr;
-
         return { result: 'success' };
     } catch (err) { return { result: 'error', message: err.message }; }
-}
-
-async function quickUpdate(inductionNumber, driverName, fieldName, value, isFile = false) {
-    try {
-        let finalValue = value;
-        if (isFile && value) {
-            finalValue = await uploadToStorage(value, inductionNumber, driverName, fieldName);
-            if (!finalValue) throw new Error("File upload failed to connect to storage bucket.");
-        }
-        
-        const { error } = await supabaseClient.from('drivers').update({ [fieldName]: finalValue }).eq('induction_number', inductionNumber);
-        if (error) throw error;
-        
-        return { result: 'success' };
-    } catch (err) {
-        return { result: 'error', message: err.message };
-    }
 }
 
 // ==========================================
@@ -310,8 +226,7 @@ async function quickUpdate(inductionNumber, driverName, fieldName, value, isFile
 // ==========================================
 async function getCalendarData(searchId, type) {
     const settings = await getSystemSettings();
-    const { data: bookings } = await supabaseClient.from('appointments').select('appointment_date, appointment_time');
-    
+    const { data: bookings } = await getDb().from('appointments').select('appointment_date, appointment_time');
     let counts = {};
     if (bookings) {
         bookings.forEach(b => {
@@ -320,56 +235,54 @@ async function getCalendarData(searchId, type) {
         });
     }
 
+    const slotLimit = settings.capacity || 10;
+    settings.blockedDates.forEach(d => {
+        let dailyLimit = settings.customCapacities[d] || slotLimit;
+        counts[d] = { '9AM': dailyLimit, '11AM': dailyLimit, '2PM': dailyLimit };
+    });
+
+    settings.blockedTimes.forEach(bt => {
+        let parts = bt.split('|');
+        if (parts.length === 2) {
+            let d = parts[0]; let t = parts[1];
+            if (!counts[d]) counts[d] = { '9AM': 0, '11AM': 0, '2PM': 0 };
+            let dailyLimit = settings.customCapacities[d] || slotLimit;
+            counts[d][t] = dailyLimit; 
+        }
+    });
+
     let minDate = new Date(); minDate.setDate(minDate.getDate() + 1);
     let maxDate = new Date(); maxDate.setFullYear(maxDate.getFullYear() + 2);
-
-    // Pass settings perfectly to UI so the frontend can calculate exact slot availability
     return { allowedMin: minDate.toISOString().split('T')[0], allowedMax: maxDate.toISOString().split('T')[0], existingBookings: counts, settings: settings };
 }
 
 async function processBooking(payload) {
     try {
         const aptId = "APT-" + Math.floor(Math.random() * 100000);
-        
-        const { data: existing, error: fetchErr } = await supabaseClient.from('appointments').select('*').eq('induction_number', payload.id).limit(1);
+        const { data: existing, error: fetchErr } = await getDb().from('appointments').select('*').eq('induction_number', payload.id).limit(1);
         if (fetchErr) throw fetchErr;
         
         if (existing && existing.length > 0) {
             let currentCount = existing[0].reschedule_count || 0;
-            if (currentCount >= 2) return { result: 'error', message: 'Maximum of 2 reschedules allowed. Please contact HSE at 08129915418 to clear your record.' };
-            
-            const { error: updateErr } = await supabaseClient.from('appointments').update({
-                appointment_date: payload.date, appointment_time: payload.time || '9AM', 
-                appointment_status: 'Rescheduled', reschedule_count: currentCount + 1, appointment_id: aptId
-            }).eq('induction_number', payload.id);
-            if (updateErr) throw updateErr;
-            return { result: 'success', aptId: aptId, status: 'Rescheduled' };
+            if (currentCount >= 2) return { result: 'error', message: 'Maximum of 2 reschedules allowed.' };
+            const { error: updateErr } = await getDb().from('appointments').update({ appointment_date: payload.date, appointment_time: payload.time || '9AM', appointment_status: 'Rescheduled', reschedule_count: currentCount + 1, appointment_id: aptId }).eq('induction_number', payload.id);
+            if (updateErr) throw updateErr; return { result: 'success', aptId: aptId, status: 'Rescheduled' };
         } else {
-            const { error: insertErr } = await supabaseClient.from('appointments').insert([{
-                induction_number: payload.id, appointment_date: payload.date, appointment_time: payload.time || '9AM',
-                application_type: payload.type, appointment_status: 'Booked', appointment_id: aptId
-            }]);
-            if (insertErr) throw insertErr;
-            return { result: 'success', aptId: aptId, status: 'Booked' };
+            const { error: insertErr } = await getDb().from('appointments').insert([{ induction_number: payload.id, appointment_date: payload.date, appointment_time: payload.time || '9AM', application_type: payload.type, appointment_status: 'Booked', appointment_id: aptId }]);
+            if (insertErr) throw insertErr; return { result: 'success', aptId: aptId, status: 'Booked' };
         }
-    } catch (err) { 
-        console.error("Booking Error:", err.message); return { result: 'error', message: err.message }; 
-    }
+    } catch (err) { return { result: 'error', message: err.message }; }
 }
 
 // ==========================================
-// 7. ADMIN DASHBOARD ACTIONS 
+// 7. ADMIN DASHBOARD ACTIONS (WITH AUDIT)
 // ==========================================
-async function adminBulkVerify(idsString, passcode, attended, daPassed, reason) {
+async function adminBulkVerify(idsString, department, attended, daPassed, reason, adminUid) {
     const idList = idsString.split(/[,\n]+/).map(id => id.trim()).filter(id => id.length > 0);
     if (idList.length === 0) return { result: 'error', message: 'No IDs provided' };
     
     try {
-        const { data: currentAppts, error: fetchErr } = await supabaseClient
-            .from('appointments')
-            .select('induction_number, medic_status, hse_status')
-            .in('induction_number', idList);
-            
+        const { data: currentAppts, error: fetchErr } = await getDb().from('appointments').select('induction_number, medic_status, hse_status').in('induction_number', idList);
         if (fetchErr) throw fetchErr;
         
         const todayStr = new Date().toISOString().split('T')[0];
@@ -380,13 +293,10 @@ async function adminBulkVerify(idsString, passcode, attended, daPassed, reason) 
             let newMaster = 'Booked';
             let hseDateUpdate = null;
 
-            if (passcode === "MEDIC2026") {
-                newMedic = daPassed ? 'Passed' : `Failed: ${reason}`;
-            } else if (passcode === "HSE2026") {
-                if (attended) { newHse = 'Attended'; hseDateUpdate = todayStr; } // 👉 CORRECTION 3: Record Date
-            } else if (passcode === "MASTER2026" || passcode === "WACT2026") {
-                newMedic = 'Passed'; newHse = 'Attended'; hseDateUpdate = todayStr;
-            } else { throw new Error('Invalid Passcode'); }
+            if (department === "Medic") { newMedic = daPassed ? 'Passed' : `Failed: ${reason}`; } 
+            else if (department === "HSE") { if (attended) { newHse = 'Attended'; hseDateUpdate = todayStr; } } 
+            else if (department === "Master" || department === "Admin") { newMedic = 'Passed'; newHse = 'Attended'; hseDateUpdate = todayStr; } 
+            else { throw new Error('Invalid Department Permissions: ' + department); }
 
             if (newMedic.startsWith('Failed')) { newMaster = 'Failed D/A'; } 
             else if (newMedic === 'Passed' && newHse === 'Attended') { newMaster = 'Verified'; } 
@@ -395,73 +305,225 @@ async function adminBulkVerify(idsString, passcode, attended, daPassed, reason) 
             let updatePayload = { medic_status: newMedic, hse_status: newHse, appointment_status: newMaster };
             if (hseDateUpdate) updatePayload.hse_date = hseDateUpdate;
 
-            await supabaseClient.from('appointments').update(updatePayload).eq('induction_number', appt.induction_number);
+            const { error: updateErr } = await getDb().from('appointments').update(updatePayload).eq('induction_number', appt.induction_number);
+            if (updateErr) throw updateErr;
+
+            await logAuditAction(adminUid, 'STATUS_UPDATE', appt.induction_number, `Set to ${newMaster}. M:${newMedic} | H:${newHse}`);
         }
-        
         return { result: 'success', message: `Successfully updated ${idList.length} records.` };
     } catch (err) { return { result: 'error', message: err.message }; }
 }
 
-async function getAnalytics(startDate, endDate) {
-    try {
-        const { data, error } = await supabaseClient.from('appointments').select('appointment_status, application_type, medic_status').gte('appointment_date', startDate).lte('appointment_date', endDate);
-        if (error) throw error;
-        
-        let stats = { total: 0, booked: 0, verified: 0, generated: 0, newCount: 0, renewalCount: 0 };
-        let failureReasons = {}; // 👉 CORRECTION 4: Dynamic Failure Tally
-
-        data.forEach(row => {
-            stats.total++;
-            if (row.application_type === 'new') stats.newCount++;
-            if (row.application_type === 'renewal') stats.renewalCount++;
-            
-            const stat = row.appointment_status;
-            if (stat === 'Booked' || stat === 'Rescheduled') stats.booked++;
-            if (stat === 'Verified') stats.verified++;
-            if (stat === 'Card Generated') stats.generated++;
-            
-            // Tally the exact failure reasons
-            if (row.medic_status && row.medic_status.startsWith('Failed:')) {
-                const cleanReason = row.medic_status.replace('Failed: ', '').split(' (')[0].trim(); // Grabs "Positive to Alcohol"
-                failureReasons[cleanReason] = (failureReasons[cleanReason] || 0) + 1;
-            }
-        });
-        
-        return { result: 'success', data: stats, failures: failureReasons };
-    } catch (err) { return { result: 'error', message: err.message }; }
-}
-
-async function markCardsGenerated(idsList) {
+async function markCardsGenerated(idsList, adminUid) {
     try {
         const expirationDate = new Date(); expirationDate.setFullYear(expirationDate.getFullYear() + 1);
-        await supabaseClient.from('appointments').update({ appointment_status: 'Card Generated' }).in('induction_number', idsList);
-        await supabaseClient.from('drivers').update({ induction_expiration: expirationDate.toISOString().split('T')[0], induction_status: 'Card Generated' }).in('induction_number', idsList);
+        await getDb().from('appointments').update({ appointment_status: 'Card Generated' }).in('induction_number', idsList);
+        await getDb().from('drivers').update({ induction_expiration: expirationDate.toISOString().split('T')[0], induction_status: 'Card Generated' }).in('induction_number', idsList);
+        
+        await logAuditAction(adminUid, 'CARDS_GENERATED', idsList.length + ' Cards', `Generated passes for: ${idsList.join(', ')}`);
         return { result: 'success', count: idsList.length };
     } catch (err) { return { result: 'error', message: err.message }; }
 }
 
 async function getFilteredList(date, status) {
     try {
-        const { data, error } = await supabaseClient.from('appointments').select('induction_number, appointment_status, application_type, drivers (full_name, company_name)').eq('appointment_status', status).eq('appointment_date', date);
+        let query = getDb().from('appointments').select('induction_number, appointment_status, application_type, medic_status, hse_status').eq('appointment_date', date);
+        if (status !== 'ALL') query = query.eq('appointment_status', status);
+        
+        const { data: appts, error } = await query;
         if (error) throw error;
-        return data.map(row => ({ id: row.induction_number, name: row.drivers.full_name, company: row.drivers.company_name, type: row.application_type === 'new' ? 'New' : 'Renewal' }));
+        if (!appts || appts.length === 0) return [];
+        
+        const ids = appts.map(a => a.induction_number);
+        const { data: drvs } = await getDb().from('drivers').select('induction_number, full_name, company_name').in('induction_number', ids);
+        
+        return appts.map(a => {
+            const d = (drvs || []).find(x => x.induction_number === a.induction_number) || {};
+            return { id: a.induction_number, name: d.full_name || 'Unknown', company: d.company_name || 'Unknown', type: a.application_type === 'new' ? 'New' : 'Renewal', rawStatus: a.appointment_status, rawMedic: a.medic_status, rawHse: a.hse_status };
+        });
     } catch (err) { return []; }
 }
 
 async function getAnalytics(startDate, endDate) {
     try {
-        const { data, error } = await supabaseClient.from('appointments').select('appointment_status, application_type').gte('appointment_date', startDate).lte('appointment_date', endDate);
+        const { data, error } = await getDb().from('appointments').select('appointment_status, application_type, medic_status').gte('appointment_date', startDate).lte('appointment_date', endDate);
         if (error) throw error;
-        let stats = { total: 0, booked: 0, verified: 0, generated: 0, newCount: 0, renewalCount: 0 };
+        
+        let stats = { total: 0, booked: 0, verified: 0, generated: 0, newCount: 0, renewalCount: 0, failedCount: 0 };
         data.forEach(row => {
             stats.total++;
             if (row.application_type === 'new') stats.newCount++;
             if (row.application_type === 'renewal') stats.renewalCount++;
-            const stat = row.appointment_status.toLowerCase();
-            if (stat.includes('booked') || stat.includes('rescheduled')) stats.booked++;
-            if (stat.includes('verified')) stats.verified++;
-            if (stat.includes('generated')) stats.generated++;
+            const stat = row.appointment_status;
+            if (stat === 'Booked' || stat === 'Rescheduled') stats.booked++;
+            if (stat === 'Verified') stats.verified++;
+            if (stat === 'Card Generated') stats.generated++;
+            if (stat === 'Failed D/A' || (row.medic_status && row.medic_status.startsWith('Failed'))) stats.failedCount++;
         });
+        
         return { result: 'success', data: stats };
     } catch (err) { return { result: 'error', message: err.message }; }
+}
+
+// 👉 NEW: Roster Export Fetcher
+async function fetchDailyRoster(date) {
+    try {
+        const { data: appts, error: aErr } = await getDb().from('appointments')
+            .select('induction_number, appointment_time, appointment_id')
+            .eq('appointment_date', date)
+            .in('appointment_status', ['Booked', 'Rescheduled', 'Verified']); 
+
+        if (aErr) throw aErr;
+        if (!appts || appts.length === 0) return { result: 'success', data: [] };
+
+        const ids = appts.map(a => a.induction_number);
+        const { data: drvs, error: dErr } = await getDb().from('drivers')
+            .select('induction_number, full_name')
+            .in('induction_number', ids);
+        
+        if (dErr) throw dErr;
+
+        const roster = appts.map(a => {
+            const d = drvs.find(x => x.induction_number === a.induction_number) || {};
+            return {
+                name: d.full_name || 'Unknown',
+                id: a.induction_number,
+                time: a.appointment_time || '9AM',
+                aptId: a.appointment_id || 'N/A'
+            };
+        });
+
+        // Organize cleanly by timeslot
+        const timeOrder = { '9AM': 1, '11AM': 2, '2PM': 3 };
+        roster.sort((a, b) => (timeOrder[a.time] || 99) - (timeOrder[b.time] || 99));
+
+        return { result: 'success', data: roster };
+    } catch (err) {
+        return { result: 'error', message: err.message };
+    }
+}
+
+// ==========================================
+// 8. SYSTEM CONFIGURATION & POKA-YOKE ENGINE
+// ==========================================
+async function checkAffectedDrivers(action, date, time) {
+    try {
+        let query = getDb().from('appointments').select('induction_number, appointment_status, appointment_time').eq('appointment_date', date);
+        if (action === 'block_time') query = query.eq('appointment_time', time);
+        
+        const { data: appts, error: apptErr } = await query;
+        if (apptErr) throw apptErr;
+
+        const activeAppts = (appts || []).filter(a => {
+            const stat = a.appointment_status || '';
+            return stat.includes('Booked') || stat.includes('Rescheduled') || stat.includes('Pending');
+        });
+
+        if (activeAppts.length === 0) return { result: 'success', data: [] };
+
+        const ids = activeAppts.map(a => a.induction_number);
+        const { data: drvs, error: drvErr } = await getDb().from('drivers').select('induction_number, full_name, mobile_number').in('induction_number', ids);
+        if (drvErr) throw drvErr;
+
+        const merged = activeAppts.map(a => {
+            const d = (drvs || []).find(x => x.induction_number === a.induction_number) || {};
+            return { id: a.induction_number, name: d.full_name || 'Unknown', phone: d.mobile_number || 'No Phone', time: a.appointment_time };
+        });
+
+        return { result: 'success', data: merged };
+    } catch (err) { return { result: 'error', message: err.message }; }
+}
+
+async function executeBlockAndReschedule(action, blockDate, blockTime, newDate, driversToMove, forceOverride, adminUid) {
+    try {
+        const settings = await getSystemSettings();
+        if (settings.blockedDates.includes(newDate)) return { result: 'error', message: 'Target date is completely blocked.' };
+
+        const slotLimit = settings.customCapacities[newDate] || settings.capacity || 10;
+        const maxDaily = slotLimit * 3;
+
+        const { data: existAppts } = await getDb().from('appointments').select('appointment_time').eq('appointment_date', newDate);
+        const currentBooked = existAppts ? existAppts.length : 0;
+
+        if (!forceOverride && (currentBooked + driversToMove.length > maxDaily)) {
+            return { result: 'overload', currentBooked, maxDaily, incoming: driversToMove.length };
+        }
+
+        let counts = { '9AM': 0, '11AM': 0, '2PM': 0 };
+        if (existAppts) existAppts.forEach(a => { let t = a.appointment_time || '9AM'; counts[t] = (counts[t] || 0) + 1; });
+        if (settings.blockedTimes.includes(`${newDate}|9AM`)) counts['9AM'] = 9999;
+        if (settings.blockedTimes.includes(`${newDate}|11AM`)) counts['11AM'] = 9999;
+        if (settings.blockedTimes.includes(`${newDate}|2PM`)) counts['2PM'] = 9999;
+
+        let movedRecords = [];
+        for (let t of driversToMove) {
+            let assignedTime = '2PM';
+            if (counts['9AM'] < slotLimit) { assignedTime = '9AM'; counts['9AM']++; }
+            else if (counts['11AM'] < slotLimit) { assignedTime = '11AM'; counts['11AM']++; }
+            else { assignedTime = '2PM'; counts['2PM']++; }
+
+            await getDb().from('appointments').update({ appointment_date: newDate, appointment_time: assignedTime, appointment_status: 'Rescheduled' }).eq('induction_number', t.id);
+            movedRecords.push({ originalDate: blockDate, newDate: newDate, newTime: assignedTime, id: t.id, name: t.name, phone: t.phone });
+        }
+
+        if (action === 'block_date' && !settings.blockedDates.includes(blockDate)) {
+            settings.blockedDates.push(blockDate); await safeUpsertSetting('blocked_dates', settings.blockedDates.join(','));
+        } else if (action === 'block_time' && !settings.blockedTimes.includes(`${blockDate}|${blockTime}`)) {
+            settings.blockedTimes.push(`${blockDate}|${blockTime}`); await safeUpsertSetting('blocked_times', settings.blockedTimes.join(','));
+        }
+
+        const { data: logData } = await getDb().from('system_settings').select('setting_value').eq('setting_key', 'reschedule_list');
+        let movedList = [];
+        if (logData && logData.length > 0 && logData[0].setting_value) movedList = JSON.parse(logData[0].setting_value);
+        
+        movedList = [...movedRecords, ...movedList].slice(0, 200);
+        await safeUpsertSetting('reschedule_list', JSON.stringify(movedList));
+
+        await logAuditAction(adminUid, 'MASS_RESCHEDULE', `${driversToMove.length} Drivers`, `Moved from ${blockDate} to ${newDate}`);
+        return { result: 'success' };
+    } catch (err) { return { result: 'error', message: err.message }; }
+}
+
+async function applyBlockOnly(action, blockDate, blockTime, adminUid) {
+    try {
+        const settings = await getSystemSettings();
+        if (action === 'block_date' && !settings.blockedDates.includes(blockDate)) {
+            settings.blockedDates.push(blockDate); await safeUpsertSetting('blocked_dates', settings.blockedDates.join(','));
+        } else if (action === 'block_time' && !settings.blockedTimes.includes(`${blockDate}|${blockTime}`)) {
+            settings.blockedTimes.push(`${blockDate}|${blockTime}`); await safeUpsertSetting('blocked_times', settings.blockedTimes.join(','));
+        }
+        await logAuditAction(adminUid, 'CALENDAR_BLOCKED', blockDate, `Action: ${action} | Time: ${blockTime}`);
+        return { result: 'success' };
+    } catch (err) { return { result: 'error', message: err.message }; }
+}
+
+// ==========================================
+// 9. ADMIN IMS AUTHENTICATION & AUDIT TRAIL
+// ==========================================
+async function adminLogin(uid, password) {
+    try {
+        // Fetch Admin safely ignoring case
+        const { data, error } = await getDb().from('wact_admins')
+            .select('*').ilike('admin_uid', uid).eq('password_hash', password).eq('is_active', true);
+        
+        if (error) throw error;
+        if (!data || data.length === 0) return { result: 'error', message: 'Invalid Admin UID or Password, or account is disabled.' };
+        
+        await logAuditAction(data[0].admin_uid, 'SYSTEM_LOGIN', 'Portal Access', 'Admin successfully authenticated.');
+        return { result: 'success', data: data[0] };
+    } catch (err) {
+        return { result: 'error', message: err.message };
+    }
+}
+
+async function logAuditAction(uid, actionType, targetId, details) {
+    if (!uid) return; 
+    try {
+        await getDb().from('audit_logs').insert([{
+            admin_uid: uid,
+            action_type: actionType,
+            target_id: targetId,
+            action_details: details
+        }]);
+    } catch (e) { console.error("Audit logger offline", e); }
 }
