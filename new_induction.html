@@ -246,10 +246,10 @@
                 ref1Name: this.ref1Name.value, ref1Address: this.ref1Address.value, ref1Position: this.ref1Position.value,
                 ref1Duration: this.ref1Duration.value, ref1Contact: this.ref1Contact.value,
                 ref2Name: this.ref2Name.value, 
-                ref2Address: this.ref2Address.value,
-                ref2Position: this.ref2Position.value,
-                ref2Duration: this.ref2Duration.value,
-                ref2Contact: this.ref2Contact.value,
+                ref2Address: document.getElementById('ref2Address').value,
+                ref2Position: document.getElementById('ref2Position').value,
+                ref2Duration: document.getElementById('ref2Duration').value,
+                ref2Contact: document.getElementById('ref2Contact').value,
                 passportPhoto: await getFileData(document.getElementById('new_passport')),
                 driversLicense: await getFileData(document.getElementById('new_license')),
                 recLetter: await getFileData(document.getElementById('new_recLetter'))
@@ -459,7 +459,7 @@
             const response = await fetch(finalURL);
             const res = await response.json();
             if (res.success) {
-                if (msg) { msg.style.color = "green"; msg.innerText = "✅ Pass slip successfully emailed to " + email; }
+                if (msg) { msg.style.color = "green"; msg.innerText = "✅ Appointment slip successfully emailed to " + email; }
                 emailField.value = "";
             } else { throw new Error(res.message || "Server rejected the request"); }
         } catch (error) {
