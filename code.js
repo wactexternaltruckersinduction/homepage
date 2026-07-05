@@ -173,19 +173,21 @@ async function submitNew(payload) {
         if (existingDriver && existingDriver.length > 0) return { result: 'error', message: `Driver already exists! Please login using the Renewal Portal.` };
 
         const currentYear = new Date().getFullYear();
-        let allDrivers = []; let fetchMore = true; let rangeStart = 0; const step = 1000; 
-
-        while (fetchMore) {
-            const { data, error: numErr } = await getDb().from('drivers').select('induction_number').range(rangeStart, rangeStart + step - 1);
-            if (numErr) throw numErr;
-            if (data && data.length > 0) { allDrivers.push(...data); rangeStart += step; if (data.length < step) fetchMore = false; } else { fetchMore = false; }
-        }
+        const { data: recentDrivers, error: numErr } = await getDb()
+            .from('drivers')
+            .select('induction_number')
+            .ilike('induction_number', `%/${currentYear}/%`)
+            .order('created_at', { ascending: false })
+            .limit(50);
+            
+        if (numErr) throw numErr;
 
         let highestNum = 1000; 
-        if (allDrivers.length > 0) {
-            for (let d of allDrivers) {
+        if (recentDrivers && recentDrivers.length > 0) {
+            for (let d of recentDrivers) {
                 if (d.induction_number) {
-                    const parts = d.induction_number.split('/'); const lastDigit = parseInt(parts[parts.length - 1]);
+                    const parts = d.induction_number.split('/'); 
+                    const lastDigit = parseInt(parts[parts.length - 1]);
                     if (!isNaN(lastDigit) && lastDigit > highestNum) highestNum = lastDigit;
                 }
             }
@@ -197,7 +199,33 @@ async function submitNew(payload) {
         const otherUrl = await uploadToStorage(payload.otherDocuments || payload.recLetter, newID, payload.fullName, "OtherDoc");
 
         const { error } = await getDb().from('drivers').insert([{
-            induction_number: newID, full_name: payload.fullName, address: payload.address, state: payload.state, lga: payload.lga, religion: payload.religion, mobile_number: payload.mobile, dob: payload.dob, marital_status: payload.maritalStatus, license_number: cleanLicense, license_expiration: payload.licenseExpDate, company_name: payload.companyName, ref1_name: payload.ref1Name, ref1_address: payload.ref1Address, ref1_position: payload.ref1Position, ref1_duration: payload.ref1Duration, ref1_contact: payload.ref1Contact, ref2_name: payload.ref2Name, passport_photo: passportUrl, drivers_license: licenseUrl, other_documents: otherUrl, induction_status: 'Pending'
+           induction_number: newID, 
+            full_name: payload.fullName, 
+            address: payload.address, 
+            state: payload.state, 
+            lga: payload.lga, 
+            religion: payload.religion, 
+            mobile_number: payload.mobile, 
+            dob: payload.dob, 
+            marital_status: payload.maritalStatus, 
+            license_number: cleanLicense, 
+            license_expiration: payload.licenseExpDate, 
+            company_name: payload.companyName, 
+            ref1_name: payload.ref1Name, 
+            ref1_address: payload.ref1Address, 
+            ref1_position: payload.ref1Position, 
+            ref1_duration: payload.ref1Duration, 
+            ref1_contact: payload.ref1Contact, 
+            ref2_name: payload.ref2Name, 
+            ref2_address: payload.ref2Address,     
+            ref2_position: payload.ref2Position,   
+            ref2_duration: payload.ref2Duration,   
+            ref2_contact: payload.ref2Contact,     
+            passport_photo: passportUrl, 
+            drivers_license: licenseUrl, 
+            other_documents: otherUrl, 
+            recommendation_letter: otherUrl,       
+            induction_status: 'Pending'
         }]);
 
         if (error) throw error;
