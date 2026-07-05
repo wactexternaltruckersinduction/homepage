@@ -292,6 +292,7 @@ async function adminBulkVerify(idsString, department, attended, daPassed, reason
             let newHse = appt.hse_status || 'Pending';
             let newMaster = 'Booked';
             let hseDateUpdate = null;
+            let driverExpUpdate = null;
 
             if (department === "Medic") { newMedic = daPassed ? 'Passed' : `Failed: ${reason}`; } 
             else if (department === "HSE") { if (attended) { newHse = 'Attended'; hseDateUpdate = todayStr; } } 
@@ -308,6 +309,12 @@ async function adminBulkVerify(idsString, department, attended, daPassed, reason
             const { error: updateErr } = await getDb().from('appointments').update(updatePayload).eq('induction_number', appt.induction_number);
             if (updateErr) throw updateErr;
 
+            // 👉 Instantly update expiration date in the main drivers table when HSE is marked attended
+            if (driverExpUpdate) {
+                const expStr = driverExpUpdate.toISOString().split('T')[0];
+                await getDb().from('drivers').update({ induction_expiration: expStr }).eq('induction_number', appt.induction_number);
+            }
+
             await logAuditAction(adminUid, 'STATUS_UPDATE', appt.induction_number, `Set to ${newMaster}. M:${newMedic} | H:${newHse}`);
         }
         return { result: 'success', message: `Successfully updated ${idList.length} records.` };
@@ -316,9 +323,40 @@ async function adminBulkVerify(idsString, department, attended, daPassed, reason
 
 async function markCardsGenerated(idsList, adminUid) {
     try {
-        const expirationDate = new Date(); expirationDate.setFullYear(expirationDate.getFullYear() + 1);
-        await getDb().from('appointments').update({ appointment_status: 'Card Generated' }).in('induction_number', idsList);
-        await getDb().from('drivers').update({ induction_expiration: expirationDate.toISOString().split('T')[0], induction_status: 'Card Generated' }).in('induction_number', idsList);
+        const todayStr = new Date().toISOString().split('T')[0];
+        
+        // Fetch current dates from both tables
+        const { data: drvs } = await getDb().from('drivers').select('induction_number, date_of_issue').in('induction_number', idsList);
+        const { data: appts } = await getDb().from('appointments').select('induction_number, hse_date').in('induction_number', idsList);
+
+        for (let id of idsList) {
+            const drv = (drvs || []).find(d => d.induction_number === id);
+            const appt = (appts || []).find(a => a.induction_number === id);
+
+            // 1. DATE OF ISSUE: Set ONLY if it doesn't already exist (meaning it is their first card)
+            let issueDate = (drv && drv.date_of_issue) ? drv.date_of_issue : todayStr;
+
+            // 2. EXPIRATION DATE: Enforce exactly 1 year from the HSE attended date
+            let expDate = new Date();
+            expDate.setFullYear(expDate.getFullYear() + 1); // Fallback failsafe
+            if (appt && appt.hse_date) {
+                const baseHse = new Date(appt.hse_date);
+                baseHse.setFullYear(baseHse.getFullYear() + 1);
+                expDate = baseHse;
+            }
+            const expStr = expDate.toISOString().split('T')[0];
+
+            // Safely write both metrics to the main database
+            await getDb().from('drivers').update({ 
+                induction_expiration: expStr, 
+                date_of_issue: issueDate,
+                induction_status: 'Card Generated' 
+            }).eq('induction_number', id);
+            
+            await getDb().from('appointments').update({ 
+                appointment_status: 'Card Generated' 
+            }).eq('induction_number', id);
+        }
         
         await logAuditAction(adminUid, 'CARDS_GENERATED', idsList.length + ' Cards', `Generated passes for: ${idsList.join(', ')}`);
         return { result: 'success', count: idsList.length };
