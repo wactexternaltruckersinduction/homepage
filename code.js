@@ -193,10 +193,14 @@ async function submitNew(payload) {
             }
         }
         
-        const nextNum = highestNum + 1; const newID = `SI/EXT/${currentYear}/${nextNum.toString().padStart(4, '0')}`;
-        const passportUrl = await uploadToStorage(payload.passportPhoto, newID, payload.fullName, "Passport");
-        const licenseUrl = await uploadToStorage(payload.driversLicense, newID, payload.fullName, "License");
-        const otherUrl = await uploadToStorage(payload.otherDocuments || payload.recLetter, newID, payload.fullName, "OtherDoc");
+        const nextNum = highestNum + 1; 
+        const newID = `SI/EXT/${currentYear}/${nextNum.toString().padStart(4, '0')}`;
+
+        const [passportUrl, licenseUrl, otherUrl] = await Promise.all([
+            uploadToStorage(payload.passportPhoto, newID, payload.fullName, "Passport"),
+            uploadToStorage(payload.driversLicense, newID, payload.fullName, "License"),
+            uploadToStorage(payload.otherDocuments || payload.recLetter, newID, payload.fullName, "OtherDoc")
+        ]);
 
         const { error } = await getDb().from('drivers').insert([{
            induction_number: newID, 

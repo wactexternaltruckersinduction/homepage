@@ -227,7 +227,7 @@
     document.getElementById('newTruckerForm').addEventListener('submit', async function(e) {
         e.preventDefault();
         const btn = document.getElementById('newSubmitBtn');
-        btn.innerText = "Processing File Packages to Supabase..."; btn.disabled = true;
+        btn.innerText = "Submitting Application..."; btn.disabled = true;
 
         try {
             // 👉 Maps exact payload needed for our code.js Supabase backend
@@ -246,6 +246,10 @@
                 ref1Name: this.ref1Name.value, ref1Address: this.ref1Address.value, ref1Position: this.ref1Position.value,
                 ref1Duration: this.ref1Duration.value, ref1Contact: this.ref1Contact.value,
                 ref2Name: this.ref2Name.value, 
+                ref2Address: this.ref2Address.value,
+                ref2Position: this.ref2Position.value,
+                ref2Duration: this.ref2Duration.value,
+                ref2Contact: this.ref2Contact.value,
                 passportPhoto: await getFileData(document.getElementById('new_passport')),
                 driversLicense: await getFileData(document.getElementById('new_license')),
                 recLetter: await getFileData(document.getElementById('new_recLetter'))
@@ -446,7 +450,7 @@
         const date = document.getElementById('slip_date')?.textContent || "N/A";
 
         btn.innerText = "Sending..."; btn.disabled = true;
-        if (msg) { msg.innerText = "Talking to WACT mail system..."; msg.style.color = "#004a99"; }
+        if (msg) { msg.innerText = "Sending Appointment Slip via Email System..."; msg.style.color = "#004a99"; }
 
         // 👉 Still using Google Apps Script strictly as an Email Delivery System
         const finalURL = `${emailScriptURL}?action=dispatchSlip&contact=${encodeURIComponent(email)}&name=${encodeURIComponent(name)}&id=${encodeURIComponent(id)}&date=${encodeURIComponent(date)}`;
