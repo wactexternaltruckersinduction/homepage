@@ -261,7 +261,7 @@ async function submitRenewal(payload) {
             license_expiration: payload.licenseExpiration, 
             card_status: payload.cardStatus,
             seizure_reason: payload.seizedBanReason, 
-            driver_status: payload.cardStatus, 
+            drivers_status: payload.cardStatus, 
             induction_status: 'Pending' 
         };
 
