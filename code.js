@@ -242,11 +242,36 @@ async function submitRenewal(payload) {
         const expDate = new Date(payload.licenseExpiration); const minValidDate = new Date(); minValidDate.setMonth(minValidDate.getMonth() + 3);
         if (expDate < minValidDate) return { result: 'error', message: "Application Rejected: License must be valid for at least 3 months." };
 
-        let updates = { address: payload.address, mobile_number: payload.mobileNumber, company_name: payload.companyName, license_expiration: payload.licenseExpiration, seizure_reason: payload.seizedBanReason, induction_status: 'Pending' };
-        if (payload.passportPhoto) updates.passport_photo = await uploadToStorage(payload.passportPhoto, payload.inductionNumber, payload.fullName, "Passport");
-        if (payload.driversLicense) updates.drivers_license = await uploadToStorage(payload.driversLicense, payload.inductionNumber, payload.fullName, "License");
-        if (payload.otherDocuments) updates.other_documents = await uploadToStorage(payload.otherDocuments, payload.inductionNumber, payload.fullName, "OtherDoc");
+        // 👉 SPEED FIX: Fire all file uploads to Supabase at the exact same time
+        const uploadTasks = [];
+        if (payload.passportPhoto) uploadTasks.push(uploadToStorage(payload.passportPhoto, payload.inductionNumber, payload.fullName, "Passport").then(url => ({key: 'passport_photo', url})));
+        if (payload.driversLicense) uploadTasks.push(uploadToStorage(payload.driversLicense, payload.inductionNumber, payload.fullName, "License").then(url => ({key: 'drivers_license', url})));
+        if (payload.otherDocuments) uploadTasks.push(uploadToStorage(payload.otherDocuments, payload.inductionNumber, payload.fullName, "OtherDoc").then(url => ({key: 'other_documents', url})));
         
+        // CATCHING THE POLICE REPORT
+        if (payload.policeReport) uploadTasks.push(uploadToStorage(payload.policeReport, payload.inductionNumber, payload.fullName, "PoliceReport").then(url => ({key: 'police_report', url})));
+
+        const uploadedFiles = await Promise.all(uploadTasks);
+
+        // MAPPING FIX: Adding drivers_status, dob, and seizure_reason
+        let updates = { 
+            address: payload.address, 
+            mobile_number: payload.mobileNumber, 
+            company_name: payload.companyName, 
+            license_expiration: payload.licenseExpiration, 
+            card_status: payload.cardStatus,
+            seizure_reason: payload.seizedBanReason, 
+            drivers_status: payload.cardStatus, 
+            induction_status: 'Pending' 
+        };
+
+        if (payload.dob) updates.dob = payload.dob;
+
+        // Map the fast parallel uploads into the database update payload
+        uploadedFiles.forEach(file => {
+            if (file && file.url) updates[file.key] = file.url;
+        });
+
         const { error: drvErr } = await getDb().from('drivers').update(updates).eq('induction_number', payload.inductionNumber);
         if (drvErr) throw drvErr;
         return { result: 'success' };
@@ -596,4 +621,29 @@ async function logAuditAction(uid, actionType, targetId, details) {
             action_details: details
         }]);
     } catch (e) { console.error("Audit logger offline", e); }
+}
+
+// ==========================================
+// QUICK ATOMIC UPDATES (For DOB and Vault)
+// ==========================================
+async function quickUpdate(id, name, field, value, isFile) {
+    try {
+        let finalValue = value;
+        // If they uploaded a new file directly to the vault, handle it securely
+        if (isFile && value) {
+            finalValue = await uploadToStorage(value, id, name, "VaultDoc");
+            if (!finalValue) throw new Error("File upload failed.");
+        }
+        
+        // Push the update to the database
+        const updates = {};
+        updates[field] = finalValue;
+        
+        const { error } = await getDb().from('drivers').update(updates).eq('induction_number', id);
+        if (error) throw error;
+        
+        return { result: 'success' };
+    } catch (err) {
+        return { result: 'error', message: err.message };
+    }
 }
