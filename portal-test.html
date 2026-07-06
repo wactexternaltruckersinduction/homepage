@@ -468,7 +468,7 @@
         let targetTextId = currentVaultDocType === 'drivers_license' ? 'status_doc_license' : 'status_doc_other';
         const txtEl = document.getElementById(targetTextId);
         if (txtEl) {
-            txtEl.innerText = "Uploading securely to vault...";
+            txtEl.innerText = "Uploading document securely to vault...";
             txtEl.style.color = "var(--orange)";
         }
         await triggerAtomicUpdate(currentVaultDocType, inputElement);
@@ -772,7 +772,7 @@
     document.getElementById('renewalForm').addEventListener('submit', async function(e) {
         e.preventDefault();
         const btn = document.getElementById('renSubmitBtn');
-        btn.innerText = "Updating Profile to Database..."; btn.disabled = true;
+        btn.innerText = "Submitting Renewal Request..."; btn.disabled = true;
         
         try {
             const payload = {
