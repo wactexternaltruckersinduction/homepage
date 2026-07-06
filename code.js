@@ -263,7 +263,7 @@ async function submitRenewal(payload) {
             seizure_reason: payload.seizedBanReason, 
             drivers_status: payload.cardStatus, 
             induction_status: 'Pending' 
-        };
+        }; //God abeg
 
         if (payload.dob) updates.dob = payload.dob;
 
