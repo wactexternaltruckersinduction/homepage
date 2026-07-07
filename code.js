@@ -260,6 +260,7 @@ async function submitRenewal(payload) {
             company_name: payload.companyName, 
             license_expiration: payload.licenseExpiration, 
             card_status: payload.cardStatus,
+            drivers_status: payload.driversStatus,
             seizure_reason: payload.seizedBanReason, 
             induction_status: 'Pending' 
         }; //God abeg
