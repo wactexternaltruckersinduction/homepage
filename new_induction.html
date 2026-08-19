@@ -335,9 +335,14 @@
 
     document.getElementById('newTruckerForm').addEventListener('submit', async function(e) {
         e.preventDefault();
-
         
-
+        // 👉 PASTE THE SECURITY CHECK HERE
+        const captchaResponse = grecaptcha.getResponse();
+        if (captchaResponse.length === 0) {
+            return alert("Security Alert: Please check the 'I am not a robot' box to prove you are human.");
+        }
+        // 👉 END OF SECURITY CHECK
+        
         const btn = document.getElementById('newSubmitBtn');
         btn.innerText = "Submitting Application..."; btn.disabled = true;
 
