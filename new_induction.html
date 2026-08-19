@@ -364,8 +364,6 @@
         const btn = document.getElementById('newSubmitBtn');
         btn.disabled = true;
         
-        const btn = document.getElementById('newSubmitBtn');
-        btn.innerText = "Submitting Application..."; btn.disabled = true;
 
         try {
             // 👉 Maps exact payload needed for our code.js Supabase backend
@@ -578,6 +576,15 @@
                 document.getElementById('slip_apt_id').innerText = result.aptId;
                 document.getElementById('slip_status').innerText = result.status || "Booked";
                 showPage('pageSlip');
+
+                // 👉 AUTOMATIC EMAIL DISPATCH PROTOCOL
+                if (currentUserData.email && currentUserData.email.includes('@')) {
+                    // Pre-fill the email box on the slip page
+                    document.getElementById('emailInput').value = currentUserData.email;
+                    // Automatically trigger the send function
+                    sendSlipViaEmail();
+                }
+                
             } else { alert(result.message); }
         } catch (e) { 
             alert("Booking failed."); 
