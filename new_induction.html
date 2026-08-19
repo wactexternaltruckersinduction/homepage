@@ -268,8 +268,8 @@
     </div>
 </div>
     
-<!-- 👉 NEW: PROCESSING OVERLAY MODAL -->
-<div id="processingModal" class="modal-bg" style="display: none; align-items: center; justify-content: center; flex-direction: column; z-index: 1001;">
+<!-- 👉 FIXED: PROCESSING OVERLAY MODAL -->
+<div id="processingModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 43, 73, 0.8); backdrop-filter: blur(8px); align-items: center; justify-content: center; flex-direction: column; z-index: 1001;">
     <div style="background: white; padding: 40px; border-radius: var(--card-radius); text-align: center; max-width: 400px; box-shadow: 0 25px 50px rgba(0,0,0,0.25);">
         <!-- Spinning Loader -->
         <div style="width: 50px; height: 50px; border: 5px solid #e2e8f0; border-top: 5px solid var(--primary-blue); border-radius: 50%; animation: spin 1s linear infinite; margin: 0 auto 20px auto;"></div>
@@ -362,6 +362,7 @@
         // 👉 SHOW PROCESSING POP-UP IMMEDIATELY
         document.getElementById('processingModal').style.display = "flex";
         const btn = document.getElementById('newSubmitBtn');
+        btn.innerText = "Processing...";
         btn.disabled = true;
         
 
