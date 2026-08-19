@@ -210,6 +210,7 @@ async function submitNew(payload) {
             lga: payload.lga, 
             religion: payload.religion, 
             mobile_number: payload.mobile, 
+            email: payload.emailAddress,
             dob: payload.dob, 
             marital_status: payload.maritalStatus, 
             license_number: cleanLicense, 
@@ -266,6 +267,7 @@ async function submitRenewal(payload) {
         }; //God abeg
 
         if (payload.dob) updates.dob = payload.dob;
+        if (payload.email) updates.email = payload.email;
 
         // Map the fast parallel uploads into the database update payload
         uploadedFiles.forEach(file => {
