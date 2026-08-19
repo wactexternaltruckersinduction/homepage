@@ -5,13 +5,18 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>WACT Logistics Portal</title>
     <style>
+        /* 👉 NEW DASHBOARD VISUAL STANDARD */
         :root { 
-            --primary-blue: #004a99; 
-            --bg-light: #f8fafc; 
-            --text-dark: #0f172a; 
-            --text-muted: #475569;
-            --shadow-soft: 0 20px 25px -5px rgba(0, 0, 0, 0.05), 0 10px 10px -5px rgba(0, 0, 0, 0.02); 
-            --squarcle-radius: 24px; 
+            --primary-blue: #008be5; /* Dashboard Blue */
+            --apmt-navy: #002B49; 
+            --apmt-orange: #FF6600; /* Dashboard Orange */
+            --bg-light: #eef2f5;    /* Soft Dashboard Background */
+            --text-dark: #334155; 
+            --text-muted: #64748b;
+            --shadow-soft: 0 12px 35px rgba(0, 0, 0, 0.06);
+            --shadow-hover: 0 20px 50px rgba(0, 0, 0, 0.15); 
+            --card-radius: 20px; 
+            --pill-radius: 50px;
         }
         body { 
             font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; 
@@ -30,7 +35,9 @@
             display: flex; 
             align-items: center; 
             justify-content: space-between; 
-            border-bottom: 1px solid #e2e8f0;
+            border-bottom: none;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.04);
+            z-index: 10;
         }
         .header-brand { display: flex; align-items: center; gap: 16px; }
         .logo-circle { 
@@ -42,9 +49,9 @@
         }
         .logo-circle img { max-width: 80%; height: auto; }
         .brand-text { text-align: left; }
-        .brand-text .name { font-weight: 800; color: var(--primary-blue); font-size: 16px; letter-spacing: -0.5px; display: block; line-height: 1.2; }
+        .brand-text .name { font-weight: 800; color: var(--apmt-navy); font-size: 16px; letter-spacing: 0.5px; display: block; line-height: 1.2; text-transform: uppercase;}
         .brand-text .sub { font-size: 11px; color: var(--text-muted); font-weight: 600; text-transform: uppercase; letter-spacing: 1px; margin-top: 2px; display: block;}
-        #currentDate { font-size: 12px; font-weight: 600; color: var(--text-muted); }
+        #currentDate { font-size: 13px; font-weight: 800; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px;}
 
         /* TALL HERO BACKGROUND CAROUSEL */
         .carousel-container {
@@ -52,15 +59,15 @@
             width: 100%;
             height: 480px;
             overflow: hidden;
-            background: #0f172a;
+            background: var(--apmt-navy);
         }
         .carousel-slide { display: none; position: absolute; width: 100%; height: 100%; }
         .carousel-slide.active { display: block; }
-        .carousel-slide img { width: 100%; height: 100%; object-fit: cover; opacity: 0.65; }
+        .carousel-slide img { width: 100%; height: 100%; object-fit: cover; opacity: 0.55; }
         .carousel-caption {
             position: absolute;
             top: 0; left: 0; right: 0; bottom: 0;
-            background: linear-gradient(rgba(15, 23, 42, 0.2), rgba(15, 23, 42, 0.85));
+            background: linear-gradient(rgba(0, 43, 73, 0.3), rgba(0, 43, 73, 0.9));
             color: white;
             display: flex;
             flex-direction: column;
@@ -69,13 +76,13 @@
             max-width: 1000px;
             margin: 0 auto;
         }
-        .carousel-caption h1 { margin: 0 0 12px 0; font-size: 38px; font-weight: 800; letter-spacing: -1px; line-height: 1.1; }
-        .carousel-caption p { margin: 0; font-size: 16px; color: #cbd5e1; font-weight: 400; max-width: 600px; }
+        .carousel-caption h1 { margin: 0 0 12px 0; font-size: 42px; font-weight: 900; letter-spacing: -1px; line-height: 1.1; }
+        .carousel-caption p { margin: 0; font-size: 16px; color: #e2e8f0; font-weight: 600; max-width: 600px; line-height: 1.6;}
 
         /* MAIN CONTENT SECTION */
         .container { 
             flex: 1; 
-            max-width: 1100px; 
+            max-width: 1150px; 
             margin: 0 auto; 
             padding: 0 20px 60px 20px; 
             width: 100%; 
@@ -86,53 +93,66 @@
         .portal-grid { 
             display: grid; 
             grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); 
-            gap: 20px; 
+            gap: 25px; 
             margin-top: -90px; /* Forcefully pulls layout up directly over image canvas */
             position: relative; 
             z-index: 100; 
         }
+        
+        /* Dashboard Cards */
         .portal-card {
             background: white;
-            border-radius: var(--squarcle-radius);
-            padding: 28px;
+            border-radius: var(--card-radius);
+            padding: 30px;
             text-align: left;
             box-shadow: var(--shadow-soft);
-            border: 1px solid #e2e8f0;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            border: none;
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
             text-decoration: none;
             color: inherit;
             display: flex; flex-direction: column; justify-content: space-between;
         }
         .portal-card:hover {
-            transform: translateY(-6px);
-            border-color: var(--primary-blue);
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.08);
+            transform: translateY(-8px);
+            box-shadow: var(--shadow-hover);
         }
-        .portal-card .icon-tag {
-            width: 44px; height: 44px; border-radius: 12px; background: #f0f7ff;
-            display: flex; align-items: center; justify-content: center;
-            font-size: 18px; color: var(--primary-blue); margin-bottom: 20px; font-weight: bold;
-        }
-        .portal-card h3 { margin: 0 0 10px 0; color: var(--text-dark); font-size: 18px; font-weight: 700; letter-spacing: -0.3px; }
-        .portal-card p { margin: 0 0 24px 0; color: var(--text-muted); font-size: 13px; line-height: 1.5; }
         
-        .btn-card { 
-            width: 100%; padding: 12px; border-radius: 12px; font-weight: 700; 
-            font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px; text-align: center;
-            background: #f1f5f9; color: var(--text-dark); transition: 0.2s; box-sizing: border-box; display: block;
+        /* Circular Dashboard Icons */
+        .portal-card .icon-tag {
+            width: 50px; height: 50px; border-radius: 50%; background: #e0f2fe;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 22px; color: var(--primary-blue); margin-bottom: 20px; font-weight: 900;
+            transition: 0.3s ease;
         }
-        .portal-card:hover .btn-card { background: var(--primary-blue); color: white; }
+        .portal-card:hover .icon-tag { background: var(--primary-blue); color: white; transform: scale(1.1); }
+        
+        .portal-card h3 { margin: 0 0 10px 0; color: var(--apmt-navy); font-size: 19px; font-weight: 900; letter-spacing: -0.3px; }
+        .portal-card p { margin: 0 0 24px 0; color: var(--text-muted); font-size: 13px; line-height: 1.6; font-weight: 500;}
+        
+        /* Pill-Shaped Action Buttons */
+        .btn-card { 
+            width: 100%; padding: 14px; border-radius: var(--pill-radius); font-weight: 800; 
+            font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px; text-align: center;
+            background: #f8fafc; color: var(--apmt-navy); transition: all 0.3s ease; box-sizing: border-box; display: block;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.03);
+        }
+        .portal-card:hover .btn-card { 
+            background: var(--primary-blue); 
+            color: white; 
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(0, 139, 229, 0.3);
+        }
 
         .fade { animation: fadeEffect 1.2s cubic-bezier(0.4, 0, 0.2, 1); }
         @keyframes fadeEffect { from { opacity: 0.3; } to { opacity: 1; } }
 
-        footer { background: white; color: var(--text-muted); text-align: center; padding: 24px; font-size: 12px; border-top: 1px solid #e2e8f0; }
+        footer { background: transparent; color: var(--text-muted); text-align: center; padding: 24px; font-size: 12px; font-weight: 600; border-top: none; }
         
         @media(max-width: 768px) {
-            header { padding: 20px; flex-direction: column; gap: 10px; text-align: center; }
+            header { padding: 20px; flex-direction: column; gap: 15px; text-align: center; }
             .brand-text { text-align: center; }
             .carousel-caption { padding: 0 20px 140px 20px; text-align: center; }
-            .carousel-caption h1 { font-size: 28px; }
+            .carousel-caption h1 { font-size: 32px; }
             .portal-grid { margin-top: -60px; padding: 0 10px; }
         }
     </style>
@@ -230,5 +250,153 @@
     }
     window.onload = function() { cycleSlides(); };
 </script>
+<!-- 👉 APM TERMINALS DASHBOARD-STYLE HELP DESK (WITH EVIDENCE NOTE) -->
+<style>
+    :root {
+        --dash-blue: #008be5; 
+        --dash-orange: #ff5000; 
+        --dash-bg: #eef2f5;    
+        --dash-card: #ffffff;
+        --dash-text: #334155;
+    }
+
+    .help-fab { 
+        position: fixed; bottom: 30px; right: 30px; 
+        width: 65px; height: 65px; 
+        background: var(--dash-orange); 
+        border-radius: 50%; 
+        box-shadow: 0 8px 25px rgba(255, 80, 0, 0.4); 
+        display: flex; justify-content: center; align-items: center; 
+        cursor: pointer; z-index: 99999; 
+        transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); 
+    }
+    .help-fab:hover { 
+        transform: scale(1.08) translateY(-5px); 
+        box-shadow: 0 15px 35px rgba(255, 80, 0, 0.5); 
+    }
+    .help-fab svg { width: 34px; height: 34px; fill: white; }
+    
+    .help-panel { 
+        position: fixed; bottom: 110px; right: 30px; 
+        width: 340px; background: var(--dash-card); 
+        border-radius: 20px; 
+        box-shadow: 0 12px 40px rgba(0,0,0,0.12); 
+        z-index: 99998; 
+        border: 1px solid #e2e8f0; 
+        transform: translateY(20px) scale(0.95); opacity: 0; pointer-events: none; 
+        transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1); 
+        display: flex; flex-direction: column; overflow: hidden; 
+        font-family: 'Segoe UI', system-ui, sans-serif;
+    }
+    .help-panel.active { transform: translateY(0) scale(1); opacity: 1; pointer-events: auto; }
+    
+    .help-header { 
+        background: var(--dash-bg); 
+        color: var(--dash-text); 
+        padding: 25px 20px; text-align: center; 
+        border-bottom: 2px solid white;
+    }
+    .help-header h3 { margin: 0; font-size: 17px; font-weight: 800; color: #0f172a; }
+    .help-header p { margin: 5px 0 0 0; font-size: 12px; font-weight: 600; color: #64748b; }
+    
+    .help-body { padding: 25px 20px; background: white; }
+    .help-label { font-size: 11px; font-weight: 800; color: #94a3b8; margin-bottom: 8px; display: block; text-transform: uppercase; letter-spacing: 1px;}
+    
+    .help-select { 
+        width: 100%; padding: 14px 20px; 
+        border: 2px solid #e2e8f0; border-radius: 30px; 
+        font-size: 13px; font-weight: 700; margin-bottom: 15px; color: var(--dash-text); 
+        outline: none; box-sizing: border-box; background: var(--dash-bg);
+        cursor: pointer; appearance: none;
+        transition: 0.2s;
+    }
+    .help-select:focus { border-color: var(--dash-blue); background: white; box-shadow: 0 0 0 4px rgba(0, 139, 229, 0.1); }
+    
+    /* 👉 NEW: The Evidence Note Box */
+    .help-evidence-box {
+        background: #f8fafc; border: 1px dashed #cbd5e1; border-radius: 12px; 
+        padding: 12px; margin-bottom: 20px; text-align: center;
+    }
+    .help-evidence-title { font-size: 10px; font-weight: 800; color: var(--dash-orange); display: block; text-transform: uppercase; margin-bottom: 4px; }
+    .help-evidence-text { font-size: 11px; color: #64748b; font-weight: 600; line-height: 1.4; }
+
+    .help-btn-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    .h-btn { 
+        padding: 14px 10px; border: none; border-radius: 30px; 
+        font-size: 12px; font-weight: 800; 
+        cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; 
+        transition: all 0.2s ease; color: white; 
+    }
+    .h-btn:hover { transform: translateY(-2px); box-shadow: 0 6px 15px rgba(0,0,0,0.15); }
+    .h-wa { background: #25D366; grid-column: span 2; } 
+    .h-email { background: var(--dash-blue); }
+    .h-call { background: var(--dash-orange); }
+</style>
+
+<div class="help-fab" onclick="toggleHelpPanel()">
+    <svg viewBox="0 0 24 24"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm0 14H6l-2 2V4h16v12z"/></svg>
+</div>
+
+<div class="help-panel" id="wactHelpPanel">
+    <div class="help-header">
+        <h3>WACT Support Desk</h3>
+        <p>How can we assist you today?</p>
+    </div>
+    <div class="help-body">
+        <label class="help-label">Select Issue Category</label>
+        <select id="helpIssueSelector" class="help-select">
+            <option value="General Inquiry">General Inquiry</option>
+            <option value="Induction Issue">Induction Process Issue</option>
+            <option value="Induction Number Not Showing">Induction Number Not Showing</option>
+            <option value="Cannot Find License Number">Cannot Find License Number</option>
+            <option value="Appointment Reschedule">Appointment Reschedule Assist</option>
+            <option value="Card Verification Failed">Card Verification Failed at Gate</option>
+        </select>
+        
+        <!-- 👉 NEW: Clean Evidence Note -->
+        <div class="help-evidence-box">
+            <span class="help-evidence-title">📎 Evidence Required</span>
+            <span class="help-evidence-text">Please attach a copy of any relevant evidence or screenshots when submitting your complaint.</span>
+        </div>
+
+        <div class="help-btn-grid">
+            <button class="h-btn h-wa" onclick="dispatchSupport('whatsapp')">
+                <svg style="width:18px;height:18px;fill:white;" viewBox="0 0 24 24"><path d="M12.031 6.172c-3.181 0-5.767 2.586-5.768 5.766-.001 1.298.38 2.27 1.019 3.287l-.582 2.128 2.182-.573c.978.58 1.911.928 3.145.929 3.178 0 5.767-2.587 5.768-5.766.001-3.187-2.575-5.77-5.764-5.771zm3.392 8.244c-.144.405-.837.774-1.17.824-.299.045-.677.063-1.092-.069-.252-.08-.575-.187-.988-.365-1.739-.751-2.874-2.502-2.961-2.617-.087-.116-.708-.94-.708-1.793s.448-1.273.607-1.446c.159-.173.346-.217.462-.217l.332.006c.106.005.249-.04.39.298.144.347.491 1.2.534 1.287.043.087.072.188.014.304-.058.116-.087.188-.173.289l-.26.304c-.087.086-.177.18-.076.327.101.144.447.706.945 1.15.643.574 1.199.754 1.343.84.144.087.231.072.317-.029l.375-.462c.116-.144.231-.116.361-.072.13.043.824.39 1.966.52.144.043.238.065.274.116.036.051.036.298-.108.703z"/></svg>
+                WhatsApp Support
+            </button>
+            <button class="h-btn h-email" onclick="dispatchSupport('email')">✉️ Email</button>
+            <button class="h-btn h-call" onclick="dispatchSupport('call')">📞 Call</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    function toggleHelpPanel() {
+        document.getElementById('wactHelpPanel').classList.toggle('active');
+    }
+
+    function dispatchSupport(channel) {
+        const supportPhone = "2349120399575"; 
+        const supportEmail = "security@apmterminals.com"; 
+        
+        const issue = document.getElementById('helpIssueSelector').value;
+        const encodedIssue = encodeURIComponent(issue);
+        
+        if (channel === 'whatsapp') {
+            const waText = encodeURIComponent(`Hello WACT Support, I am an external trucker and I need help with: ${issue}.\n\n[Attached is my evidence/screenshot]`);
+            window.open(`https://wa.me/${supportPhone}?text=${waText}`, '_blank');
+        } 
+        else if (channel === 'email') {
+            const body = encodeURIComponent(`Hello WACT Support,\n\nI am experiencing the following issue: ${issue}.\n\n[PLEASE ATTACH YOUR EVIDENCE/SCREENSHOTS TO THIS EMAIL]\n\nPlease assist me.\n\nMy Details:\nInduction No: \nName: `);
+            window.location.href = `mailto:${supportEmail}?subject=Portal Support: ${encodedIssue}&body=${body}`;
+        } 
+        else if (channel === 'call') {
+            window.location.href = `tel:+${supportPhone}`;
+        }
+        
+        toggleHelpPanel();
+    }
+</script>
+<!-- 👉 END DASHBOARD-STYLE HELP DESK -->
 </body>
 </html>
