@@ -5,43 +5,120 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>New Induction - WACT</title>
     <style>
-        :root { --primary-blue: #004a99; --bg-light: #f8fafc; --text-dark: #0f172a; --text-muted: #475569; --shadow-soft: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.05); --squarcle-radius: 24px; }
+        /* 👉 NEW DASHBOARD VISUAL STANDARD */
+  /* 👉 APMT DASHBOARD VISUAL STANDARD */
+        :root { 
+            --primary-blue: #008be5; 
+            --apmt-navy: #002B49; 
+            --apmt-orange: #FF6600; 
+            --bg-light: #eef2f5; 
+            --text-dark: #334155; 
+            --text-muted: #64748b; 
+            --shadow-soft: 0 12px 35px rgba(0, 0, 0, 0.06); 
+            --shadow-hover: 0 15px 40px rgba(0, 0, 0, 0.12); 
+            --card-radius: 20px; 
+            --pill-radius: 50px; 
+        }
+        
         body { font-family: 'Segoe UI', system-ui, sans-serif; background-color: var(--bg-light); color: var(--text-dark); margin: 0; padding: 0; line-height: 1.6; display: flex; flex-direction: column; min-height: 100vh; }
-        header { background: white; padding: 20px 40px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid #e2e8f0; }
+        
+        /* Dashboard Header */
+        header { background: white; padding: 20px 40px; display: flex; align-items: center; justify-content: space-between; border-bottom: none; box-shadow: 0 4px 20px rgba(0,0,0,0.04); z-index: 10;}
         .header-brand { display: flex; align-items: center; gap: 16px; }
         .logo-circle { width: 55px; height: 55px; border-radius: 16px; display: flex; justify-content: center; align-items: center; overflow: hidden; background: #fafafa; border: 1px solid #e2e8f0; }
         .logo-circle img { max-width: 80%; height: auto; }
-        .brand-text .name { font-weight: 800; color: var(--primary-blue); font-size: 16px; display: block; line-height: 1.2; }
+        .brand-text .name { font-weight: 900; color: var(--apmt-navy); font-size: 16px; display: block; line-height: 1.2; text-transform: uppercase; letter-spacing: 0.5px;}
         .brand-text .sub { font-size: 11px; color: var(--text-muted); font-weight: 600; text-transform: uppercase; letter-spacing: 1px; margin-top: 2px; display: block;}
-        .btn-home { padding: 10px 18px; border-radius: 12px; font-weight: 700; font-size: 12px; text-transform: uppercase; text-decoration: none; color: var(--text-muted); border: 2px solid #e2e8f0; transition: 0.2s; }
-        .btn-home:hover { background: #f1f5f9; color: var(--text-dark); }
-        .container { flex: 1; max-width: 850px; margin: 30px auto; padding: 0 20px; width: 100%; box-sizing: border-box;}
-        .card { background: white; border-radius: var(--squarcle-radius); padding: 35px; margin-bottom: 30px; box-shadow: var(--shadow-soft); border: 1px solid #e2e8f0; }
+        
+        .btn-home { padding: 12px 24px; border-radius: var(--pill-radius); font-weight: 800; font-size: 11px; text-transform: uppercase; text-decoration: none; color: var(--text-muted); border: 2px solid #e2e8f0; transition: all 0.3s ease; background: white;}
+        .btn-home:hover { background: var(--bg-light); color: var(--text-dark); transform: translateY(-2px); box-shadow: var(--shadow-soft); }
+        
+        .container { flex: 1; max-width: 850px; margin: 40px auto; padding: 0 20px; width: 100%; box-sizing: border-box;}
+        
+        /* Soft Dashboard Cards */
+        .card { background: white; border-radius: var(--card-radius); padding: 45px; margin-bottom: 30px; box-shadow: var(--shadow-soft); border: none; transition: transform 0.3s ease; }
+        .card:hover { transform: translateY(-2px); box-shadow: var(--shadow-hover); }
+        
         .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
-        .form-group { margin-bottom: 20px; }
-        h3 { font-size: 13px; text-transform: uppercase; color: var(--primary-blue); border-bottom: 2px solid #f1f5f9; padding-bottom: 8px; margin-top: 30px; margin-bottom: 20px; letter-spacing: 1px; font-weight: 800; }
-        label { display: block; font-size: 11px; font-weight: 700; color: #64748b; margin-bottom: 8px; text-transform: uppercase; }
-        input, select, textarea { width: 100%; padding: 12px 16px; border: 2px solid #e2e8f0; border-radius: 12px; font-size: 14px; box-sizing: border-box; transition: border-color 0.2s; }
-        input:focus { outline: none; border-color: var(--primary-blue); }
-        .referee-box { background: #f8fafc; padding: 20px; border-radius: 18px; margin-bottom: 20px; border: 1px solid #e2e8f0; }
-        .btn { padding: 14px 28px; border-radius: 14px; font-weight: 700; cursor: pointer; border: none; transition: 0.3s; text-transform: uppercase; font-size: 13px; }
+        .form-group { margin-bottom: 25px; }
+        
+        h3 { font-size: 13px; text-transform: uppercase; color: var(--apmt-navy); border-bottom: 2px solid #f1f5f9; padding-bottom: 12px; margin-top: 35px; margin-bottom: 25px; letter-spacing: 1px; font-weight: 900; }
+        label { display: block; font-size: 11px; font-weight: 800; color: #64748b; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.5px;}
+        
+        /* 👉 PERFECTED DASHBOARD INPUTS (PILLS) */
+        input[type="text"], input[type="tel"], input[type="date"], input[type="email"], select, textarea { 
+            width: 100%; padding: 14px 20px; border: 2px solid #e2e8f0; border-radius: var(--pill-radius); 
+            font-size: 14px; font-weight: 600; box-sizing: border-box; transition: all 0.2s ease; 
+            background: #f8fafc; outline: none; appearance: none; 
+        }
+        
+        input[type="text"]:focus, input[type="tel"]:focus, input[type="date"]:focus, select:focus, textarea:focus { 
+            border-color: var(--primary-blue); background: white; box-shadow: 0 0 0 4px rgba(0, 139, 229, 0.1); 
+        }
+
+        /* 👉 CUSTOM FILE UPLOAD STYLING (PILL SHAPE WITH BLUE BUTTON) */
+        input[type="file"] { 
+            width: 100%; padding: 10px 15px; border: 2px dashed #cbd5e1; border-radius: var(--pill-radius); 
+            font-size: 13px; font-weight: 600; box-sizing: border-box; transition: all 0.2s ease; 
+            background: #f8fafc; cursor: pointer; color: var(--text-muted);
+        }
+        input[type="file"]:hover { border-color: var(--primary-blue); background: #f0f9ff; }
+        input[type="file"]::file-selector-button {
+            background: var(--primary-blue); color: white; border: none; padding: 10px 20px; 
+            border-radius: var(--pill-radius); margin-right: 15px; font-weight: 800; 
+            text-transform: uppercase; font-size: 11px; cursor: pointer; transition: 0.2s ease;
+        }
+        input[type="file"]::file-selector-button:hover { background: var(--apmt-navy); transform: scale(1.05); }
+        
+        /* 👉 SAFE CHECKBOX EXCLUSION (RESTORES DEFAULT BEHAVIOR) */
+        input[type="checkbox"] { 
+            appearance: auto; width: auto; transform: scale(1.3); cursor: pointer; margin: 0; padding: 0; 
+        }
+        
+        /* Referee Box squarcle */
+        .referee-box { background: #f8fafc; padding: 25px; border-radius: var(--card-radius); margin-bottom: 25px; border: 1px dashed #cbd5e1; }
+        .referee-box .grid { margin-top: 15px; }
+        
+        /* Pill-Shaped Action Buttons */
+        .btn { padding: 16px 28px; border-radius: var(--pill-radius); font-weight: 800; cursor: pointer; border: none; transition: all 0.3s ease; text-transform: uppercase; font-size: 13px; letter-spacing: 0.5px; box-shadow: 0 4px 10px rgba(0,0,0,0.05);}
+        .btn:hover { transform: translateY(-3px); box-shadow: 0 8px 20px rgba(0,0,0,0.15); }
         .btn-primary { background: var(--primary-blue); color: white; width: 100%; }
-        .btn-outline { background: transparent; border: 2px solid #e2e8f0; color: #64748b; }
+        .btn-outline { background: white; border: 2px solid #e2e8f0; color: var(--text-dark); }
+        
         .page { display: none; }
-        .page.active { display: block; }
-        #successModal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(15,23,42,0.6); backdrop-filter: blur(4px); z-index: 1000; }
-        .modal-content { background: white; width: 90%; max-width: 400px; margin: 15vh auto; padding: 40px; border-radius: var(--squarcle-radius); text-align: center; box-shadow: var(--shadow-soft); }
-        .id-display { font-size: 24px; font-weight: 800; margin: 20px 0; color: var(--primary-blue); background: #f0f7ff; padding: 15px; border-radius: 12px; border: 2px dashed var(--primary-blue); }
-        footer { background: white; color: var(--text-muted); text-align: center; padding: 20px; font-size: 12px; border-top: 1px solid #e2e8f0; }
-        .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 10px; }
-        .day-box { border: 1px solid #ddd; padding: 10px; border-radius: 12px; text-align: center; cursor: pointer; position: relative; transition: 0.3s; }
-        .day-box.disabled { background: #f1f5f9; color: #ccc; cursor: not-allowed; border: none; }
-        .day-box.available { border: 2px solid var(--primary-blue); color: var(--primary-blue); font-weight: bold; }
-        .day-box.selected { background: var(--primary-blue) !important; color: white !important; }
+        .page.active { display: block; animation: fadeIn 0.4s ease-out; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* Modal Upgrade */
+        #successModal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 43, 73, 0.8); backdrop-filter: blur(8px); z-index: 1000; }
+        .modal-content { background: white; width: 90%; max-width: 450px; margin: 15vh auto; padding: 50px; border-radius: var(--card-radius); text-align: center; box-shadow: 0 25px 50px rgba(0,0,0,0.25); }
+        .id-display { font-size: 26px; font-weight: 900; margin: 25px 0; color: var(--apmt-navy); background: #f0f7ff; padding: 20px; border-radius: 16px; border: 2px dashed var(--primary-blue); letter-spacing: 1px;}
+        
+        /* Dashboard Calendar styling */
+        .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 12px; }
+        .day-box { border: 1px solid #e2e8f0; padding: 12px; border-radius: 16px; text-align: center; cursor: pointer; position: relative; transition: all 0.3s ease; background: white; font-weight: 700; box-shadow: 0 2px 5px rgba(0,0,0,0.02);}
+        .day-box:hover:not(.disabled):not(.full) { border-color: var(--primary-blue); transform: translateY(-2px); box-shadow: 0 6px 15px rgba(0,139,229,0.15); }
+        .day-box.disabled { background: #f8fafc; color: #cbd5e1; cursor: not-allowed; border: none; box-shadow: none;}
+        .day-box.available { border: 2px solid var(--primary-blue); color: var(--primary-blue); }
+        .day-box.selected { background: var(--primary-blue) !important; color: white !important; box-shadow: 0 8px 20px rgba(0,139,229,0.3) !important; transform: translateY(-2px);}
         .day-box.full { background: #fee2e2; color: #ef4444; border: 1px solid #fecaca; cursor: not-allowed; }
-        .slots-left { font-size: 10px; display: block; margin-top: 5px; }
-        @media print { body * { visibility: hidden; } #printArea, #printArea * { visibility: visible; } #printArea { position: absolute; left: 0; top: 0; width: 100%; } }
+        .slots-left { font-size: 10px; display: block; margin-top: 6px; font-weight: 800; text-transform: uppercase; }
+        
+        @media print { body * { visibility: hidden; } #printArea, #printArea * { visibility: visible; } #printArea { position: absolute; left: 0; top: 0; width: 100%; border:none !important; box-shadow:none !important;} }
+
+        /* 👉 APMT CORPORATE FOOTER STYLES */
+        .apmt-footer { background-color: var(--apmt-navy); color: #e2e8f0; padding: 50px 40px 20px 40px; margin-top: auto; font-family: 'Segoe UI', system-ui, sans-serif; }
+        .footer-grid { max-width: 1150px; margin: 0 auto; display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 40px; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 40px; }
+        .footer-col h4 { color: white; font-size: 15px; font-weight: 900; text-transform: uppercase; letter-spacing: 1px; margin: 0 0 20px 0; display: flex; align-items: center; gap: 12px; }
+        .footer-col h4::before { content: ''; display: block; width: 12px; height: 12px; background-color: var(--apmt-orange); }
+        .footer-col p { font-size: 13px; line-height: 1.6; margin: 0 0 15px 0; color: #cbd5e1; font-weight: 500;}
+        .safety-list { list-style: none; padding: 0; margin: 0; }
+        .safety-list li { font-size: 13px; font-weight: 600; margin-bottom: 12px; display: flex; align-items: flex-start; gap: 10px; color: white; }
+        .incident-box { background: rgba(255,255,255,0.05); border-left: 4px solid var(--warn, #f59e0b); padding: 15px; border-radius: 4px; }
+        .incident-box .tag { font-size: 10px; font-weight: 900; color: var(--warn, #f59e0b); text-transform: uppercase; display: block; margin-bottom: 6px; letter-spacing: 0.5px;}
+        .footer-bottom { max-width: 1150px; margin: 25px auto 0 auto; text-align: center; font-size: 12px; font-weight: 600; color: #94a3b8; }
     </style>
+    <script src="https://www.google.com/recaptcha/api.js" async defer></script>
 </head>
 <body>
 
@@ -61,7 +138,7 @@
 <div class="container">
     <div id="pageNew" class="page active">
         <form id="newTruckerForm" class="card">
-            <h2 style="margin-top:0; color: var(--primary-blue); font-weight:800;">New Trucker Induction</h2>
+            <h2 style="margin-top:0; color: var(--apmt-navy); font-weight:900; font-size: 24px;">New Trucker Induction</h2>
             
             <h3>Biodata Fields</h3>
             <div class="form-group"><label>Full Name (AS SEEN ON DRIVER'S LICENSE)</label><input type="text" name="fullName" placeholder="John Doe" required></div>
@@ -118,35 +195,36 @@
                 <div class="form-group"><label>PASSPORT PHOTO (Required)</label><input type="file" id="new_passport" accept="image/*" required></div>
                 <div class="form-group"><label>DRIVER'S LICENSE (Required)</label><input type="file" id="new_license" accept="image/*,application/pdf" required></div>
             </div>
-            <div class="grid" style="margin-top: 20px;">
-                <div class="form-group"><label>RECOMMENDATION LETTER (Optional but Recommended)</label><input type="file" id="new_recLetter" accept="image/*,application/pdf"></div>
+            <div class="grid" style="margin-top: 15px;">
+                <div class="form-group"><label>RECOMMENDATION LETTER (Optional)</label><input type="file" id="new_recLetter" accept="image/*,application/pdf"></div>
                 <div class="form-group"><label>OTHER DOCUMENTS (Optional)</label><input type="file" id="new_otherDoc" accept="image/*,application/pdf"></div>
             </div>
-            <div class="form-group" style="margin-top:20px;">
+            <div class="form-group" style="margin-top:25px;">
                 <label style="display: flex; align-items: center; gap: 10px; text-transform: none; font-size:13px; font-weight:600; color:var(--text-dark);">
-                    <input type="checkbox" name="consent" required style="width: auto; margin:0;"> I confirm that the details provided are correct and accurate and incorrect information can lead to a ban.
+                    <input type="checkbox" name="consent" required style="width: auto; margin:0; transform: scale(1.2);"> I confirm that the details provided are correct and accurate and incorrect information can lead to a ban.
                 </label>
             </div>
+            <div class="g-recaptcha" data-sitekey="6LcpAY0tAAAAANA44gxAzTCrwk4Lvyr_BGHE0oqI" style="margin-bottom: 25px; display: flex; justify-content: center;"></div>
             <button type="submit" class="btn btn-primary" id="newSubmitBtn" style="margin-top:10px;">Submit Application</button>
         </form>
     </div>
 
     <div id="pageAppointment" class="page">
         <div class="card">
-            <h2 style="margin-top:0; color:var(--primary-blue); font-weight:800;">Schedule Induction Session</h2>
-            <div id="calHeader" style="display:flex; justify-content: space-between; margin-bottom: 15px;">
-                <button class="btn btn-home" onclick="changeMonth(-1)">Prev</button>
-                <h3 id="monthDisplay" style="border:none; margin:0; padding:0; font-size:16px;">Month Year</h3>
-                <button class="btn btn-home" onclick="changeMonth(1)">Next</button>
+            <h2 style="margin-top:0; color:var(--apmt-navy); font-weight:900; font-size:24px;">Schedule Induction Session</h2>
+            <div id="calHeader" style="display:flex; justify-content: space-between; margin-bottom: 25px; align-items:center;">
+                <button class="btn btn-home" onclick="changeMonth(-1)" style="box-shadow:none;">Prev</button>
+                <h3 id="monthDisplay" style="border:none; margin:0; padding:0; font-size:17px; color:var(--apmt-navy);">Month Year</h3>
+                <button class="btn btn-home" onclick="changeMonth(1)" style="box-shadow:none;">Next</button>
             </div>
             <div class="calendar-grid" id="calendarGrid"></div>
             
-            <div id="bookingActions" style="margin-top:20px; display:none; text-align:center; border-top: 1px solid #e2e8f0; padding-top: 20px;">
-                <p style="font-size: 15px; font-weight: 600;">Selected Target Date: <strong id="selectedDateText" style="color: var(--primary-blue);"></strong></p>
+            <div id="bookingActions" style="margin-top:30px; display:none; text-align:center; border-top: 1px solid #e2e8f0; padding-top: 25px;">
+                <p style="font-size: 15px; font-weight: 700;">Selected Target Date: <strong id="selectedDateText" style="color: var(--primary-blue); font-weight:900;"></strong></p>
                 
-                <div style="margin: 15px auto 25px auto; max-width: 300px; text-align: left;">
-                    <label style="font-size: 11px; font-weight: 700; color: #64748b; text-transform: uppercase;">Select Time Slot</label>
-                    <select id="appointmentTime" style="width: 100%; padding: 12px; border-radius: 12px; border: 2px solid #e2e8f0;" required></select>
+                <div style="margin: 20px auto 30px auto; max-width: 350px; text-align: left;">
+                    <label>Select Time Slot</label>
+                    <select id="appointmentTime" required></select>
                 </div>
 
                 <button class="btn btn-primary" onclick="confirmBooking()">Book Appointment Slot</button>
@@ -155,31 +233,31 @@
     </div>
 
     <div id="pageSlip" class="page">
-        <div class="card" id="printArea">
-            <div style="border: 2px solid #000; padding: 20px; text-align: center; border-radius:12px;">
-                <img src="https://cms-cd.apmterminals.com/onne/-/jssmedia/mainsite/africa-and-middle-east/Onne/Standard-Hero-images/wact-logo-square-400-ext.png" style="width: 60px; margin-bottom: 10px;">
-                <h1 style="font-size: 20px; margin-bottom: 5px; font-weight:800;">WACT INDUCTION SLIP</h1>
-                <hr style="border:1px solid #000;">
-                <div style="text-align: left; margin-top: 20px; font-size:14px; line-height:1.8;">
-                    <p><strong>NAME:</strong> <span id="slip_name"></span></p>
-                    <p><strong>INDUCTION ID:</strong> <span id="slip_id"></span></p>
-                    <p><strong>APPT DATE:</strong> <span id="slip_date"></span></p>
-                    <p><strong>APPT ID:</strong> <span id="slip_apt_id"></span></p>
-                    <p><strong>STATUS:</strong> <span id="slip_status"></span></p>
-                    <p><strong>TIME:</strong> <span id="slip_time_display" style="color: var(--primary-blue); font-weight: 700;"></span></p>
+        <div class="card" id="printArea" style="padding:40px;">
+            <div style="border: 2px solid var(--apmt-navy); padding: 30px; text-align: center; border-radius: 20px; background: #f8fafc;">
+                <img src="https://cms-cd.apmterminals.com/onne/-/jssmedia/mainsite/africa-and-middle-east/Onne/Standard-Hero-images/wact-logo-square-400-ext.png" style="width: 70px; margin-bottom: 15px;">
+                <h1 style="font-size: 22px; margin-bottom: 10px; font-weight:900; color:var(--apmt-navy);">WACT INDUCTION SLIP</h1>
+                <hr style="border:1px solid #cbd5e1; margin-bottom: 20px;">
+                <div style="text-align: left; font-size:14px; line-height:2;">
+                    <p><strong>NAME:</strong> <span id="slip_name" style="font-weight:700;"></span></p>
+                    <p><strong>INDUCTION ID:</strong> <span id="slip_id" style="font-weight:700;"></span></p>
+                    <p><strong>APPT DATE:</strong> <span id="slip_date" style="font-weight:700;"></span></p>
+                    <p><strong>APPT ID:</strong> <span id="slip_apt_id" style="font-weight:700; color:var(--text-muted);"></span></p>
+                    <p><strong>STATUS:</strong> <span id="slip_status" style="font-weight:700;"></span></p>
+                    <p><strong>TIME:</strong> <span id="slip_time_display" style="color: var(--primary-blue); font-weight: 900; font-size:16px;"></span></p>
                     <p><strong>LOCATION:</strong> WACT Training Center, Onne Port.</p>
                 </div>
-                <hr style="border:1px solid #000;">
-                <p style="font-size: 11px; margin-top: 20px; font-weight:600;">Please bring a printed copy or screenshot of this slip to the security gate on your appointment day.</p>
+                <hr style="border:1px solid #cbd5e1; margin-top: 20px;">
+                <p style="font-size: 12px; margin-top: 20px; font-weight:700; color:var(--apmt-orange);">Please bring a printed copy or screenshot of this slip to the security gate on your appointment day.</p>
             </div>
-            <div style="margin-top: 20px; display: flex; flex-direction: column; gap: 10px;">
-                <button class="btn btn-primary" onclick="window.print()">Print Slip Paper</button>
-                <div style="display: flex; gap: 5px;">
-                    <input type="email" id="emailInput" placeholder="Enter email address" style="padding: 12px; border-radius: 12px; border: 2px solid #e2e8f0; width: 100%;">
-                    <button id="sendEmailBtn" class="btn btn-home" style="white-space: nowrap;" onclick="sendSlipViaEmail()">Email Slip</button>
+            <div style="margin-top: 30px; display: flex; flex-direction: column; gap: 15px;">
+                <button class="btn btn-primary" onclick="window.print()">🖨️ Print Slip Paper</button>
+                <div style="display: flex; gap: 10px; align-items:center;">
+                    <input type="email" id="emailInput" placeholder="Enter email address" style="margin-bottom:0; flex:1;">
+                    <button id="sendEmailBtn" class="btn btn-home" style="white-space: nowrap; height:100%; margin:0;" onclick="sendSlipViaEmail()">✉️ Email Slip</button>
                 </div>
                 <p id="emailStatusMsg" style="font-size: 12px; margin:0; text-align: center; font-weight:700;"></p>
-                <button class="btn btn-outline" onclick="location.reload()">Complete & Exit</button>
+                <button class="btn btn-outline" onclick="location.reload()" style="width:100%;">Complete & Exit</button>
             </div>
         </div>
     </div>
@@ -187,16 +265,47 @@
 
 <div id="successModal">
     <div class="modal-content">
-        <div style="font-size: 50px;">✅</div>
-        <h2 style="color: var(--primary-blue); font-weight:800; margin:10px 0;">Submitted Successfully!</h2>
-        <p style="color:var(--text-muted); font-size:14px;">Your Induction ID has been generated:</p>
+        <div style="font-size: 55px; margin-bottom: 10px;">✅</div>
+        <h2 style="color: var(--apmt-navy); font-weight:900; margin:10px 0;">Submitted Successfully!</h2>
+        <p style="color:var(--text-muted); font-size:14px; font-weight:600;">Your Induction ID has been generated:</p>
         <div class="id-display" id="displayID">---</div>
-        <p style="font-size: 12px; color: #64748b; margin-bottom:20px;">Please proceed to book your physical induction session.</p>
-        <button class="btn btn-primary" id="modalActionBtn">Continue to Appointment Calendar</button>
+        <p style="font-size: 13px; color: #64748b; margin-bottom:30px; font-weight:600;">Please proceed to book your physical induction session.</p>
+        <button class="btn btn-primary" id="modalActionBtn">Continue to Calendar</button>
     </div>
 </div>
 
-<footer>&copy; 2026 West Africa Container Terminal | Global APM Terminals Network</footer>
+<!-- 👉 APMT STANDARD FOOTER -->
+<footer class="apmt-footer">
+    <div class="footer-grid">
+        <div class="footer-col">
+            <h4>WACT HSC Operations</h4>
+            <p>Our mandatory induction protocol is designed to boost terminal safety, ensuring all personnel and external haulage operators share a unified commitment to zero harm.</p>
+            <p style="color: var(--apmt-orange); font-weight: 800; font-size: 12px; text-transform: uppercase;">Safety First, Operations Always.</p>
+        </div>
+        
+        <div class="footer-col">
+            <h4>Golden Safety Rules</h4>
+            <ul class="safety-list">
+                <li><span style="font-size:16px;">🛑</span> <span><strong>SPEED LIMIT:</strong> Maximum 25 km/h at all times inside the terminal.</span></li>
+                <li><span style="font-size:16px;">🚫</span> <span><strong>NO U-TURNS:</strong> Strictly follow designated traffic flow and lane markers.</span></li>
+                <li><span style="font-size:16px;">🏗️</span> <span><strong>RTG ZONES:</strong> Never drive, park, or walk under the RTG operational lanes.</span></li>
+            </ul>
+        </div>
+        
+        <div class="footer-col">
+            <h4>Safety Flash Alert</h4>
+            <div class="incident-box">
+                <span class="tag">Recent Incident Review</span>
+                <p style="margin-bottom:8px; font-weight:800; color:white;">Tailgating at Main Gate</p>
+                <p style="font-size:12px; margin:0; line-height: 1.5;"><strong>Prevention Protocol:</strong> Maintain a minimum 5-meter distance from the truck ahead. Ensure automated barriers fully open before proceeding.</p>
+            </div>
+        </div>
+    </div>
+    
+    <div class="footer-bottom">
+        &copy; 2026 West Africa Container Terminal | Global APM Terminals Network
+    </div>
+</footer>
 
 <script>
     // Note: We retain Google Apps Script URL strictly to act as our Email Dispatcher. 
@@ -226,6 +335,14 @@
 
     document.getElementById('newTruckerForm').addEventListener('submit', async function(e) {
         e.preventDefault();
+
+        // 👉 PASTE THE SECURITY CHECK HERE
+        const captchaResponse = grecaptcha.getResponse();
+        if (captchaResponse.length === 0) {
+            return alert("Security Alert: Please check the 'I am not a robot' box to prove you are human.");
+        }
+        // 👉 END OF SECURITY CHECK
+
         const btn = document.getElementById('newSubmitBtn');
         btn.innerText = "Submitting Application..."; btn.disabled = true;
 
@@ -471,5 +588,153 @@
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="code.js"></script>
 
+<!-- 👉 APM TERMINALS DASHBOARD-STYLE HELP DESK (WITH EVIDENCE NOTE) -->
+<style>
+    :root {
+        --dash-blue: #008be5; 
+        --dash-orange: #ff5000; 
+        --dash-bg: #eef2f5;    
+        --dash-card: #ffffff;
+        --dash-text: #334155;
+    }
+
+    .help-fab { 
+        position: fixed; bottom: 30px; right: 30px; 
+        width: 65px; height: 65px; 
+        background: var(--dash-orange); 
+        border-radius: 50%; 
+        box-shadow: 0 8px 25px rgba(255, 80, 0, 0.4); 
+        display: flex; justify-content: center; align-items: center; 
+        cursor: pointer; z-index: 99999; 
+        transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); 
+    }
+    .help-fab:hover { 
+        transform: scale(1.08) translateY(-5px); 
+        box-shadow: 0 15px 35px rgba(255, 80, 0, 0.5); 
+    }
+    .help-fab svg { width: 34px; height: 34px; fill: white; }
+    
+    .help-panel { 
+        position: fixed; bottom: 110px; right: 30px; 
+        width: 340px; background: var(--dash-card); 
+        border-radius: 20px; 
+        box-shadow: 0 12px 40px rgba(0,0,0,0.12); 
+        z-index: 99998; 
+        border: 1px solid #e2e8f0; 
+        transform: translateY(20px) scale(0.95); opacity: 0; pointer-events: none; 
+        transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1); 
+        display: flex; flex-direction: column; overflow: hidden; 
+        font-family: 'Segoe UI', system-ui, sans-serif;
+    }
+    .help-panel.active { transform: translateY(0) scale(1); opacity: 1; pointer-events: auto; }
+    
+    .help-header { 
+        background: var(--dash-bg); 
+        color: var(--dash-text); 
+        padding: 25px 20px; text-align: center; 
+        border-bottom: 2px solid white;
+    }
+    .help-header h3 { margin: 0; font-size: 17px; font-weight: 800; color: #0f172a; }
+    .help-header p { margin: 5px 0 0 0; font-size: 12px; font-weight: 600; color: #64748b; }
+    
+    .help-body { padding: 25px 20px; background: white; }
+    .help-label { font-size: 11px; font-weight: 800; color: #94a3b8; margin-bottom: 8px; display: block; text-transform: uppercase; letter-spacing: 1px;}
+    
+    .help-select { 
+        width: 100%; padding: 14px 20px; 
+        border: 2px solid #e2e8f0; border-radius: 30px; 
+        font-size: 13px; font-weight: 700; margin-bottom: 15px; color: var(--dash-text); 
+        outline: none; box-sizing: border-box; background: var(--dash-bg);
+        cursor: pointer; appearance: none;
+        transition: 0.2s;
+    }
+    .help-select:focus { border-color: var(--dash-blue); background: white; box-shadow: 0 0 0 4px rgba(0, 139, 229, 0.1); }
+    
+    /* 👉 NEW: The Evidence Note Box */
+    .help-evidence-box {
+        background: #f8fafc; border: 1px dashed #cbd5e1; border-radius: 12px; 
+        padding: 12px; margin-bottom: 20px; text-align: center;
+    }
+    .help-evidence-title { font-size: 10px; font-weight: 800; color: var(--dash-orange); display: block; text-transform: uppercase; margin-bottom: 4px; }
+    .help-evidence-text { font-size: 11px; color: #64748b; font-weight: 600; line-height: 1.4; }
+
+    .help-btn-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    .h-btn { 
+        padding: 14px 10px; border: none; border-radius: 30px; 
+        font-size: 12px; font-weight: 800; 
+        cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; 
+        transition: all 0.2s ease; color: white; 
+    }
+    .h-btn:hover { transform: translateY(-2px); box-shadow: 0 6px 15px rgba(0,0,0,0.15); }
+    .h-wa { background: #25D366; grid-column: span 2; } 
+    .h-email { background: var(--dash-blue); }
+    .h-call { background: var(--dash-orange); }
+</style>
+
+<div class="help-fab" onclick="toggleHelpPanel()">
+    <svg viewBox="0 0 24 24"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm0 14H6l-2 2V4h16v12z"/></svg>
+</div>
+
+<div class="help-panel" id="wactHelpPanel">
+    <div class="help-header">
+        <h3>WACT HSE Support Desk</h3>
+        <p>How can we assist you today?</p>
+    </div>
+    <div class="help-body">
+        <label class="help-label">Select Issue Category</label>
+        <select id="helpIssueSelector" class="help-select">
+            <option value="General Inquiry">General Inquiry</option>
+            <option value="Induction Issue">Induction Process Issue</option>
+            <option value="Induction Number Not Showing">Induction Number Not Showing</option>
+            <option value="Cannot Find License Number">Cannot Find License Number</option>
+            <option value="Appointment Reschedule">Appointment Reschedule Assist</option>
+            <option value="Card Verification Failed">Card Verification Failed at Gate</option>
+        </select>
+        
+        <!-- 👉 NEW: Clean Evidence Note -->
+        <div class="help-evidence-box">
+            <span class="help-evidence-title">📎 Evidence Required</span>
+            <span class="help-evidence-text">Please attach a copy of any relevant evidence or screenshots when submitting your complaint.</span>
+        </div>
+
+        <div class="help-btn-grid">
+            <button class="h-btn h-wa" onclick="dispatchSupport('whatsapp')">
+                <svg style="width:18px;height:18px;fill:white;" viewBox="0 0 24 24"><path d="M12.031 6.172c-3.181 0-5.767 2.586-5.768 5.766-.001 1.298.38 2.27 1.019 3.287l-.582 2.128 2.182-.573c.978.58 1.911.928 3.145.929 3.178 0 5.767-2.587 5.768-5.766.001-3.187-2.575-5.77-5.764-5.771zm3.392 8.244c-.144.405-.837.774-1.17.824-.299.045-.677.063-1.092-.069-.252-.08-.575-.187-.988-.365-1.739-.751-2.874-2.502-2.961-2.617-.087-.116-.708-.94-.708-1.793s.448-1.273.607-1.446c.159-.173.346-.217.462-.217l.332.006c.106.005.249-.04.39.298.144.347.491 1.2.534 1.287.043.087.072.188.014.304-.058.116-.087.188-.173.289l-.26.304c-.087.086-.177.18-.076.327.101.144.447.706.945 1.15.643.574 1.199.754 1.343.84.144.087.231.072.317-.029l.375-.462c.116-.144.231-.116.361-.072.13.043.824.39 1.966.52.144.043.238.065.274.116.036.051.036.298-.108.703z"/></svg>
+                WhatsApp Support
+            </button>
+            <button class="h-btn h-email" onclick="dispatchSupport('email')">✉️ Email</button>
+            <button class="h-btn h-call" onclick="dispatchSupport('call')">📞 Call</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    function toggleHelpPanel() {
+        document.getElementById('wactHelpPanel').classList.toggle('active');
+    }
+
+    function dispatchSupport(channel) {
+        const supportPhone = "2349120399575"; 
+        const supportEmail = "security@apmterminals.com"; 
+        
+        const issue = document.getElementById('helpIssueSelector').value;
+        const encodedIssue = encodeURIComponent(issue);
+        
+        if (channel === 'whatsapp') {
+            const waText = encodeURIComponent(`Hello WACT Support, I am an external trucker and I need help with: ${issue}.\n\n[Attached is my evidence/screenshot]`);
+            window.open(`https://wa.me/${supportPhone}?text=${waText}`, '_blank');
+        } 
+        else if (channel === 'email') {
+            const body = encodeURIComponent(`Hello WACT Support,\n\nI am experiencing the following issue: ${issue}.\n\n[PLEASE ATTACH YOUR EVIDENCE/SCREENSHOTS TO THIS EMAIL]\n\nPlease assist me.\n\nMy Details:\nInduction No: \nName: `);
+            window.location.href = `mailto:${supportEmail}?subject=Portal Support: ${encodedIssue}&body=${body}`;
+        } 
+        else if (channel === 'call') {
+            window.location.href = `tel:+${supportPhone}`;
+        }
+        
+        toggleHelpPanel();
+    }
+</script>
+<!-- 👉 END DASHBOARD-STYLE HELP DESK -->
 </body>
 </html>
