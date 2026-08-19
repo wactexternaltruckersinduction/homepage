@@ -1,60 +1,94 @@
- <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Dashboard - WACT</title>
     <style>
+        /* 👉 NEW DASHBOARD VISUAL STANDARD */
         :root { 
-            --primary-blue: #004a99; --bg-light: #f8fafc; --text-dark: #0f172a; --text-muted: #475569;
-            --success: #16a34a; --danger: #dc2626; --warn: #ea580c;
-            --squarcle-radius: 24px; --shadow-soft: 0 10px 25px -5px rgba(0, 0, 0, 0.05);
+            --primary-blue: #008be5; /* Vibrant Dashboard Blue */
+            --apmt-navy: #002B49; 
+            --apmt-orange: #FF6600; /* Dashboard Orange */
+            --bg-light: #eef2f5;    /* Soft Dashboard Background */
+            --text-dark: #334155; 
+            --text-muted: #64748b;
+            --success: #10b981; 
+            --danger: #ef4444; 
+            --warn: #f59e0b;
+            --card-radius: 20px; 
+            --pill-radius: 50px;
+            --shadow-soft: 0 12px 35px rgba(0, 0, 0, 0.06);
+            --shadow-hover: 0 15px 40px rgba(0, 0, 0, 0.12);
         }
         body { font-family: 'Segoe UI', system-ui, sans-serif; background-color: var(--bg-light); color: var(--text-dark); margin: 0; padding: 0; min-height: 100vh; display: flex; flex-direction: column; }
-        header { background: white; padding: 20px 40px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid #e2e8f0; }
+        
+        /* Header Upgrade */
+        header { background: white; padding: 20px 40px; display: flex; align-items: center; justify-content: space-between; border-bottom: none; box-shadow: 0 4px 20px rgba(0,0,0,0.04); z-index: 10; }
         .header-brand { display: flex; align-items: center; gap: 16px; }
         .logo-circle { width: 55px; height: 55px; border-radius: 16px; display: flex; justify-content: center; align-items: center; overflow: hidden; background: #fafafa; border: 1px solid #e2e8f0; }
         .logo-circle img { max-width: 80%; height: auto; }
-        .brand-text .name { font-weight: 800; color: var(--primary-blue); font-size: 16px; display: block; line-height: 1.2; }
+        .brand-text .name { font-weight: 800; color: var(--apmt-navy); font-size: 16px; display: block; line-height: 1.2; text-transform: uppercase; letter-spacing: 0.5px;}
         .brand-text .sub { font-size: 11px; color: var(--text-muted); font-weight: 600; text-transform: uppercase; letter-spacing: 1px; margin-top: 2px; display: block;}
-        .btn-home { padding: 10px 18px; border-radius: 12px; font-weight: 700; font-size: 12px; text-transform: uppercase; text-decoration: none; color: var(--text-muted); border: 2px solid #e2e8f0; transition: 0.2s; white-space: nowrap;}
-        .btn-home:hover { background: #f1f5f9; color: var(--text-dark); }
+        
+        /* Pill-Shaped Home Button */
+        .btn-home { padding: 12px 24px; border-radius: var(--pill-radius); font-weight: 800; font-size: 11px; text-transform: uppercase; text-decoration: none; color: var(--text-muted); border: 2px solid #e2e8f0; transition: all 0.3s ease; white-space: nowrap; background: white;}
+        .btn-home:hover { background: var(--bg-light); color: var(--text-dark); transform: translateY(-2px); box-shadow: var(--shadow-soft); }
 
-        .container { flex: 1; max-width: 1100px; margin: 30px auto; padding: 0 20px; width: 100%; box-sizing: border-box; }
+        .container { flex: 1; max-width: 1150px; margin: 40px auto; padding: 0 20px; width: 100%; box-sizing: border-box; }
         #protectedContent { display: none; }
-        .card { background: white; border-radius: var(--squarcle-radius); padding: 35px; box-shadow: var(--shadow-soft); border: 1px solid #e2e8f0; margin-bottom: 25px; }
         
-        .modern-input { width: 100%; padding: 12px; border: 2px solid #e2e8f0; border-radius: 12px; margin-bottom: 16px; font-family: inherit; box-sizing: border-box; font-size: 14px; font-weight: 600;}
-        .btn-main { padding: 12px 20px; border: none; border-radius: 12px; font-weight: 800; cursor: pointer; font-size: 13px; text-transform: uppercase; transition: 0.2s; display: inline-block;}
-        .btn-main:hover { opacity: 0.9; transform: translateY(-1px); }
+        /* Soft Dashboard Cards */
+        .card { background: white; border-radius: var(--card-radius); padding: 35px; box-shadow: var(--shadow-soft); border: none; margin-bottom: 25px; transition: transform 0.3s ease; }
+        .card:hover { transform: translateY(-2px); box-shadow: var(--shadow-hover); }
+        
+        /* Pill-Shaped Inputs */
+        .modern-input { width: 100%; padding: 14px 20px; border: 2px solid #e2e8f0; border-radius: var(--pill-radius); margin-bottom: 16px; font-family: inherit; box-sizing: border-box; font-size: 13px; font-weight: 700; background: #f8fafc; transition: all 0.2s ease; outline: none; appearance: none;}
+        .modern-input:focus { border-color: var(--primary-blue); background: white; box-shadow: 0 0 0 4px rgba(0, 139, 229, 0.1); }
+        
+        /* Interactive Pill-Shaped Buttons */
+        .btn-main { padding: 14px 24px; border: none; border-radius: var(--pill-radius); font-weight: 800; cursor: pointer; font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px; transition: all 0.3s ease; display: inline-block; box-shadow: 0 4px 10px rgba(0,0,0,0.1);}
+        .btn-main:hover { transform: translateY(-3px); box-shadow: 0 8px 20px rgba(0,0,0,0.15); }
 
-        .modal-bg { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(15, 23, 42, 0.75); backdrop-filter: blur(8px); display: none; align-items: center; justify-content: center; z-index: 99999; }
-        .gate-card { background: white; width: 90%; max-width: 500px; padding: 40px; border-radius: var(--squarcle-radius); text-align: center; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.4); }
-        .gate-input { width: 100%; padding: 14px; border: 2px solid #e2e8f0; border-radius: 14px; font-size: 16px; text-align: center; margin-bottom: 20px; box-sizing: border-box; font-weight: 700;}
+        /* Gate/Modal Upgrades */
+        .modal-bg { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(15, 23, 42, 0.8); backdrop-filter: blur(10px); display: none; align-items: center; justify-content: center; z-index: 99999; }
+        .gate-card { background: white; width: 90%; max-width: 500px; padding: 50px; border-radius: var(--card-radius); text-align: center; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5); border: none; }
+        .gate-input { width: 100%; padding: 16px 20px; border: 2px solid #e2e8f0; border-radius: var(--pill-radius); font-size: 15px; text-align: center; margin-bottom: 20px; box-sizing: border-box; font-weight: 800; background: #f8fafc; outline:none; transition: 0.3s;}
+        .gate-input:focus { border-color: var(--apmt-navy); background: white; }
         
-        .driver-table { width: 100%; border-collapse: collapse; margin-top: 15px; background: white; border-radius: 12px; overflow: hidden; border: 1px solid #e2e8f0; }
-        .driver-table th, .driver-table td { padding: 15px; border-bottom: 1px solid #e2e8f0; text-align: left; font-size: 14px; }
-        .driver-table th { background: #f8fafc; font-weight: 800; color: var(--text-muted); text-transform: uppercase; font-size: 12px; }
-        .driver-table tr:hover { background: #f8fafc; }
-        .cb-action { transform: scale(1.4); cursor: pointer; accent-color: var(--warn); }
+        /* Clean Tables */
+        .driver-table { width: 100%; border-collapse: separate; border-spacing: 0; margin-top: 15px; background: white; border-radius: 16px; overflow: hidden; border: 1px solid #e2e8f0; }
+        .driver-table th, .driver-table td { padding: 16px; border-bottom: 1px solid #e2e8f0; text-align: left; font-size: 13px; }
+        .driver-table th { background: #f8fafc; font-weight: 800; color: var(--text-muted); text-transform: uppercase; font-size: 11px; letter-spacing: 0.5px; border-bottom: 2px solid #e2e8f0;}
+        .driver-table tr:hover td { background: #f8fafc; }
+        .driver-table tr:last-child td { border-bottom: none; }
+        .cb-action { transform: scale(1.4); cursor: pointer; accent-color: var(--primary-blue); }
         
-        .status-pill { padding: 6px 12px; border-radius: 8px; font-size: 11px; font-weight: 800; text-transform: uppercase; display: inline-block;}
+        /* Dashboard Status Pills */
+        .status-pill { padding: 8px 14px; border-radius: var(--pill-radius); font-size: 10px; font-weight: 900; text-transform: uppercase; display: inline-block; letter-spacing: 0.5px;}
         .pill-pending { background: #f1f5f9; color: #64748b; }
-        .pill-pass { background: #dcfce3; color: #166534; }
-        .pill-fail { background: #fee2e2; color: #991b1b; }
+        .pill-pass { background: #dcfce3; color: #166534; box-shadow: 0 2px 10px rgba(22, 163, 74, 0.1); }
+        .pill-fail { background: #fee2e2; color: #991b1b; box-shadow: 0 2px 10px rgba(220, 38, 38, 0.1); }
 
-        .tab-nav { display: flex; gap: 10px; margin-bottom: 25px; border-bottom: 2px solid #e2e8f0; overflow-x: auto; padding-bottom: 10px; }
-        .tab-btn { background: white; border: 1px solid #e2e8f0; padding: 12px 24px; font-size: 14px; font-weight: 800; color: #64748b; cursor: pointer; border-radius: 12px; transition: 0.2s; white-space: nowrap; }
-        .tab-btn:hover { background: #f8fafc; color: var(--primary-blue); }
-        .tab-btn.active { background: var(--primary-blue); color: white; border-color: var(--primary-blue); box-shadow: 0 4px 10px rgba(0,74,153,0.2); }
+        /* APMT Dashboard Style Filter Tabs */
+        .tab-nav { display: flex; gap: 15px; margin-bottom: 35px; overflow-x: auto; padding-bottom: 15px; border-bottom: none;}
+        .tab-btn { background: white; border: none; padding: 14px 28px; font-size: 13px; font-weight: 800; color: var(--text-muted); cursor: pointer; border-radius: var(--pill-radius); transition: all 0.3s ease; white-space: nowrap; box-shadow: 0 4px 15px rgba(0,0,0,0.05); text-transform: uppercase; letter-spacing: 0.5px;}
+        .tab-btn:hover { transform: translateY(-3px); box-shadow: var(--shadow-hover); color: var(--primary-blue); }
+        .tab-btn.active { background: var(--primary-blue); color: white; box-shadow: 0 8px 25px rgba(0, 139, 229, 0.35); transform: translateY(-3px);}
+        
         .tab-content { display: none; }
-        .tab-content.active { display: block; animation: fadeIn 0.3s ease-in-out; }
+        .tab-content.active { display: block; animation: slideUpFade 0.4s cubic-bezier(0.16, 1, 0.3, 1); }
 
-        .setting-chip { display: inline-flex; align-items: center; gap: 8px; background: #f1f5f9; padding: 6px 12px; border-radius: 8px; font-size: 12px; font-weight: 700; color: #334155; margin: 4px; border: 1px solid #cbd5e1; }
-        .chip-delete { cursor: pointer; color: #ef4444; font-weight: 900; }
-        .chip-delete:hover { color: #991b1b; }
+        @keyframes slideUpFade {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
 
-        footer { background: white; color: var(--text-muted); text-align: center; padding: 20px; font-size: 12px; border-top: 1px solid #e2e8f0; margin-top: auto; }
+        .setting-chip { display: inline-flex; align-items: center; gap: 8px; background: white; padding: 8px 16px; border-radius: var(--pill-radius); font-size: 12px; font-weight: 800; color: var(--text-dark); margin: 4px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); border: 1px solid #e2e8f0; }
+        .chip-delete { cursor: pointer; color: var(--danger); font-weight: 900; background: #fee2e2; width: 20px; height: 20px; display: flex; align-items: center; justify-content: center; border-radius: 50%; transition: 0.2s;}
+        .chip-delete:hover { background: var(--danger); color: white; }
+
+        footer { background: transparent; color: var(--text-muted); text-align: center; padding: 20px; font-size: 12px; font-weight: 600; margin-top: auto; }
     </style>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
@@ -74,22 +108,22 @@
 <!-- UNIQUE ADMIN LOGIN GATE -->
 <div id="authGateModal" class="modal-bg" style="display: flex;">
     <div class="gate-card">
-        <div style="font-size: 40px; margin-bottom: 10px;">🛡️</div>
-        <h2 style="color: var(--primary-blue); font-weight: 900; margin-top: 0; letter-spacing: -0.5px;">IMS Secure Login</h2>
-        <p style="color: #64748b; font-size: 13px; font-weight: 600; margin-bottom: 20px;">Enter your unique Admin UID and Password. All actions are logged and audited.</p>
+        <div style="font-size: 45px; margin-bottom: 15px;">🛡️</div>
+        <h2 style="color: var(--apmt-navy); font-weight: 900; margin-top: 0; letter-spacing: -0.5px;">IMS Secure Login</h2>
+        <p style="color: #64748b; font-size: 13px; font-weight: 600; margin-bottom: 30px;">Enter your unique Admin UID and Password. All actions are logged and audited.</p>
         
-        <input type="text" id="gateUidField" class="gate-input" placeholder="Admin UID (e.g. ADMIN-001)" style="margin-bottom: 12px; text-transform: uppercase;">
+        <input type="text" id="gateUidField" class="gate-input" placeholder="Admin UID (e.g. ADMIN-001)" style="margin-bottom: 16px; text-transform: uppercase;">
         <input type="password" id="gatePasscodeField" class="gate-input" placeholder="Password">
         
-        <button type="button" id="loginBtn" class="btn-main" style="background: var(--primary-blue); color: white; width: 100%; font-size: 15px;" onclick="unlockAdminPanel()">Verify Identity</button>
+        <button type="button" id="loginBtn" class="btn-main" style="background: var(--primary-blue); color: white; width: 100%; font-size: 15px; margin-top: 10px;" onclick="unlockAdminPanel()">Verify Identity</button>
     </div>
 </div>
 
 <!-- DYNAMIC BAN MODAL -->
 <div id="dynamicBanModal" class="modal-bg">
     <div class="gate-card" style="text-align: left;">
-        <h2 style="color: var(--danger); font-weight: 800; margin-top: 0; border-bottom: 2px solid #fee2e2; padding-bottom: 10px;">❌ Register Failure & Ban</h2>
-        <label style="font-size: 11px; font-weight: 800; color: #475569;">1. Select Substance</label>
+        <h2 style="color: var(--danger); font-weight: 900; margin-top: 0; border-bottom: 2px solid #fee2e2; padding-bottom: 15px;">❌ Register Failure & Ban</h2>
+        <label style="font-size: 11px; font-weight: 800; color: #475569; display:block; margin-bottom:5px;">1. Select Substance</label>
         <select id="dynBanSubstance" class="modern-input" style="border-color: var(--danger);">
             <option value="Marijuana (THC)">Marijuana - THC</option>
             <option value="Opiate-Morphine (OPI/MOR)">Opiate-Morphine - OPI/MOR</option>
@@ -116,7 +150,7 @@
             <option value="Buprenorphine (BUP)">Buprenorphine - BUP</option>
             <option value="Refusal to Test">Refusal to Test</option>
         </select>
-        <label style="font-size: 11px; font-weight: 800; color: #475569;">2. Ban Duration</label>
+        <label style="font-size: 11px; font-weight: 800; color: #475569; display:block; margin-bottom:5px;">2. Ban Duration</label>
         <div style="display: flex; gap: 10px;">
             <input type="number" id="dynBanValue" class="modern-input" placeholder="6" value="1" style="flex: 1; border-color: var(--danger);">
             <select id="dynBanUnit" class="modern-input" style="flex: 1; border-color: var(--danger);">
@@ -126,8 +160,8 @@
                 <option value="Indefinite">Indefinite</option>
             </select>
         </div>
-        <div style="display: flex; gap: 10px; margin-top: 15px;">
-            <button class="btn-main" style="background: white; color: var(--text-muted); border: 2px solid #e2e8f0; width: 100%;" onclick="document.getElementById('dynamicBanModal').style.display='none'">Cancel</button>
+        <div style="display: flex; gap: 15px; margin-top: 25px;">
+            <button class="btn-main" style="background: white; color: var(--text-muted); border: 2px solid #e2e8f0; width: 100%; box-shadow:none;" onclick="document.getElementById('dynamicBanModal').style.display='none'">Cancel</button>
             <button class="btn-main" style="background: var(--danger); color: white; width: 100%;" onclick="executeDynamicBan()">Implement Ban</button>
         </div>
     </div>
@@ -136,23 +170,23 @@
 <!-- POKA-YOKE MASS RESCHEDULE MODAL -->
 <div id="pokaYokeModal" class="modal-bg">
     <div class="gate-card" style="text-align: left; max-width: 650px;">
-        <h2 style="color: var(--warn); font-weight: 800; margin-top: 0; border-bottom: 2px solid #ffedd5; padding-bottom: 10px;">⚠️ Action Required: Affected Truckers</h2>
-        <p style="font-size: 14px; font-weight: 600; color: #475569;">Blocking this date/time affects all the scheduled drivers below. Select a new operational date, and the system will automatically distribute them across available slots.</p>
+        <h2 style="color: var(--warn); font-weight: 900; margin-top: 0; border-bottom: 2px solid #ffedd5; padding-bottom: 15px;">⚠️ Action Required: Affected Truckers</h2>
+        <p style="font-size: 14px; font-weight: 600; color: #475569; line-height: 1.5;">Blocking this date/time affects all the scheduled drivers below. Select a new operational date, and the system will automatically distribute them across available slots.</p>
         
-        <div style="max-height: 200px; overflow-y: auto; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; margin-bottom: 15px;">
+        <div style="max-height: 200px; overflow-y: auto; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; margin-bottom: 20px;">
             <table class="driver-table" style="margin-top: 0; border: none; font-size: 12px;">
                 <tbody id="affectedTruckersBody"></tbody>
             </table>
         </div>
 
-        <button onclick="copyPokaYokePhones()" class="btn-main" style="background: #0f172a; color: white; width: 100%; margin-bottom: 20px;">📱 Copy Phone Numbers (For Bulk SMS)</button>
+        <button onclick="copyPokaYokePhones()" class="btn-main" style="background: var(--apmt-navy); color: white; width: 100%; margin-bottom: 25px;">📱 Copy Phone Numbers (For Bulk SMS)</button>
 
-        <label style="font-size: 11px; font-weight: 800; color: #475569;">SELECT NEW DATE FOR MASS RESCHEDULE</label>
-        <div style="display: flex; gap: 10px;">
+        <label style="font-size: 11px; font-weight: 800; color: #475569; display:block; margin-bottom:5px;">SELECT NEW DATE FOR MASS RESCHEDULE</label>
+        <div style="display: flex; gap: 15px;">
             <input type="date" id="massRescheduleDate" class="modern-input" style="flex: 2; border-color: var(--warn); margin-bottom: 0;">
             <button onclick="executeMassReschedule()" class="btn-main" style="background: var(--warn); color: white; flex: 1; margin-bottom: 0;">Move Drivers</button>
         </div>
-        <button class="btn-main" style="background: transparent; color: #94a3b8; width: 100%; margin-top: 15px;" onclick="cancelPokaYoke()">Cancel Block Action</button>
+        <button class="btn-main" style="background: transparent; color: #94a3b8; width: 100%; margin-top: 20px; box-shadow:none;" onclick="cancelPokaYoke()">Cancel Block Action</button>
     </div>
 </div>
 
@@ -167,18 +201,18 @@
     <!-- WORKSPACE -->
     <div id="tab-workspace" class="tab-content">
         <div class="card">
-            <h2 id="portalTitle" style="margin-top:0; color: var(--primary-blue); font-weight: 800;">Department Action Roster</h2>
+            <h2 id="portalTitle" style="margin-top:0; color: var(--apmt-navy); font-weight: 900; font-size:22px;">Department Action Roster</h2>
             
-            <div style="background: #f8fafc; padding: 15px; border-radius: 12px; border: 1px solid #e2e8f0; margin-bottom: 20px; display: flex; gap: 15px; align-items: flex-end; flex-wrap: wrap;">
+            <div style="background: #f8fafc; padding: 20px; border-radius: 20px; border: 1px solid #e2e8f0; margin-bottom: 25px; display: flex; gap: 15px; align-items: flex-end; flex-wrap: wrap;">
                 <div style="flex: 1; min-width: 150px;">
-                    <label style="font-size: 11px; font-weight: 800; color: #475569; display: block; margin-bottom: 4px;">LOAD DATE</label>
+                    <label style="font-size: 11px; font-weight: 800; color: #475569; display: block; margin-bottom: 8px;">LOAD DATE</label>
                     <input type="date" id="workspaceDate" class="modern-input" style="margin-bottom: 0;">
                 </div>
                 <button onclick="loadWorkspaceRoster()" class="btn-main" style="background: var(--primary-blue); color: white; margin-bottom: 0;">Load Roster</button>
             </div>
 
-            <div id="workspaceControls" style="display: none; background: #fff7ed; padding: 15px; border-radius: 12px; border: 2px solid #ffedd5; margin-bottom: 20px; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 15px;">
-                <span style="font-size: 14px; font-weight: 800; color: var(--warn);">⚡ BATCH ACTIONS:</span>
+            <div id="workspaceControls" style="display: none; background: #fff7ed; padding: 20px; border-radius: 20px; border: 2px solid #ffedd5; margin-bottom: 25px; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 15px;">
+                <span style="font-size: 14px; font-weight: 900; color: var(--warn);">⚡ BATCH ACTIONS:</span>
                 <div style="display: flex; gap: 10px;">
                     <button id="btnHsePass" class="btn-main" style="background: var(--success); color: white; display: none;" onclick="processWorkspace('hse-pass')">✅ Mark HSE Attended</button>
                     <button id="btnMedicPass" class="btn-main" style="background: var(--success); color: white; display: none;" onclick="processWorkspace('medic-pass')">✅ Mark Medic Passed</button>
@@ -188,7 +222,7 @@
             <div style="overflow-x: auto;">
                 <table class="driver-table">
                     <thead><tr><th style="width: 40px;"><input type="checkbox" class="cb-action" id="wsSelectAll" onclick="toggleWsCheckboxes(this)" style="display:none;"></th><th>ID</th><th>Name</th><th>D/A Status</th><th>HSE Status</th></tr></thead>
-                    <tbody id="workspaceRosterBody"><tr><td colspan="5" style="text-align:center; padding:30px;">Select a date to load.</td></tr></tbody>
+                    <tbody id="workspaceRosterBody"><tr><td colspan="5" style="text-align:center; padding:40px; font-weight:600; color:#94a3b8;">Select a date to load.</td></tr></tbody>
                 </table>
             </div>
         </div>
@@ -197,23 +231,23 @@
     <!-- REGISTRY -->
     <div id="tab-registry" class="tab-content">
         <div class="card">
-            <h2 style="margin-top:0; color: var(--primary-blue); font-weight: 800;">Pass Printing Terminal</h2>
-            <div style="background: #f8fafc; padding: 15px; border-radius: 12px; border: 1px solid #e2e8f0; margin-bottom: 20px; display: flex; gap: 15px; align-items: flex-end; flex-wrap: wrap;">
-                <div style="flex: 1;"><label style="font-size: 11px; font-weight: 700;">DATE</label><input type="date" id="filterDate" class="modern-input" style="margin-bottom: 0;"></div>
-                <div style="flex: 1;"><label style="font-size: 11px; font-weight: 700;">STATUS</label>
+            <h2 style="margin-top:0; color: var(--apmt-navy); font-weight: 900; font-size:22px;">Pass Printing Terminal</h2>
+            <div style="background: #f8fafc; padding: 20px; border-radius: 20px; border: 1px solid #e2e8f0; margin-bottom: 25px; display: flex; gap: 15px; align-items: flex-end; flex-wrap: wrap;">
+                <div style="flex: 1;"><label style="font-size: 11px; font-weight: 800; display:block; margin-bottom:8px; color:#475569;">DATE</label><input type="date" id="filterDate" class="modern-input" style="margin-bottom: 0;"></div>
+                <div style="flex: 1;"><label style="font-size: 11px; font-weight: 800; display:block; margin-bottom:8px; color:#475569;">STATUS</label>
                     <select id="filterStatus" class="modern-input" style="margin-bottom: 0;"><option value="Verified">Verified</option><option value="Booked">Booked</option><option value="Failed D/A">Failed D/A</option><option value="Card Generated">Card Generated</option></select>
                 </div>
                 <button onclick="fetchFilteredDrivers()" class="btn-main" style="background: var(--primary-blue); color: white; margin-bottom: 0;">Search</button>
             </div>
             <div id="batchActionControls" style="display: none; gap: 15px; margin-bottom: 25px; flex-wrap: wrap;">
-                <button class="btn-main" style="background:#16a34a; flex: 1; color: white;" onclick="openPrintBatch()">🖨️ Print Displayed</button>
-                <button class="btn-main" style="background:#0f172a; flex: 1; color: white;" onclick="reprintSelected()">🖨️ Reprint Selected</button>
+                <button class="btn-main" style="background:#10b981; flex: 1; color: white;" onclick="openPrintBatch()">🖨️ Print Displayed</button>
+                <button class="btn-main" style="background:var(--apmt-navy); flex: 1; color: white;" onclick="reprintSelected()">🖨️ Reprint Selected</button>
                 <button class="btn-main" style="background:var(--warn); flex: 1; color: white;" onclick="markSelectedCheckboxes()">✅ Mark as Generated</button>
             </div>
             <div style="overflow-x: auto;">
                 <table class="driver-table">
                     <thead><tr><th style="width: 40px;"><input type="checkbox" id="selectAllCb" class="cb-action" onclick="toggleAllCbs(this)" style="display:none;"></th><th>ID</th><th>Name</th><th>D/A Status</th><th>HSE Status</th></tr></thead>
-                    <tbody id="verifiedRowsContainer"><tr><td colspan="5" style="text-align:center; padding: 30px;">Use filter to load.</td></tr></tbody>
+                    <tbody id="verifiedRowsContainer"><tr><td colspan="5" style="text-align:center; padding: 40px; font-weight:600; color:#94a3b8;">Use filter to load.</td></tr></tbody>
                 </table>
             </div>
         </div>
@@ -221,51 +255,51 @@
 
     <!-- ANALYTICS -->
     <div id="tab-analytics" class="tab-content">
-        <div class="card" style="padding: 25px;">
-            <h2 style="color: #004a99; margin-top: 0; margin-bottom: 15px; font-weight: 800;">📊 Induction Analytics Overview</h2>
-            <div style="display: flex; gap: 15px; align-items: flex-end; margin-bottom: 25px; flex-wrap: wrap;">
-                <div><label style="font-size: 12px; font-weight: 700;">START DATE</label><input type="date" id="chartStartDate" class="modern-input" style="margin-bottom:0;"></div>
-                <div><label style="font-size: 12px; font-weight: 700;">END DATE</label><input type="date" id="chartEndDate" class="modern-input" style="margin-bottom:0;"></div>
+        <div class="card" style="padding: 40px;">
+            <h2 style="color: var(--apmt-navy); margin-top: 0; margin-bottom: 25px; font-weight: 900; font-size:22px;">📊 Induction Analytics Overview</h2>
+            <div style="display: flex; gap: 15px; align-items: flex-end; margin-bottom: 35px; flex-wrap: wrap;">
+                <div><label style="font-size: 11px; font-weight: 800; display:block; margin-bottom:8px; color:#475569;">START DATE</label><input type="date" id="chartStartDate" class="modern-input" style="margin-bottom:0;"></div>
+                <div><label style="font-size: 11px; font-weight: 800; display:block; margin-bottom:8px; color:#475569;">END DATE</label><input type="date" id="chartEndDate" class="modern-input" style="margin-bottom:0;"></div>
                 <button onclick="fetchAndDrawAnalytics()" class="btn-main" style="background: var(--primary-blue); color: white; margin-bottom:0;">Generate Report</button>
             </div>
-            <div id="analyticsLoading" style="display:none; color:#004a99; font-weight:bold; margin-bottom: 15px;">Sorting data...</div>
-            <div style="display: flex; gap: 30px; align-items: center; flex-wrap: wrap;" id="analyticsResults">
-                <div style="width: 300px; height: 300px;"><canvas id="inductionPieChart"></canvas></div>
-                <div style="flex-grow: 1; display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
-                    <div style="background: #faf5ff; padding: 15px; border-radius: 8px; border-left: 5px solid #a855f7;"><h3 style="margin: 0; color: #9333ea; font-size: 11px;">NEW APPLICATION</h3><p style="margin: 5px 0 0 0; font-size: 24px; font-weight: 900;" id="stat_new">0</p></div>
-                    <div style="background: #fdf2f8; padding: 15px; border-radius: 8px; border-left: 5px solid #db2777;"><h3 style="margin: 0; color: #be185d; font-size: 11px;">RENEWALS</h3><p style="margin: 5px 0 0 0; font-size: 24px; font-weight: 900;" id="stat_renew">0</p></div>
-                    <div style="background: #f8fafc; padding: 15px; border-radius: 8px; border-left: 5px solid #64748b;"><h3 style="margin: 0; color: #64748b; font-size: 11px;">TOTAL EXPECTED</h3><p style="margin: 5px 0 0 0; font-size: 24px; font-weight: 900;" id="stat_total">0</p></div>
-                    <div style="background: #fefce8; padding: 15px; border-radius: 8px; border-left: 5px solid #eab308;"><h3 style="margin: 0; color: #ca8a04; font-size: 11px;">PENDING (Booked)</h3><p style="margin: 5px 0 0 0; font-size: 24px; font-weight: 900;" id="stat_booked">0</p></div>
-                    <div style="background: #f0fdf4; padding: 15px; border-radius: 8px; border-left: 5px solid #22c55e;"><h3 style="margin: 0; color: #16a34a; font-size: 11px;">VERIFIED</h3><p style="margin: 5px 0 0 0; font-size: 24px; font-weight: 900;" id="stat_verified">0</p></div>
-                    <div style="background: #eff6ff; padding: 15px; border-radius: 8px; border-left: 5px solid #3b82f6;"><h3 style="margin: 0; color: #2563eb; font-size: 11px;">CARDS GENERATED</h3><p style="margin: 5px 0 0 0; font-size: 24px; font-weight: 900;" id="stat_generated">0</p></div>
-                    <div style="background: #fef2f2; padding: 15px; border-radius: 8px; border-left: 5px solid #dc2626;"><h3 style="margin: 0; color: #991b1b; font-size: 11px;">FAILED D/A</h3><p style="margin: 5px 0 0 0; font-size: 24px; font-weight: 900;" id="stat_failed">0</p></div>
+            <div id="analyticsLoading" style="display:none; color:var(--primary-blue); font-weight:800; margin-bottom: 15px;">Sorting data...</div>
+            <div style="display: flex; gap: 40px; align-items: center; flex-wrap: wrap;" id="analyticsResults">
+                <div style="width: 320px; height: 320px;"><canvas id="inductionPieChart"></canvas></div>
+                <div style="flex-grow: 1; display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                    <div style="background: #faf5ff; padding: 25px; border-radius: 16px; border-left: 6px solid #a855f7; box-shadow: 0 4px 15px rgba(0,0,0,0.03);"><h3 style="margin: 0; color: #9333ea; font-size: 11px; text-transform:uppercase; font-weight:800; letter-spacing:0.5px;">NEW APPLICATION</h3><p style="margin: 8px 0 0 0; font-size: 28px; font-weight: 900;" id="stat_new">0</p></div>
+                    <div style="background: #fdf2f8; padding: 25px; border-radius: 16px; border-left: 6px solid #db2777; box-shadow: 0 4px 15px rgba(0,0,0,0.03);"><h3 style="margin: 0; color: #be185d; font-size: 11px; text-transform:uppercase; font-weight:800; letter-spacing:0.5px;">RENEWALS</h3><p style="margin: 8px 0 0 0; font-size: 28px; font-weight: 900;" id="stat_renew">0</p></div>
+                    <div style="background: #f8fafc; padding: 25px; border-radius: 16px; border-left: 6px solid #64748b; box-shadow: 0 4px 15px rgba(0,0,0,0.03);"><h3 style="margin: 0; color: #64748b; font-size: 11px; text-transform:uppercase; font-weight:800; letter-spacing:0.5px;">TOTAL EXPECTED</h3><p style="margin: 8px 0 0 0; font-size: 28px; font-weight: 900;" id="stat_total">0</p></div>
+                    <div style="background: #fefce8; padding: 25px; border-radius: 16px; border-left: 6px solid #eab308; box-shadow: 0 4px 15px rgba(0,0,0,0.03);"><h3 style="margin: 0; color: #ca8a04; font-size: 11px; text-transform:uppercase; font-weight:800; letter-spacing:0.5px;">PENDING (Booked)</h3><p style="margin: 8px 0 0 0; font-size: 28px; font-weight: 900;" id="stat_booked">0</p></div>
+                    <div style="background: #f0fdf4; padding: 25px; border-radius: 16px; border-left: 6px solid #10b981; box-shadow: 0 4px 15px rgba(0,0,0,0.03);"><h3 style="margin: 0; color: #059669; font-size: 11px; text-transform:uppercase; font-weight:800; letter-spacing:0.5px;">VERIFIED</h3><p style="margin: 8px 0 0 0; font-size: 28px; font-weight: 900;" id="stat_verified">0</p></div>
+                    <div style="background: #eff6ff; padding: 25px; border-radius: 16px; border-left: 6px solid var(--primary-blue); box-shadow: 0 4px 15px rgba(0,0,0,0.03);"><h3 style="margin: 0; color: var(--primary-blue); font-size: 11px; text-transform:uppercase; font-weight:800; letter-spacing:0.5px;">CARDS GENERATED</h3><p style="margin: 8px 0 0 0; font-size: 28px; font-weight: 900;" id="stat_generated">0</p></div>
+                    <div style="background: #fef2f2; padding: 25px; border-radius: 16px; border-left: 6px solid var(--danger); box-shadow: 0 4px 15px rgba(0,0,0,0.03);"><h3 style="margin: 0; color: #b91c1c; font-size: 11px; text-transform:uppercase; font-weight:800; letter-spacing:0.5px;">FAILED D/A</h3><p style="margin: 8px 0 0 0; font-size: 28px; font-weight: 900;" id="stat_failed">0</p></div>
                 </div>
             </div>
         </div>
         
         <!-- 👉 NEW: DAILY ROSTER DISPATCH CARD IN ANALYTICS -->
         <div class="card" style="margin-top: 25px;">
-            <h2 style="color: #004a99; margin-top: 0; margin-bottom: 15px; font-weight: 800;">📋 Daily Roster Dispatch</h2>
-            <p style="font-size: 12px; color: #475569; margin-bottom: 20px;">Generate and forward the verified induction roster to port security or gate control.</p>
+            <h2 style="color: var(--apmt-navy); margin-top: 0; margin-bottom: 15px; font-weight: 900; font-size:22px;">📋 Daily Roster Dispatch</h2>
+            <p style="font-size: 13px; color: #64748b; margin-bottom: 25px; font-weight:600;">Generate and forward the verified induction roster to port security or gate control.</p>
             
-            <div style="display: flex; gap: 15px; align-items: flex-end; margin-bottom: 15px; flex-wrap: wrap;">
+            <div style="display: flex; gap: 15px; align-items: flex-end; margin-bottom: 20px; flex-wrap: wrap;">
                 <div style="flex: 1; min-width: 200px;">
-                    <label style="font-size: 11px; font-weight: 800; color: #475569;">ROSTER DATE</label>
+                    <label style="font-size: 11px; font-weight: 800; color: #475569; display:block; margin-bottom:8px;">ROSTER DATE</label>
                     <input type="date" id="rosterTargetDate" class="modern-input" style="margin-bottom: 0;">
                 </div>
-                <button onclick="generateRosterText()" class="btn-main" style="background: var(--success); color: white; margin-bottom: 0; height: 44px;">Extract List</button>
+                <button onclick="generateRosterText()" class="btn-main" style="background: var(--success); color: white; margin-bottom: 0; height: 48px;">Extract List</button>
             </div>
 
-            <textarea id="rosterOutput" class="modern-input" style="height: 150px; font-family: monospace; font-size: 12px; resize: none; background: #f8fafc; white-space: pre;" readonly placeholder="Roster data will appear here..."></textarea>
+            <textarea id="rosterOutput" class="modern-input" style="height: 180px; font-family: monospace; font-size: 13px; resize: none; background: #f8fafc; white-space: pre; border-radius: 16px;" readonly placeholder="Roster data will appear here..."></textarea>
 
-            <div style="display: flex; gap: 15px; align-items: flex-end; flex-wrap: wrap;">
+            <div style="display: flex; gap: 15px; align-items: flex-end; flex-wrap: wrap; margin-top:10px;">
                 <div style="flex: 1; min-width: 200px;">
-                    <label style="font-size: 11px; font-weight: 800; color: #475569;">TARGET EMAIL ADDRESS</label>
+                    <label style="font-size: 11px; font-weight: 800; color: #475569; display:block; margin-bottom:8px;">TARGET EMAIL ADDRESS</label>
                     <input type="email" id="rosterTargetEmail" class="modern-input" placeholder="security@apmterminals.com" style="margin-bottom: 0;">
                 </div>
-                <div style="display: flex; gap: 10px;">
-                    <button class="btn-main" style="background: #0f172a; color: white; margin-bottom: 0; height: 44px;" onclick="copyRoster()">📋 Copy Text</button>
-                    <button class="btn-main" style="background: var(--primary-blue); color: white; margin-bottom: 0; height: 44px;" onclick="sendRosterEmail()">✉️ Send Email</button>
+                <div style="display: flex; gap: 15px;">
+                    <button class="btn-main" style="background: var(--apmt-navy); color: white; margin-bottom: 0; height: 48px;" onclick="copyRoster()">📋 Copy Text</button>
+                    <button class="btn-main" style="background: var(--primary-blue); color: white; margin-bottom: 0; height: 48px;" onclick="sendRosterEmail()">✉️ Send Email</button>
                 </div>
             </div>
         </div>
@@ -273,51 +307,50 @@
 
     <!-- SETTINGS -->
     <div id="tab-settings" class="tab-content">
-        <h2 style="color: #0f172a; margin-top: 0; font-weight: 800; margin-bottom: 20px;">⚙️ Dynamic System Configuration</h2>
-        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 25px;">
+        <h2 style="color: var(--apmt-navy); margin-top: 0; font-weight: 900; margin-bottom: 30px; font-size:24px;">⚙️ Dynamic System Configuration</h2>
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(340px, 1fr)); gap: 30px;">
             
             <div class="card" style="margin-bottom: 0;">
-                <h3 style="color: #0f172a; margin-top: 0; font-size: 15px; border-bottom: 1px solid #e2e8f0; padding-bottom: 10px;">1. Global Daily Slot Limit</h3>
-                <div style="display: flex; gap: 10px; align-items: center;"><input type="number" id="uiGlobalLimit" class="modern-input" style="margin-bottom: 0; flex: 1;"><button onclick="saveGlobalLimit()" class="btn-main" style="background: #0f172a; color: white;">Update</button></div>
+                <h3 style="color: var(--apmt-navy); margin-top: 0; font-size: 16px; font-weight:800; border-bottom: 2px solid #e2e8f0; padding-bottom: 15px; margin-bottom:20px;">1. Global Daily Slot Limit</h3>
+                <div style="display: flex; gap: 15px; align-items: center;"><input type="number" id="uiGlobalLimit" class="modern-input" style="margin-bottom: 0; flex: 1;"><button onclick="saveGlobalLimit()" class="btn-main" style="background: var(--apmt-navy); color: white;">Update</button></div>
             </div>
             
             <div class="card" style="margin-bottom: 0;">
-                <h3 style="color: var(--danger); margin-top: 0; font-size: 15px; border-bottom: 1px solid #fee2e2; padding-bottom: 10px;">2. Block Calendar Dates / Times</h3>
-                <label style="font-size: 11px; font-weight: 800;">SELECT ACTION</label>
+                <h3 style="color: var(--danger); margin-top: 0; font-size: 16px; font-weight:800; border-bottom: 2px solid #fee2e2; padding-bottom: 15px; margin-bottom:20px;">2. Block Calendar Dates / Times</h3>
+                <label style="font-size: 11px; font-weight: 800; display:block; margin-bottom:8px; color:#475569;">SELECT ACTION</label>
                 <select id="uiBlockAction" class="modern-input" onchange="toggleTimeDropdown()"><option value="block_date">Block Entire Date</option><option value="block_time">Block Specific Time</option></select>
-                <div style="display: flex; gap: 10px;">
-                    <div style="flex: 1;"><label style="font-size: 11px; font-weight: 800;">TARGET DATE</label><input type="date" id="uiBlockDate" class="modern-input" style="margin-bottom: 0;"></div>
-                    <div style="flex: 1; display: none;" id="uiTimeDiv"><label style="font-size: 11px; font-weight: 800;">TARGET TIME</label><select id="uiBlockTime" class="modern-input" style="margin-bottom: 0;"><option value="9AM">9AM</option><option value="11AM">11AM</option><option value="2PM">2PM</option></select></div>
+                <div style="display: flex; gap: 15px;">
+                    <div style="flex: 1;"><label style="font-size: 11px; font-weight: 800; display:block; margin-bottom:8px; color:#475569;">TARGET DATE</label><input type="date" id="uiBlockDate" class="modern-input" style="margin-bottom: 0;"></div>
+                    <div style="flex: 1; display: none;" id="uiTimeDiv"><label style="font-size: 11px; font-weight: 800; display:block; margin-bottom:8px; color:#475569;">TARGET TIME</label><select id="uiBlockTime" class="modern-input" style="margin-bottom: 0;"><option value="9AM">9AM</option><option value="11AM">11AM</option><option value="2PM">2PM</option></select></div>
                 </div>
-                <button onclick="attemptBlockAction()" class="btn-main" style="background: var(--danger); color: white; width: 100%; margin-top: 15px;">Execute Block</button>
-                <h4 style="font-size: 11px; margin-top: 20px;">CURRENT BLOCKS (Click ✖ to Unblock)</h4>
-                <div id="uiActiveBlocks" style="background: #f8fafc; padding: 10px; border-radius: 8px; border: 1px solid #e2e8f0; min-height: 50px;"></div>
+                <button onclick="attemptBlockAction()" class="btn-main" style="background: var(--danger); color: white; width: 100%; margin-top: 20px;">Execute Block</button>
+                <h4 style="font-size: 11px; margin-top: 25px; color:#64748b; font-weight:800; text-transform:uppercase;">CURRENT BLOCKS (Click ✖ to Unblock)</h4>
+                <div id="uiActiveBlocks" style="background: #f8fafc; padding: 15px; border-radius: 16px; border: 1px dashed #cbd5e1; min-height: 50px;"></div>
             </div>
             
             <div class="card" style="margin-bottom: 0;">
-                <h3 style="color: var(--primary-blue); margin-top: 0; font-size: 15px; border-bottom: 1px solid #e0e7ff; padding-bottom: 10px;">3. Custom Date Capacity</h3>
-                <div style="display: flex; gap: 10px;">
-                    <div style="flex: 2;"><label style="font-size: 11px; font-weight: 800;">TARGET DATE</label><input type="date" id="uiCustomDate" class="modern-input" style="margin-bottom: 0;"></div>
-                    <div style="flex: 1;"><label style="font-size: 11px; font-weight: 800;">NEW LIMIT</label><input type="number" id="uiCustomLimit" class="modern-input" style="margin-bottom: 0;"></div>
+                <h3 style="color: var(--primary-blue); margin-top: 0; font-size: 16px; font-weight:800; border-bottom: 2px solid #e0e7ff; padding-bottom: 15px; margin-bottom:20px;">3. Custom Date Capacity</h3>
+                <div style="display: flex; gap: 15px;">
+                    <div style="flex: 2;"><label style="font-size: 11px; font-weight: 800; display:block; margin-bottom:8px; color:#475569;">TARGET DATE</label><input type="date" id="uiCustomDate" class="modern-input" style="margin-bottom: 0;"></div>
+                    <div style="flex: 1;"><label style="font-size: 11px; font-weight: 800; display:block; margin-bottom:8px; color:#475569;">NEW LIMIT</label><input type="number" id="uiCustomLimit" class="modern-input" style="margin-bottom: 0;"></div>
                 </div>
-                <button onclick="executeCustomCapacity()" class="btn-main" style="background: var(--primary-blue); color: white; width: 100%; margin-top: 15px;">Set Capacity</button>
-                <h4 style="font-size: 11px; margin-top: 20px;">CURRENT OVERRIDES (Click ✖ to Remove)</h4>
-                <div id="uiActiveOverrides" style="background: #f8fafc; padding: 10px; border-radius: 8px; border: 1px solid #e2e8f0; min-height: 50px;"></div>
+                <button onclick="executeCustomCapacity()" class="btn-main" style="background: var(--primary-blue); color: white; width: 100%; margin-top: 20px;">Set Capacity</button>
+                <h4 style="font-size: 11px; margin-top: 25px; color:#64748b; font-weight:800; text-transform:uppercase;">CURRENT OVERRIDES (Click ✖ to Remove)</h4>
+                <div id="uiActiveOverrides" style="background: #f8fafc; padding: 15px; border-radius: 16px; border: 1px dashed #cbd5e1; min-height: 50px;"></div>
             </div>
 
             <div class="card" style="margin-bottom: 0;">
-                <h3 style="color: var(--warn); margin-top: 0; font-size: 15px; border-bottom: 1px solid #ffedd5; padding-bottom: 10px;">4. Displaced Drivers Register</h3>
-                <p style="font-size: 12px; color: #64748b; margin-bottom: 15px;">List of truckers automatically moved due to calendar blocks.</p>
+                <h3 style="color: var(--warn); margin-top: 0; font-size: 16px; font-weight:800; border-bottom: 2px solid #ffedd5; padding-bottom: 15px; margin-bottom:15px;">4. Displaced Drivers Register</h3>
+                <p style="font-size: 13px; color: #64748b; margin-bottom: 20px; font-weight:600;">List of truckers automatically moved due to calendar blocks.</p>
                 
-                <!-- 👉 NEW: THE CLEAR LIST BUTTON -->
-                <div style="display: flex; gap: 10px; margin-bottom: 15px;">
-                    <button onclick="copyHistoryPhones()" class="btn-main" style="background: #0f172a; color: white; flex: 1; font-size: 11px; padding: 10px;">📱 Copy All Phones</button>
-                    <button onclick="clearDisplacedHistory()" class="btn-main" style="background: #dc2626; color: white; flex: 1; font-size: 11px; padding: 10px;">🗑️ Clear List</button>
+                <div style="display: flex; gap: 15px; margin-bottom: 20px;">
+                    <button onclick="copyHistoryPhones()" class="btn-main" style="background: var(--apmt-navy); color: white; flex: 1; font-size: 11px;">📱 Copy Phones</button>
+                    <button onclick="clearDisplacedHistory()" class="btn-main" style="background: var(--danger); color: white; flex: 1; font-size: 11px;">🗑️ Clear List</button>
                 </div>
                 
-                <div style="max-height: 250px; overflow-y: auto; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px;">
+                <div style="max-height: 250px; overflow-y: auto; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 16px; padding: 5px;">
                     <table class="driver-table" style="margin-top: 0; border: none; font-size: 11px;">
-                        <thead><tr><th>Driver Name</th><th>ID / Phone</th><th>Moved To (Date & Time)</th></tr></thead>
+                        <thead><tr><th>Driver Name</th><th>ID / Phone</th><th>Moved To</th></tr></thead>
                         <tbody id="uiRescheduleHistory"></tbody>
                     </table>
                 </div>
@@ -424,7 +457,6 @@
         }
     }
 
-    // 👉 EMAIL DISPATCH UI LOGIC (Now safely integrated into Analytics Tab)
     async function generateRosterText() {
         const date = document.getElementById('rosterTargetDate').value;
         if(!date) return alert("Select a date.");
@@ -471,7 +503,6 @@
         window.location.href = `mailto:${email}?subject=${subject}&body=${body}`;
     }
 
-    // 👉 CLEAR DISPLACED HISTORY LOGIC
     async function clearDisplacedHistory() {
         if(!confirm("Are you sure you want to clear the displaced drivers register? This action is permanent and will be logged.")) return;
         
@@ -489,7 +520,6 @@
         btn.innerText = oldText; btn.disabled = false;
     }
 
-    // Existing Functions
     function toggleWsCheckboxes(mCb) { document.querySelectorAll('.ws-cb').forEach(cb => cb.checked = mCb.checked); }
     
     async function loadWorkspaceRoster() {
@@ -513,15 +543,15 @@
                 let hUI = dbH === 'Attended' ? `<span class="status-pill pill-pass">Yes</span>` : `<span class="status-pill pill-pending">No</span>`;
                 let mUI = dbM === 'Passed' ? `<span class="status-pill pill-pass">Passed</span>` : (dbM.startsWith('Failed') ? `<span class="status-pill pill-fail">${dbM.replace('Failed: ', '')}</span>` : `<span class="status-pill pill-pending">Pending</span>`);
                 
-                const rHTML = `<tr><td style="text-align:center;"><input type="checkbox" class="ws-cb cb-action" value="${row.id}"></td><td style="font-family:monospace; font-weight:800; color:var(--primary-blue);">${row.id}</td><td>${row.name}</td><td>${mUI}</td><td>${hUI}</td></tr>`;
+                const rHTML = `<tr><td style="text-align:center;"><input type="checkbox" class="ws-cb cb-action" value="${row.id}"></td><td style="font-family:monospace; font-weight:800; color:var(--primary-blue);">${row.id}</td><td style="font-weight:600;">${row.name}</td><td>${mUI}</td><td>${hUI}</td></tr>`;
                 if (isProc) { procHTML += rHTML; procCount++; } else { pHTML += rHTML; pCount++; }
             });
 
             let fHTML = "";
-            if (pCount > 0) fHTML += `<tr><td colspan='5' style='background:#fef3c7; color:#b45309; font-weight:800; font-size:12px;'>⏳ PENDING ACTION (${pCount})</td></tr>` + pHTML; 
+            if (pCount > 0) fHTML += `<tr><td colspan='5' style='background:#fef3c7; color:#b45309; font-weight:900; font-size:11px; text-transform:uppercase; letter-spacing:0.5px;'>⏳ PENDING ACTION (${pCount})</td></tr>` + pHTML; 
             else fHTML += `<tr><td colspan='5' style='text-align:center; color:var(--success); font-weight:800;'>✅ Inbox Zero!</td></tr>`;
             
-            if (procCount > 0) fHTML += `<tr><td colspan='5' style='background:#f0fdf4; color:#166534; font-weight:800; font-size:12px;'>✅ PROCESSED TODAY (Select to edit) (${procCount})</td></tr>` + procHTML;
+            if (procCount > 0) fHTML += `<tr><td colspan='5' style='background:#f0fdf4; color:#166534; font-weight:900; font-size:11px; text-transform:uppercase; letter-spacing:0.5px;'>✅ PROCESSED TODAY (Select to edit) (${procCount})</td></tr>` + procHTML;
             
             cont.innerHTML = fHTML; 
             if (pCount > 0 || procCount > 0) document.getElementById('workspaceControls').style.display = 'flex';
@@ -605,7 +635,7 @@
                 const d = res.data;
                 document.getElementById('stat_total').innerText = d.total; document.getElementById('stat_new').innerText = d.newCount; document.getElementById('stat_renew').innerText = d.renewalCount; document.getElementById('stat_booked').innerText = d.booked; document.getElementById('stat_verified').innerText = d.verified; document.getElementById('stat_generated').innerText = d.generated; document.getElementById('stat_failed').innerText = d.failedCount;
                 const ctx = document.getElementById('inductionPieChart').getContext('2d'); if (myPieChart) myPieChart.destroy();
-                myPieChart = new Chart(ctx, { type: 'doughnut', data: { labels: ['Pending', 'Verified', 'Generated', 'Failed'], datasets: [{ data: [d.booked, d.verified, d.generated, d.failedCount], backgroundColor: ['#facc15', '#22c55e', '#3b82f6', '#dc2626'], borderWidth: 2, borderColor: '#ffffff' }] }, options: { responsive: true, maintainAspectRatio: false } });
+                myPieChart = new Chart(ctx, { type: 'doughnut', data: { labels: ['Pending', 'Verified', 'Generated', 'Failed'], datasets: [{ data: [d.booked, d.verified, d.generated, d.failedCount], backgroundColor: ['#facc15', '#10b981', '#008be5', '#ef4444'], borderWidth: 2, borderColor: '#ffffff' }] }, options: { responsive: true, maintainAspectRatio: false, cutout: '75%' } });
             } else alert("Failed.");
         } catch (e) { loader.style.display = "none"; alert("Error."); }
     }
@@ -619,7 +649,7 @@
             
             const bDiv = document.getElementById('uiActiveBlocks'); bDiv.innerHTML = "";
             let bData = [...globalSettingsState.blockedDates, ...globalSettingsState.blockedTimes];
-            if (bData.length === 0) bDiv.innerHTML = "<span style='font-size:12px; color:#94a3b8;'>No blocks.</span>";
+            if (bData.length === 0) bDiv.innerHTML = "<span style='font-size:12px; color:#94a3b8; font-weight:600;'>No blocks active.</span>";
             else {
                 bData.forEach(i => {
                     if(i.includes('|')) bDiv.innerHTML += `<div class="setting-chip">🛑 ${i} <span class="chip-delete" onclick="removeSystemSetting('block_time', '${i}', '${currentAdminUid}').then(refreshSettingsUI)">✖</span></div>`;
@@ -629,9 +659,9 @@
             
             const oDiv = document.getElementById('uiActiveOverrides'); oDiv.innerHTML = "";
             const keys = Object.keys(globalSettingsState.customCapacities);
-            if (keys.length === 0) oDiv.innerHTML = "<span style='font-size:12px; color:#94a3b8;'>No overrides.</span>";
+            if (keys.length === 0) oDiv.innerHTML = "<span style='font-size:12px; color:#94a3b8; font-weight:600;'>No overrides active.</span>";
             else {
-                keys.forEach(k => oDiv.innerHTML += `<div class="setting-chip" style="background:#e0e7ff; border-color:#c7d2fe;">🗓️ ${k} (${globalSettingsState.customCapacities[k]}) <span class="chip-delete" onclick="removeSystemSetting('custom_cap', '${k}', '${currentAdminUid}').then(refreshSettingsUI)">✖</span></div>`);
+                keys.forEach(k => oDiv.innerHTML += `<div class="setting-chip" style="background:#e0e7ff; border-color:#c7d2fe; color:var(--primary-blue);">🗓️ ${k} (${globalSettingsState.customCapacities[k]}) <span class="chip-delete" style="background:var(--primary-blue); color:white;" onclick="removeSystemSetting('custom_cap', '${k}', '${currentAdminUid}').then(refreshSettingsUI)">✖</span></div>`);
             }
 
             const { data: logData } = await window.supabaseClient.from('system_settings').select('setting_value').eq('setting_key', 'reschedule_list');
@@ -645,11 +675,11 @@
                     logDiv.innerHTML += `<tr>
                         <td style="font-weight:700;">${item.name}</td>
                         <td><span style="font-family:monospace; color:var(--primary-blue); font-weight:800;">${item.id}</span><br>${item.phone}</td>
-                        <td><span style="background:#fef3c7; color:#b45309; padding:4px 8px; border-radius:6px; font-weight:800; font-size:10px;">${item.newDate} | ${item.newTime || '9AM'}</span></td>
+                        <td><span style="background:#fef3c7; color:#b45309; padding:6px 10px; border-radius:30px; font-weight:800; font-size:10px;">${item.newDate} | ${item.newTime || '9AM'}</span></td>
                     </tr>`;
                 });
             } else {
-                logDiv.innerHTML = `<tr><td colspan='3' style='text-align:center; color:#94a3b8; padding:20px;'>No displaced drivers on record.</td></tr>`;
+                logDiv.innerHTML = `<tr><td colspan='3' style='text-align:center; color:#94a3b8; padding:30px; font-weight:600;'>No displaced drivers on record.</td></tr>`;
             }
         } catch(e) {}
     }
