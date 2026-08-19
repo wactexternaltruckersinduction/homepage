@@ -151,6 +151,11 @@
                 <div class="form-group"><label>RELIGION</label><input type="text" name="religion"></div>
                 <div class="form-group"><label>MOBILE NUMBER</label><input type="tel" name="mobile" required></div>
             </div>
+            <!-- 👉 NEW: OPTIONAL EMAIL FIELD -->
+            <div class="form-group">
+                <label>EMAIL ADDRESS (Optional)</label>
+                <input type="email" name="emailAddress" placeholder="driver@example.com">
+            </div>
             <div class="grid">
                 <div class="form-group"><label>DATE OF BIRTH</label><input type="date" name="dob" required></div>
                 <div class="form-group">
@@ -262,7 +267,18 @@
         </div>
     </div>
 </div>
-
+    
+<!-- 👉 NEW: PROCESSING OVERLAY MODAL -->
+<div id="processingModal" class="modal-bg" style="display: none; align-items: center; justify-content: center; flex-direction: column; z-index: 1001;">
+    <div style="background: white; padding: 40px; border-radius: var(--card-radius); text-align: center; max-width: 400px; box-shadow: 0 25px 50px rgba(0,0,0,0.25);">
+        <!-- Spinning Loader -->
+        <div style="width: 50px; height: 50px; border: 5px solid #e2e8f0; border-top: 5px solid var(--primary-blue); border-radius: 50%; animation: spin 1s linear infinite; margin: 0 auto 20px auto;"></div>
+        <h3 style="color: var(--apmt-navy); margin-top: 0; font-size: 18px; font-weight: 900;">PROCESSING APPLICATION</h3>
+        <p style="color: var(--text-muted); font-size: 13px; font-weight: 600; margin: 0;">Please wait while we securely verify your data and generate your unique induction number...</p>
+    </div>
+</div>
+<style>@keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }</style>
+    
 <div id="successModal">
     <div class="modal-content">
         <div style="font-size: 55px; margin-bottom: 10px;">✅</div>
@@ -342,6 +358,11 @@
             return alert("Security Alert: Please check the 'I am not a robot' box to prove you are human.");
         }
         // 👉 END OF SECURITY CHECK
+
+        // 👉 SHOW PROCESSING POP-UP IMMEDIATELY
+        document.getElementById('processingModal').style.display = "flex";
+        const btn = document.getElementById('newSubmitBtn');
+        btn.disabled = true;
         
         const btn = document.getElementById('newSubmitBtn');
         btn.innerText = "Submitting Application..."; btn.disabled = true;
@@ -355,6 +376,7 @@
                 lga: this.lga.value, 
                 religion: this.religion.value,
                 mobile: this.mobile.value, 
+                emailAddress: this.emailAddress.value,
                 dob: this.dob.value,
                 maritalStatus: this.maritalStatus.value, 
                 licenseDetails: this.licenseDetails.value,
@@ -379,7 +401,11 @@
             const result = await submitNew(payload);
 
             if (result.result === 'success') {
-                currentUserData = { name: this.fullName.value, id: result.inductionNumber, type: 'new' };
+                // Save the email into the user's temporary data so we can use it on the booking page
+                currentUserData = { name: this.fullName.value, id: result.inductionNumber, type: 'new', email: this.emailAddress.value };
+                
+                // Hide Processing, Show Success
+                document.getElementById('processingModal').style.display = "none";
                 document.getElementById('displayID').innerText = result.inductionNumber;
                 document.getElementById('successModal').style.display = "block";
                 
@@ -389,12 +415,15 @@
                 };
                 this.reset();
             } else { 
+                document.getElementById('processingModal').style.display = "none";
                 alert("Database Error: " + (result.message || "Something went wrong.")); 
             }
         } catch (err) { 
-            alert("System Error: " + err.message + "\n\n(Check the F12 Console for details)"); 
+            document.getElementById('processingModal').style.display = "none";
+            console.error(err);
+            alert("System Error: Check internet connection or F12 Console."); 
         } finally { 
-            btn.innerText = "Submit Application"; btn.disabled = false; 
+            btn.disabled = false; 
         }
     });
 
