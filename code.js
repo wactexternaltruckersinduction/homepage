@@ -150,7 +150,7 @@ async function driverLogin(inductionNumber, password) {
         }
 
         const formattedProfile = {
-            fullName: validDriver.full_name, inductionNumber: validDriver.induction_number, licenseNumber: validDriver.license_number, dob: validDriver.dob, passportPhoto: validDriver.passport_photo, mobileNumber: validDriver.mobile_number, companyName: validDriver.company_name, address: validDriver.address, inductionExpiration: validDriver.induction_expiration, licenseExpiration: validDriver.license_expiration, docLicense: validDriver.drivers_license, docOther: validDriver.other_documents || validDriver.recommendation_letter 
+            fullName: validDriver.full_name, inductionNumber: validDriver.induction_number, licenseNumber: validDriver.license_number, dob: validDriver.dob, email: validDriver.email, passportPhoto: validDriver.passport_photo, mobileNumber: validDriver.mobile_number, companyName: validDriver.company_name, address: validDriver.address, inductionExpiration: validDriver.induction_expiration, licenseExpiration: validDriver.license_expiration, docLicense: validDriver.drivers_license, docOther: validDriver.other_documents || validDriver.recommendation_letter 
         };
         const managementData = {
             status: appt ? appt.appointment_status : "Booked", daReason: activeBanReason, currentAppointment: appt ? appt.appointment_date : "", appointmentTime: appt ? appt.appointment_time : "", appointmentId: appt ? appt.appointment_id : "", hseDate: appt ? appt.hse_date : "", rescheduleCount: appt ? appt.reschedule_count : 0, isSuspended: isSuspended, suspensionEnd: suspensionEnd
