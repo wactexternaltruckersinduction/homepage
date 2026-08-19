@@ -389,7 +389,7 @@
                 alert("Database Error: " + (result.message || "Something went wrong.")); 
             }
         } catch (err) { 
-            alert("System Error: Check internet connection."); 
+            alert("System Error: " + err.message + "\n\n(Check the F12 Console for details)"); 
         } finally { 
             btn.innerText = "Submit Application"; btn.disabled = false; 
         }
