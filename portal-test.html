@@ -629,6 +629,7 @@
         let nameVal = profile.fullName || "Unknown Driver";
         let idVal = profile.inductionNumber || "N/A";
         let dobVal = profile.dob || "N/A";
+        let emailVal = profile.email || "No email provided";
         let photoUrl = profile.passportPhoto;
         let phoneVal = profile.mobileNumber || "N/A";
         let compVal = profile.companyName || "N/A";
@@ -638,6 +639,7 @@
         setVal('sideId', idVal);
         setVal('sideLicense', licVal);
         setVal('sideDob', dobVal);
+        setVal('sideemail', emailVal);
         setVal('sideIssue', issueVal);
 
         setVal('currPhone', phoneVal);
